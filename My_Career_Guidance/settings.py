@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'djoser',
     'user',
+    'timetable',
     
 ]
 MIDDLEWARE = [
