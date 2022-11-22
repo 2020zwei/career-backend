@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView,RetrieveUpdateAPIView
+from rest_framework.generics import CreateAPIView,RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from .serializer import SignupUserSerializer,UserSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -14,9 +14,9 @@ class SignupUser(CreateAPIView):
 
     serializer_class = SignupUserSerializer
 
-class UserView(RetrieveUpdateAPIView):
+class UserView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
     def get_queryset(self):
-      queryset=Student.objects.filter(user=self.request.user).first()    
+      queryset=Student.objects.get(id=self.request.user.id)  
       return queryset
