@@ -22,4 +22,5 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('user/',include("user.urls")),
     path('timetable/',include("timetable.urls")),
+    path('calculator/',include("calculator.urls")),
 ]
