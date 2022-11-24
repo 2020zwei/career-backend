@@ -23,4 +23,5 @@ urlpatterns = [
     path('user/',include("user.urls")),
     path('timetable/',include("timetable.urls")),
     path('calculator/',include("calculator.urls")),
+    path('cv/',include("cv.urls")),
 ]
