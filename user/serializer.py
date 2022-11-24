@@ -7,7 +7,7 @@ class SignupUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Student
-        fields=['first_name','last_name','school','dob']
+        fields=['first_name','last_name','school','dob','city','country','address','eircode']
    
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
