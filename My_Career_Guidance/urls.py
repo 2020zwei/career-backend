@@ -25,3 +25,6 @@ urlpatterns = [
     path('calculator/',include("calculator.urls")),
     path('cv/',include("cv.urls")),
 ]
+admin.site.site_header = "My Career Guidance"
+admin.site.site_title = "Career Guidance Admin Portal"
+admin.site.index_title = "Welcome to Career Guidance Portal"
