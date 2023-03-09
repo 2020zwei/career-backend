@@ -8,6 +8,8 @@ from .models import Slot
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework import status
 from rest_framework.response import Response
+from datetime import datetime, date,timedelta
+
 
 
 
@@ -20,8 +22,17 @@ class AddTimeSlot(CreateAPIView):
         year, week_num, day_of_week = todays_date.isocalendar()  # Using isocalendar() function   
         user=self.request.user.student
         new_slot= self.request.data.get("timeslot")
-        if Slot.objects.filter(timeslot=new_slot,user=user):
+        end_slot=self.request.data.get("endslot")
+        new_time = datetime.strptime(new_slot, '%H:%M:%S').time()
+        end_time = datetime.strptime(end_slot, '%H:%M:%S').time()
+        duration = datetime.combine(date.min, end_time) - datetime.combine(date.min, new_time)
+        if Slot.objects.filter(timeslot__gte=new_slot,user=user):
                  raise ValidationError(" You have already regesterd this slot")
+
+        elif duration > timedelta(seconds=900):
+            raise ValidationError("The duration can not be greater than 15 mins")
+        elif duration < timedelta(seconds=900):
+            raise ValidationError("The duration can not be less than 15 mins")
 
         else:
          return {'user': self.request.user, 'year': str(year),'week':str(week_num),'user':user}

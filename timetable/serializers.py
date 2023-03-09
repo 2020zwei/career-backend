@@ -8,7 +8,7 @@ class TimeSlotAddSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Slot
-        fields=['timeslot','day']
+        fields=['timeslot','endslot','day']
         
     def create(self, validated_data):
         validated_data["user"] = self.context["user"]
