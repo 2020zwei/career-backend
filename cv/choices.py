@@ -16,6 +16,8 @@ class JUNIOR_CERT_TEST_RESULT(models.TextChoices):
     PARTIALLYACHIEVED = "4", _('PARTIALLY ACHIEVED')
     NOTGRADED= "5", _('NOT GRADED')
     
-    
-
+class JOB_TITLE(models.TextChoices):
+    Assistant = "1", _('ASSISTANT')
+    WorkShadow = "2", _('WORK SHADOW')
+    Other = "3", _('OTHER')
 
