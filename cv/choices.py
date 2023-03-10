@@ -15,6 +15,15 @@ class JUNIOR_CERT_TEST_RESULT(models.TextChoices):
     ACHIEVED = "3", _('ACHIEVED')
     PARTIALLYACHIEVED = "4", _('PARTIALLY ACHIEVED')
     NOTGRADED= "5", _('NOT GRADED')
+
+class USER_TITLE(models.TextChoices):
+
+    MR = "1", _('MR')
+    MRS = "2", _('MRS')
+    MS = "3", _('MS')
+
+
+    
     
 class JOB_TITLE(models.TextChoices):
     Assistant = "1", _('ASSISTANT')
