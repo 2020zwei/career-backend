@@ -17,25 +17,28 @@ from datetime import datetime, date,timedelta
 class AddTimeSlot(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TimeSlotAddSerializer
-    def get_serializer_context(self):
-        todays_date = date.today()
-        year, week_num, day_of_week = todays_date.isocalendar()  # Using isocalendar() function   
-        user=self.request.user.student
-        new_slot= self.request.data.get("timeslot")
-        end_slot=self.request.data.get("endslot")
-        new_time = datetime.strptime(new_slot, '%H:%M:%S').time()
-        end_time = datetime.strptime(end_slot, '%H:%M:%S').time()
-        duration = datetime.combine(date.min, end_time) - datetime.combine(date.min, new_time)
-        if Slot.objects.filter(timeslot__gte=new_slot,user=user):
-                 raise ValidationError(" You have already regesterd this slot")
+    try:
+        def get_serializer_context(self):
+            todays_date = date.today()
+            year, week_num, day_of_week = todays_date.isocalendar()  # Using isocalendar() function   
+            user=self.request.user.student
+            new_slot= self.request.data.get("timeslot")
+            end_slot=self.request.data.get("endslot")
+            new_time = datetime.strptime(new_slot, '%H:%M:%S').time()
+            end_time = datetime.strptime(end_slot, '%H:%M:%S').time()
+            duration = datetime.combine(date.min, end_time) - datetime.combine(date.min, new_time)
+            if Slot.objects.filter(timeslot__gte=new_slot,user=user):
+                    raise ValidationError(" You have already regesterd this slot")
 
-        elif duration > timedelta(seconds=900):
-            raise ValidationError("The duration can not be greater than 15 mins")
-        elif duration < timedelta(seconds=900):
-            raise ValidationError("The duration can not be less than 15 mins")
+            elif duration > timedelta(seconds=900):
+                raise ValidationError("The duration can not be greater than 15 mins")
+            elif duration < timedelta(seconds=900):
+                raise ValidationError("The duration can not be less than 15 mins")
 
-        else:
-         return {'user': self.request.user, 'year': str(year),'week':str(week_num),'user':user}
+            else:
+                return {'user': self.request.user, 'year': str(year),'week':str(week_num),'user':user}
+    except Exception as e:
+        raise
 
 class TimeSlotRelatedView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
