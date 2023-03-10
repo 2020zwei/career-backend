@@ -25,6 +25,8 @@ class USER_TITLE(models.TextChoices):
 
     
     
-    
-
+class JOB_TITLE(models.TextChoices):
+    Assistant = "1", _('ASSISTANT')
+    WorkShadow = "2", _('WORK SHADOW')
+    Other = "3", _('OTHER')
 

@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import Student
-from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT,USER_TITLE
+from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE
 from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
@@ -29,9 +29,30 @@ class JuniorCertTest(models.Model):
 class Experience(models.Model):
     startdate = models.DateField()
     enddate=models.DateField()
-    position=models.CharField(max_length=50)
-    company=models.CharField(max_length=50)
+    jobtitle=models.CharField(choices=JOB_TITLE.choices,max_length=1)
+    #position=models.CharField(max_length=50, null=True)
+    company=models.CharField(max_length=50, null=True)
+    city=models.CharField(max_length=50, null=True)
+    country=models.CharField(max_length=50, null=True)
+    description=models.TextField(max_length=300, null=True)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
+
+
+class Skills(models.Model):
+    skill=models.CharField(max_length=50, null=True)
+    description=models.TextField(max_length=300)
+    user=models.ForeignKey(Student,on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural="skills"
+
+class Qualities(models.Model):
+    quality=models.CharField(max_length=50, null=True)
+    description=models.TextField(max_length=300)
+    user=models.ForeignKey(Student,on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural="qualities"
     
 class JobTitle(models.Model):
     title=models.CharField(max_length=60)

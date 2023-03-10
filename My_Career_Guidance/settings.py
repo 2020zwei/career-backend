@@ -106,14 +106,24 @@ WSGI_APPLICATION = 'My_Career_Guidance.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME':    os.environ['CAREER_DATABASE_NAME'],
+#         'USER':    os.environ['CAREER_DATABASE_USER'],
+#         'PASSWORD': os.environ['CAREER_DATABASE_PASS'],
+#         'HOST': os.environ['CAREER_DATABASE_HOST'],
+#         'PORT': os.environ['CAREER_DB_PORT'],
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':    os.environ['CAREER_DATABASE_NAME'],
-        'USER':    os.environ['CAREER_DATABASE_USER'],
-        'PASSWORD': os.environ['CAREER_DATABASE_PASS'],
-        'HOST': os.environ['CAREER_DATABASE_HOST'],
-        'PORT': os.environ['CAREER_DB_PORT'],
+        'NAME':    'MyCareerGuidance',
+        'USER':    'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
