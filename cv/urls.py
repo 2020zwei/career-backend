@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CvViewRelated,EducationViewRelated,JuniorCertTestViewRelated,ExperienceViewRelated,ReferenceViewRelated, SkillsViewRelated,QualityViewRelated
+from .views import CvViewRelated,EducationViewRelated,JuniorCertTestViewRelated,ExperienceViewRelated,ReferenceViewRelated, SkillsViewRelated,QualityViewRelated,GeneratePDF
 
 
 urlpatterns = [
@@ -13,6 +13,8 @@ urlpatterns = [
     path('add-reference/',ReferenceViewRelated.as_view(),name="Add_Reference"),
     path('add-skill/',SkillsViewRelated.as_view(),name="Add_Skill"),
     path('add-quality/',QualityViewRelated.as_view(),name="Add_Quality"),
+    path('cv/',GeneratePDF.as_view(),name="CV"),
+
 
 
     
