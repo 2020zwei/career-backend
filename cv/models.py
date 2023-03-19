@@ -1,6 +1,6 @@
 from django.db import models
 from user.models import Student
-from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE
+from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT
 from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
@@ -11,8 +11,7 @@ class CV(models.Model):
     HobbiesandInterests=models.TextField(max_length=300)
     def __str__(self):
         return self.user.first_name +" "+ self.user.last_name
-    
-    
+       
 
 class Education(models.Model):
     year=models.PositiveSmallIntegerField()
@@ -21,16 +20,21 @@ class Education(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class JuniorCertTest(models.Model):
-    subject = models.CharField(max_length=50)
-    level=models.CharField(choices=JUNIOR_CERT_TEST_LEVEL.choices,max_length=1)
-    result=models.CharField(choices=JUNIOR_CERT_TEST_RESULT.choices,max_length=1)
+    subject = models.CharField(choices=SUBJECTS.choices,max_length=2)
+    level=models.CharField(choices=JUNIOR_CERT_TEST_LEVEL.choices,max_length=2)
+    result=models.CharField(choices=JUNIOR_CERT_TEST_RESULT.choices,max_length=2)
+    user=models.ForeignKey(Student, on_delete=models.CASCADE)
+
+class LeavingCertTest(models.Model):
+    subject = models.CharField(choices=SUBJECTS.choices,max_length=2)
+    level=models.CharField(choices=LEAVING_CERT_TEST_LEVEL.choices,max_length=2)
+    result=models.CharField(choices=LEAVING_CERT_TEST_RESULT.choices,max_length=2)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class Experience(models.Model):
     startdate = models.DateField()
     enddate=models.DateField()
     jobtitle=models.CharField(choices=JOB_TITLE.choices,max_length=1)
-    #position=models.CharField(max_length=50, null=True)
     company=models.CharField(max_length=50, null=True)
     city=models.CharField(max_length=50, null=True)
     country=models.CharField(max_length=50, null=True)

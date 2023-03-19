@@ -1,11 +1,13 @@
 from django.contrib import admin
-from .models import CV,Education,JuniorCertTest,Experience,Reference,Qualities,Skills,JobTitle
+from .models import CV,Education,JuniorCertTest,Experience,Reference,Qualities,Skills,JobTitle,LeavingCertTest
 # Register your models here.
 class CVAdminSite(admin.ModelAdmin):
     list_display=['user','is_juniorcert_test']
 class EducationAdminSite(admin.ModelAdmin):
     list_display=['user','year','school','examtaken']
 class JuniorCertTestAdminSite(admin.ModelAdmin):
+    list_display=['user','subject','level','result']
+class LeavingCertTestAdminSite(admin.ModelAdmin):
     list_display=['user','subject','level','result']
 class ExperienceTestAdminSite(admin.ModelAdmin):
     list_display=['user','startdate','enddate','jobtitle','company','city','country','description']
@@ -26,6 +28,7 @@ class JobTitleAdmin(admin.ModelAdmin):
 admin.site.register(CV,CVAdminSite)
 admin.site.register(Education,EducationAdminSite)
 admin.site.register(JuniorCertTest,JuniorCertTestAdminSite)
+admin.site.register(LeavingCertTest,LeavingCertTestAdminSite)
 admin.site.register(Experience,ExperienceTestAdminSite)
 admin.site.register(Reference,ReferenceAdminSite)
 admin.site.register(Skills,SkillsAdminSite)

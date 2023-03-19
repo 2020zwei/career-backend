@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CV,Education,JuniorCertTest,Experience,Reference
+from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qualities,LeavingCertTest
 from rest_framework.exceptions import  ValidationError
 from user.models import Student
 
@@ -19,6 +19,16 @@ class  JuniorCertTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=JuniorCertTest
+        fields=['subject','level','result']
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user.student
+        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
+
+class  LeavingCertTestSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model=LeavingCertTest
         fields=['subject','level','result']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
@@ -58,5 +68,22 @@ class CvSerializer(serializers.ModelSerializer):
         fields=['user','objective','is_juniorcert_test','skills','HobbiesandInterests']
    
 
+class SkillSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model=Skills
+        fields=['skill','description']
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user.student
+        return super(SkillSerializer, self).create(validated_data=validated_data)
+
+class QualitiesSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model=Qualities
+        fields=['quality','description']
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user.student
+        return super(QualitiesSerializer, self).create(validated_data=validated_data)
 
     

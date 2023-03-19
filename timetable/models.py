@@ -18,8 +18,6 @@ class Slot(models.Model):
     week = models.PositiveSmallIntegerField()
     user=models.ForeignKey(Student,on_delete=models.CASCADE,related_name='Student')
 
-
-
     def __str__(self):
         
         return (self.user.first_name +" " + self.user.last_name)
