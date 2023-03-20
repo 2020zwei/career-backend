@@ -25,7 +25,8 @@ urlpatterns = [
     path('calculator/',include("calculator.urls")),
     path('cv/',include("cv.urls")),
     path('psychometric/',include("psychometric.urls")),
-    path('_nested_admin/', include('nested_admin.urls'))
+    path('_nested_admin/', include('nested_admin.urls')),
+    path('goals/', include("goals.urls"))
 ]
 admin.site.site_header = "My Career Guidance"
 admin.site.site_title = "Career Guidance Admin Portal"
