@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'timetable',
     'calculator',
     'cv',
+    'psychometric',
+    'nested_admin',
     
 ]
 MIDDLEWARE = [
