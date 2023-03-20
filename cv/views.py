@@ -1,5 +1,6 @@
 import os
 from django.shortcuts import render
+from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView
 from rest_framework.views import APIView
@@ -128,9 +129,12 @@ class GeneratePDF(CreateAPIView):
           temp_name = "general/templates/" 
           cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
           open(temp_name + cv_template, "w").write(render_to_string('cv.html', {'student_detail': user_obj,'cv_detail':cv_obj,'education_detail':education_obj,'Junior_Cert_detail':junior_cert_obj,'Leave_Cert_detail':leave_cert_obj,'skill_detail':skill_obj,'qualities_detail':quality_obj,'Experience_detail':exp_obj,'Reference_detail':refer_obj}))
-          HTML(temp_name + cv_template).write_pdf(str(user_obj.id)+'.pdf')
-          os.remove(str(user_obj.first_name)+'.pdf')
-          os.remove(temp_name + cv_template)
-          return Response({'cv_report': user_obj.first_name}, status=status.HTTP_200_OK)
+          HTML(temp_name + cv_template).write_pdf(str(user_obj.first_name)+'.pdf')
+          file_location = f'{user_obj.first_name}.pdf'
+          with open(file_location, 'rb') as f:
+            file_data = f.read()
+          response = HttpResponse(file_data, content_type='application/pdf')
+          response['Content-Disposition'] = 'attachment; filename="'+ user_obj.first_name +'".pdf'
+          return response
         except Exception as e:
           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
