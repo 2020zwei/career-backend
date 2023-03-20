@@ -1,9 +1,9 @@
 import os
 from django.shortcuts import render
+from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView
 from rest_framework.views import APIView
-from django.http import HttpResponse
 from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer
 from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest
 from user.models import Student
@@ -130,8 +130,6 @@ class GeneratePDF(CreateAPIView):
           cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
           open(temp_name + cv_template, "w").write(render_to_string('cv.html', {'student_detail': user_obj,'cv_detail':cv_obj,'education_detail':education_obj,'Junior_Cert_detail':junior_cert_obj,'Leave_Cert_detail':leave_cert_obj,'skill_detail':skill_obj,'qualities_detail':quality_obj,'Experience_detail':exp_obj,'Reference_detail':refer_obj}))
           HTML(temp_name + cv_template).write_pdf(str(user_obj.first_name)+'.pdf')
-          os.remove(str(user_obj.first_name)+'.pdf')
-          os.remove(temp_name + cv_template)
           file_location = f'{user_obj.first_name}.pdf'
           with open(file_location, 'rb') as f:
             file_data = f.read()
