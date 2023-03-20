@@ -32,4 +32,6 @@ class TestResult(models.Model):
     user=models.OneToOneField(Student, on_delete=models.CASCADE)
     test=models.ForeignKey(PsychometricTest,on_delete=models.CASCADE)
     score=models.IntegerField()
+    def __str__(self):
+        return self.score
    

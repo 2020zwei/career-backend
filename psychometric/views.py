@@ -14,6 +14,7 @@ class PsychometricViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset=PsychometricTest.objects.all()
 
+    
     def get(self, request):
         """Fetch All Tests By User"""
         try:
@@ -41,4 +42,28 @@ class PsychometricViewRelated(CreateAPIView):
         else:
             return Response("Question doesnt exist")    
     
-        
+class PsychometricDetails(CreateAPIView):
+
+    permission_classes = [IsAuthenticated]
+    queryset = Question.objects.all()
+    serializer_class = PsychometricTestSerializer
+
+    lookup_field = 'id'
+
+    def get_test(self, id):
+        try:
+            return PsychometricTest.objects.get(id = id)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, id):
+        test = self.get_test(id)
+        serializer = PsychometricTestSerializer(test)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def delete(self, request, id):
+        test = self.get_object(id)
+        test.delete()
+        return Response(status = status.HTTP_204_NO_CONTENT)
+
+   
