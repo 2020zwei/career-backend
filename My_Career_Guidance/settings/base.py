@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'psychometric',
     'nested_admin',
     'goals',
+    'education',
+    
     
 ]
 MIDDLEWARE = [
