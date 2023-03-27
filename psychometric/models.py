@@ -29,9 +29,14 @@ class Answer(models.Model):
         return self.answer
 
 class TestResult(models.Model):
-    user=models.OneToOneField(Student, on_delete=models.CASCADE)
-    test=models.ForeignKey(PsychometricTest,on_delete=models.CASCADE)
-    score=models.IntegerField()
+    user=models.OneToOneField(Student, blank=True, null=True,on_delete=models.CASCADE)
+    test=models.ForeignKey(PsychometricTest,blank=True, null=True, on_delete=models.CASCADE)
+    score=models.IntegerField(null=True)
     def __str__(self):
-        return self.score
+        return self.user.first_name
+    
+class TestResultDetail(models.Model):
+    result=models.ForeignKey(TestResult, on_delete=models.CASCADE)
+    question=models.ForeignKey(Question,related_name="result", on_delete=models.CASCADE)
+    answer=models.ForeignKey(Answer,related_name="result", on_delete=models.CASCADE)
    

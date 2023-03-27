@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView
 from .serializers import QuestionSerializer, QuizSerializer
-from .models import Quiz,Question,QuizResult,Answer
+from .models import Quiz,Question,QuizResult,Answer,QuizResultDetail
 from user.models import Student
 from rest_framework import status
 from rest_framework.response import Response
@@ -31,24 +31,25 @@ class QuizViewRelated(CreateAPIView):
         wrong=0
         user_obj=request.user
         questions= request.data.get('question')
+        std_obj= Student.objects.get(user=user_obj)
 
         for quest in questions:
             ques_obj=Question.objects.get(question=quest['question'])
             ans_obj=Answer.objects.filter(question=ques_obj).filter(is_correct=True).first()
-            result_obj=QuizResult.objects.get(user=user_obj.id)
             if ques_obj:
                 option=quest['answer']
-                # ans=Question.objects.get(option=answer)
                 if option== ans_obj.answer:
                     TOTAL_POINT=TOTAL_POINT+ 1
-                    result_obj.score= TOTAL_POINT
-                    result_obj.quiz.name= request.data.get('name')
-                    result_obj.save()
-                    
+                    score= TOTAL_POINT
+                    name= quest['quiz']   
+                    ans_detail=Answer.objects.filter(question=ques_obj).filter(answer=option).first()  
                 else:
                     wrong+=1
             else:
-                return Response("Question doesnt exist")  
+                return Response("Question doesnt exist") 
+        result_obj=QuizResult.objects.get_or_create(user=std_obj,score=score, quiz__name=name)
+        result_detail=QuizResultDetail.objects.get_or_create(result=result_obj[0], answer=ans_detail, question=ques_obj)
+
         return Response(data={'success': True, 'Total Point': TOTAL_POINT}, status=status.HTTP_200_OK)  
     
 class QuizDetails(CreateAPIView):

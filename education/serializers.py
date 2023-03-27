@@ -26,6 +26,11 @@ class QuizSerializer(serializers.ModelSerializer):
         model=Quiz
         fields=['name','question']
 
-# class ResultSerializer(serializers.ModelSerializer):
-#     model=QuizResult
-#     fields=['quiz','user','score']
+class ResultDetailSerializer(serializers.ModelSerializer):
+
+    question= QuestionSerializer(many=True)
+
+    class Meta:
+        model=Quiz
+        fields=['result','question', 'answer']
+

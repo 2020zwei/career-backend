@@ -9,7 +9,7 @@ class  GoalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Goal
-        fields=['user','goal','actions','realistic','countdown']
+        fields=['goal','actions','realistic','countdown']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(GoalSerializer, self).create(validated_data=validated_data)
