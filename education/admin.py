@@ -1,10 +1,7 @@
 from django.contrib import admin
-from .models import Question, TestType, PsychometricTest,Answer, TestResult,TestResultDetail
+from .models import Question, Quiz, QuizResult,Answer,QuizResultDetail
 from nested_admin import NestedTabularInline, NestedModelAdmin
 # Register your models here.
-
-class TestTypeAdminSite(admin.ModelAdmin):
-    list_display=['type']
 
 class AnswerInline(NestedTabularInline):
     model = Answer
@@ -15,15 +12,15 @@ class QuestionInline(NestedTabularInline):
         AnswerInline,
     ]
 class ResultDetailInline(NestedTabularInline):
-    model = TestResultDetail
+    model = QuizResultDetail
+    extra = 0
 
-@admin.register(PsychometricTest)
-class PsychometricTestAdmin(NestedModelAdmin):
+
+@admin.register(Quiz)
+class QuizAdmin(NestedModelAdmin):
     inlines = [QuestionInline]
 
-@admin.register(TestResult)
-class TestResultAdmin(NestedModelAdmin):
+@admin.register(QuizResult)
+class QuizResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
 
-
-admin.site.register(TestType,TestTypeAdminSite)

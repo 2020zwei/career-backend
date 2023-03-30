@@ -67,6 +67,7 @@ class GoalDetail(APIView):
 
     def put(self, request, pk, format=None):
         goal = self.get_object(pk)
+        user_obj=request.user
         serializer = GoalSerializer(goal, data=request.data)
         if serializer.is_valid():
             serializer.save()
