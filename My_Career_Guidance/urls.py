@@ -28,6 +28,7 @@ urlpatterns = [
     path('_nested_admin/', include('nested_admin.urls')),
     path('goals/', include("goals.urls")),
     path('education/', include("education.urls")),
+    path('choices/', include("choices.urls")),
 ]
 admin.site.site_header = "My Career Guidance"
 admin.site.site_title = "Career Guidance Admin Portal"
