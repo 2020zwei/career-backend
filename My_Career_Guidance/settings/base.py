@@ -51,12 +51,14 @@ INSTALLED_APPS = [
     'goals',
     'education',
     'choices',
+
     
     
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -108,7 +110,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME':    os.environ['CAREER_DATABASE_NAME'],
         'USER':    os.environ['CAREER_DATABASE_USER'],
-        'PASSWORD': 'postgres',
+        'PASSWORD': os.environ['CAREER_DATABASE_PASS'],
         'HOST': os.environ['CAREER_DATABASE_HOST'],
         'PORT': os.environ['CAREER_DB_PORT'],
     }
