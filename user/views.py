@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView,RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
-from .serializer import SignupUserSerializer,UserSerializer
+from .serializers import SignupUserSerializer,UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from .models import Student
 from rest_framework.exceptions import ValidationError

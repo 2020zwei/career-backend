@@ -86,12 +86,32 @@ TEMPLATES = [
         },
     },
 ]
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    "LOGIN_FIELD": "email",
+    'SERIALIZERS': {        
+        'token_create':'user.serializers.CustomTokenCreateSerializer',
+        "user_create": "user.serializers.UserCreateSerializer",
+        },
+}
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer'),
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=100),
 }
 
+# DJOSER = {
+#     "LOGIN_FIELD": "email",
+#     "ACTIVATION_URL": "",
+#     "SEND_ACTIVATION_EMAIL": False,
+#     "SERIALIZERS": {
+#         'token_create':'user.serializers.CustomTokenCreateSerializer',
+#         "user_create": "user.serializers.UserCreateSerializer",
+#     }
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
