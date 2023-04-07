@@ -51,12 +51,14 @@ INSTALLED_APPS = [
     'goals',
     'education',
     'choices',
+    'corsheaders',
 
     
     
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,6 +69,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'My_Career_Guidance.urls'
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
