@@ -103,15 +103,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=100),
 }
 
-# DJOSER = {
-#     "LOGIN_FIELD": "email",
-#     "ACTIVATION_URL": "",
-#     "SEND_ACTIVATION_EMAIL": False,
-#     "SERIALIZERS": {
-#         'token_create':'user.serializers.CustomTokenCreateSerializer',
-#         "user_create": "user.serializers.UserCreateSerializer",
-#     }
-# }
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

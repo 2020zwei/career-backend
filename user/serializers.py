@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Student
+from .models import Student, School
 from djoser.serializers import UserCreateSerializer, TokenCreateSerializer
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
@@ -62,3 +62,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=Student
         fields=['first_name','last_name','school','dob']
+
+class SchoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=School
+        fields=['school','county']
