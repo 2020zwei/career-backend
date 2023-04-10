@@ -1,20 +1,52 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView,RetrieveAPIView
+from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView
 from rest_framework.permissions import IsAuthenticated
+from .models import User,Student, School
 from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import Student, School
-from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password
 
 
-
-
-class SignupUser(CreateAPIView):
+class SignupUser(GenericAPIView):
     permission_classes = []
-    serializer_class = SignupUserSerializer
+    def post(self, request):
+        try:
+            user_data=request.data
+            email=request.data.get('email')
+            password=request.data.get('password')
+            user = User.objects.create(email=email,  password = make_password(password))
+            school = School.objects.get(id=request.data.get('school'))
+            if user:
+                email=request.data.get('email')
+                password=request.data.get('password')
+                full_name=request.data.get('full_name')
+                school=school
+                dob=request.data.get('dob')
+                city=request.data.get('city')
+                country=request.data.get('country')
+                address=request.data.get('address')
+                eircode=request.data.get('eircode')
+                # password=request.data.get('password')
+
+
+                std=Student.objects.create(user=user, full_name=full_name,school=school,dob=dob,city=city,country=country,address=address,eircode=eircode)
+                std.save()
+
+
+            else:
+                    return Response("Student already exist") 
+            user.is_active = True
+            user.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK) 
+        
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 class UserView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]

@@ -1,11 +1,16 @@
 from rest_framework import serializers
 from .models import Student, School
-from djoser.serializers import UserCreateSerializer, TokenCreateSerializer
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, TokenCreateSerializer
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from djoser.compat import get_user_email_field_name
 from djoser.conf import settings
+from rest_framework.exceptions import ValidationError
 from djoser.serializers import TokenCreateSerializer
+from django.db import IntegrityError, transaction
+
+from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions as django_exceptions
 
 
 User = get_user_model()
@@ -41,21 +46,57 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
         self.fail("invalid_credentials")
 
 
-class UserCreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
-        model = User
-        fields = ("id", "email", "first_name", "last_name", "password")
+class SignupUserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        help_text='Leave empty if no change needed',
+        style={'input_type': 'password', 'placeholder': 'Password'}
+    )
+    full_name = serializers.CharField(max_length=200)
+    dob = serializers.DateTimeField()
+    city = serializers.CharField(max_length=200)
+    country = serializers.CharField(max_length=200)
+    address = serializers.CharField(max_length=200)
+    eircode = serializers.CharField(max_length=200)
+    school = serializers.PrimaryKeyRelatedField(queryset=School.objects.all())
 
-
-class SignupUserSerializer(serializers.ModelSerializer):
-    
     class Meta:
-        model=Student
-        fields=[ "full_name",'school','dob','city','country','address','eircode','profile_image']
-   
+        fields=["id", "email","password", "full_name",'school','dob','city','country','address','eircode']
+    def validate(self, attrs):
+        user = User(attrs['email'], attrs['password'])
+        password = attrs.get("password")
+
+        try:
+            validate_password(password, user)
+        except django_exceptions.ValidationError as e:
+            serializer_error = serializers.as_serializer_error(e)
+            raise serializers.ValidationError(
+                {"password": serializer_error["non_field_errors"]}
+            )
+
+        return attrs
+    
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
-        return super(SignupUserSerializer, self).create(validated_data=validated_data)
+        try:
+
+            user = self.perform_create(email=validated_data['email'], password=validated_data['password'])
+            Student.objects.create(user=user, full_name=validated_data['full_name'],school=validated_data['school'],dob=validated_data['dob'],city=validated_data['city'],country=validated_data['country'],address=validated_data['address'],eircode=validated_data['eircode'])
+
+        except IntegrityError:
+            self.fail("cannot_create_user")
+        return Student.objects.create(user=user, full_name=validated_data['full_name'],school=validated_data['school'],dob=validated_data['dob'],city=validated_data['city'],country=validated_data['country'],address=validated_data['address'],eircode=validated_data['eircode'])
+
+    def perform_create(self, email, password):
+        with transaction.atomic():
+
+            user = User.objects.create_user(email=email,password=password)
+            if settings.SEND_ACTIVATION_EMAIL:
+                user.is_active = False
+                user.save(update_fields=["is_active"])
+        return user
+
 
 
 class UserSerializer(serializers.ModelSerializer):

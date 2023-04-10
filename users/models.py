@@ -33,7 +33,7 @@ class Student(models.Model):
     address = models.TextField(blank=True,null=True)
     eircode=models.CharField(max_length=7,null=True,blank=True)
     def __str__(self):
-        """return name of Job-Title"""
-        return self.first_name +" "+ self.last_name
+        """return name of Student"""
+        return self.full_name
  
 
