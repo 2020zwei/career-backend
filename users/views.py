@@ -29,6 +29,7 @@ class UserView(RetrieveAPIView):
 
 
 class SchoolView(CreateAPIView):
+    permission_classes=[]
     serializer_class = SchoolSerializer
 
     def get(self, request):
