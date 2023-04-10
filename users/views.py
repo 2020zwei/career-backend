@@ -13,8 +13,7 @@ from rest_framework.response import Response
 
 
 class SignupUser(CreateAPIView):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = []
     serializer_class = SignupUserSerializer
 
 class UserView(RetrieveAPIView):
