@@ -20,7 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-    path('user/',include("user.urls")),
+    path('user/',include("users.urls")),
     path('timetable/',include("timetable.urls")),
     path('calculator/',include("calculator.urls")),
     path('cv/',include("cv.urls")),

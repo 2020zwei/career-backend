@@ -6,7 +6,7 @@ from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,L
 from rest_framework.views import APIView
 from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer
 from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest
-from user.models import Student
+from users.models import Student
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from rest_framework.exceptions import  ValidationError

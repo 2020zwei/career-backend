@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView
 from .serializers import QuestionSerializer, QuizSerializer
 from .models import Quiz,Question,QuizResult,Answer,QuizResultDetail
-from user.models import Student
+from users.models import Student
 from rest_framework import status
 from rest_framework.response import Response
 

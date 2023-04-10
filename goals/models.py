@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import Student
+from users.models import Student
 from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from django.http import HttpResponse
 from .serializers import GoalSerializer
 from .models import Goal
-from user.models import Student
+from users.models import Student
 from django.template.loader import render_to_string
 from weasyprint import HTML
 from rest_framework import status

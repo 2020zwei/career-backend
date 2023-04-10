@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import PsychometricTest, TestType,Question,Answer  
-from user.models import Student
+from users.models import Student
 
 class StudentSerializer(serializers.ModelSerializer):
     model=Student

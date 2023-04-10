@@ -1,6 +1,7 @@
 from .validators import validate_file_size
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from .manager import UserManager
 
 class School(models.Model):
     """Model to create School"""
@@ -9,13 +10,20 @@ class School(models.Model):
     def __str__(self):
         return self.school
 
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=32, null=True, blank=True)
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = UserManager()
 
 class Student(models.Model):
     """Model to create Student"""
     
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    full_name = models.CharField(max_length=100)
     school =  models.ForeignKey(School,on_delete=models.CASCADE,blank=True)
     profile_image = models.ImageField(upload_to='profile_images',null=True,blank=True,validators=[validate_file_size])  
     dob = models.DateField(null=True,blank=True)
@@ -27,17 +35,5 @@ class Student(models.Model):
     def __str__(self):
         """return name of Job-Title"""
         return self.first_name +" "+ self.last_name
-
-
-
-    
-
-
-
-
-
-    
-
-
-    
+ 
 

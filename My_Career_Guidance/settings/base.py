@@ -29,6 +29,7 @@ SECRET_KEY = 'django-insecure-07a@z)c3%aqa_-flquq%ni40=)2_m^)$8s&zb9fsl@^p!v%j$7
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+AUTH_USER_MODEL='users.User'
 
 # Application definition
 
@@ -42,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'djoser',
-    'user',
+    'users',
     'timetable',
     'calculator',
     'cv',
@@ -94,8 +95,8 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True,
     "LOGIN_FIELD": "email",
     'SERIALIZERS': {        
-        'token_create':'user.serializers.CustomTokenCreateSerializer',
-        "user_create": "user.serializers.UserCreateSerializer",
+        'token_create':'users.serializers.CustomTokenCreateSerializer',
+        "user_create": "users.serializers.UserCreateSerializer",
         },
 }
 

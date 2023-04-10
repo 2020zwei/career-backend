@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Goal
 from rest_framework.exceptions import  ValidationError
-from user.models import Student
+from users.models import Student
 
 
 class  GoalSerializer(serializers.ModelSerializer):

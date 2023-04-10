@@ -44,14 +44,14 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
 class UserCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
         model = User
-        fields = ("id", "email", "username", "first_name", "last_name", "password")
+        fields = ("id", "email", "first_name", "last_name", "password")
 
 
 class SignupUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Student
-        fields=['first_name','last_name','school','dob','city','country','address','eircode']
+        fields=[ "full_name",'school','dob','city','country','address','eircode']
    
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user

@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import Student
+from users.models import Student
 from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT
 from django.contrib.postgres.fields import ArrayField
 
