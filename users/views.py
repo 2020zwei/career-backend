@@ -29,10 +29,10 @@ class SignupUser(GenericAPIView):
                 country=request.data.get('country')
                 address=request.data.get('address')
                 eircode=request.data.get('eircode')
-                # password=request.data.get('password')
+                profile_image=request.data.get('profile_image')
 
 
-                std=Student.objects.create(user=user, full_name=full_name,school=school,dob=dob,city=city,country=country,address=address,eircode=eircode)
+                std=Student.objects.create(user=user, full_name=full_name,school=school,dob=dob,city=city,country=country,address=address,eircode=eircode,profile_image=profile_image)
                 std.save()
 
 
