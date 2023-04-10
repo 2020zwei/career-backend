@@ -37,7 +37,7 @@ class SchoolView(CreateAPIView):
         try:
             schools=School.objects.all()
             serializer = SchoolSerializer(schools, many=True)
-            return Response(serializer.data, success=True)
+            return Response({'data':serializer.data, 'success':True})
     
         except Exception as e:
            return Response({'message': str(e)},success=False, status=status.HTTP_400_BAD_REQUEST)
