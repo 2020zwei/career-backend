@@ -8,9 +8,10 @@ from djoser.conf import settings
 from rest_framework.exceptions import ValidationError
 from djoser.serializers import TokenCreateSerializer
 from django.db import IntegrityError, transaction
-
+from drf_extra_fields.fields import Base64ImageField
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
+from django.contrib.auth.hashers import make_password
 
 
 User = get_user_model()
@@ -108,3 +109,21 @@ class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model=School
         fields=['school','county']
+
+
+class StudentSignUpSerializer(serializers.ModelSerializer):
+    
+    profile_image = Base64ImageField()
+    class Meta:
+        model=Student
+        fields=('first_name','last_name','profile_image','school','user','full_name',"dob")
+
+
+class UserSignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=('email','username','password')
+
+    def validate(self, data):
+        data['password'] = make_password(data['password'])
+        return data

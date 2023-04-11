@@ -7,6 +7,7 @@ class School(models.Model):
     """Model to create School"""
     school = models.CharField(max_length=100)
     county = models.CharField(max_length=100)
+    
     def __str__(self):
         return self.school
 
