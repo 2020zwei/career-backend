@@ -18,7 +18,7 @@ class SignupUser(GenericAPIView):
             email=request.data.get('email')
             password=request.data.get('password')
             user = User.objects.create(email=email,  password = make_password(password))
-            school = School.objects.get(id=request.data.get('school'))
+            school = School.objects.get(school=request.data.get('school'))
             if user:
                 email=request.data.get('email')
                 password=request.data.get('password')
