@@ -174,3 +174,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = "media"
+EMAIL_BACKEND = 'django_ses.SESBackend'
+AWS_ACCESS_KEY_ID = os.environ['CAREER_GUIDANCE_AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['CAREER_GUIDANCE_AWS_SECRET_KEY_ID']
+DEFAULT_FROM_EMAIL = 'hassan.shahzad@zweidevs.com'
