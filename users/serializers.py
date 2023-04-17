@@ -108,7 +108,7 @@ class UserSerializer(serializers.ModelSerializer):
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model=School
-        fields=['school','county']
+        fields=['pk','school','county']
 
 
 class StudentSignUpSerializer(serializers.ModelSerializer):
