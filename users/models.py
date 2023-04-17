@@ -22,8 +22,8 @@ class User(AbstractUser):
 class Student(models.Model):
     """Model to create Student"""
     
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100,blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
     full_name = models.CharField(max_length=100)
     school =  models.ForeignKey(School,on_delete=models.CASCADE,blank=True)
     profile_image = models.ImageField(upload_to='profile_images',null=True,blank=True,validators=[validate_file_size])  
