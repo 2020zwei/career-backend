@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
-
+from django.db import transaction
 
 # class SignupUser(GenericAPIView):
 #     permission_classes = []
@@ -45,14 +45,15 @@ class SignupUser(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
-        user_serializer_obj  = UserSignUpSerializer(data=request.data)
-        user_serializer_obj.is_valid(raise_exception=True)
-        user_obj = user_serializer_obj.save()
-        request.data["user"] = user_obj.pk
-        student_serializer_obj = StudentSignUpSerializer(data=request.data)
-        student_serializer_obj.is_valid(raise_exception=True)
-        student_serializer_obj.save()
-        return Response({"data":student_serializer_obj.data})
+        with transaction.atomic():
+            user_serializer_obj  = UserSignUpSerializer(data=request.data)
+            user_serializer_obj.is_valid(raise_exception=True)
+            user_obj = user_serializer_obj.save()
+            request.data["user"] = user_obj.pk
+            student_serializer_obj = StudentSignUpSerializer(data=request.data)
+            student_serializer_obj.is_valid(raise_exception=True)
+            student_serializer_obj.save()
+            return Response({"data":student_serializer_obj.data})
 
 
 class UserView(RetrieveAPIView):
