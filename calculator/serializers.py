@@ -20,7 +20,7 @@ class SubjectGradeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=SubjectGrade
-        fields=['grade']
+        fields=['grade','pk', 'point']
    
 
 

@@ -23,8 +23,10 @@ class Subject(models.Model):
     class Meta:
         verbose_name_plural = "Subjects"
 
+
 class SubjectGrade(models.Model):
     """Model to create Subject"""
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True,)
     grade = models.CharField(max_length=5,unique=True)
     point=models.IntegerField()
     level = models.ForeignKey(Level,on_delete=models.CASCADE, related_name='subject_grade',blank=True)
@@ -35,8 +37,3 @@ class SubjectGrade(models.Model):
     
     class Meta:
         verbose_name_plural = "Grades"
-
-
-
-
-
