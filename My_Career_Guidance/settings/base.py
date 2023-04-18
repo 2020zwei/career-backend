@@ -110,6 +110,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'EXCEPTION_HANDLER': 'common.exception_handler.c_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -178,3 +179,4 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_ACCESS_KEY_ID = os.environ['CAREER_GUIDANCE_AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['CAREER_GUIDANCE_AWS_SECRET_KEY_ID']
 DEFAULT_FROM_EMAIL = 'hassan.shahzad@zweidevs.com'
+DOMAIN = 'https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/d2eqtmfyvf15r'
