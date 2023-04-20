@@ -43,5 +43,5 @@ class CalculatePointViewRelated(APIView):
                 TOTAL_POINT += subject_grade_obj.subject.additional_marks
 
         response_template = get_response_template()
-        response_template['data'] = {'success': True, 'Total Point': TOTAL_POINT}
+        response_template['data'] = {'success': True, 'total_points': TOTAL_POINT}
         return Response(data=response_template, status=status.HTTP_200_OK)
