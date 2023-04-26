@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView
-from .serializers import QuestionSerializer, QuizSerializer
+from rest_framework.generics import CreateAPIView,ListAPIView
+from .serializers import QuestionSerializer, QuizSerializer, QuizStatusSerializer
 from .models import Quiz,Question,QuizResult,Answer,QuizResultDetail
 from users.models import Student
 from rest_framework import status
@@ -80,3 +80,12 @@ class QuizDetails(CreateAPIView):
         return Response(status = status.HTTP_204_NO_CONTENT)
 
    
+class QuizListAPIView(ListAPIView):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizStatusSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context

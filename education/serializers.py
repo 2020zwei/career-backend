@@ -34,3 +34,33 @@ class ResultDetailSerializer(serializers.ModelSerializer):
         model=Quiz
         fields=['result','question', 'answer']
 
+
+class QuizStatusSerializer(serializers.ModelSerializer):
+    complete = serializers.SerializerMethodField()
+    score = serializers.SerializerMethodField()
+    total_score = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Quiz
+        fields = ['id', 'name', 'description', 'complete', 'score', 'total_score']
+
+    def get_complete(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            # Check if the user has completed the quiz
+            result = QuizResult.objects.filter(user__user__email=request.user.email, quiz=obj).first()
+            if result:
+                return True
+        return False
+
+    def get_score(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            # Get the user's score for the quiz
+            result = QuizResult.objects.filter(user__user__email=request.user.email, quiz=obj).first()
+            if result:
+                return result.score
+        return None
+
+    def get_total_score(self, obj):
+        return obj.question.count()

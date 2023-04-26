@@ -6,6 +6,7 @@ from ckeditor.fields import RichTextField
 
 class Quiz(models.Model):
     name = models.CharField(max_length=300)
+    description = models.CharField(max_length=700, null=True, default='')
     
     def __str__(self):
         return self.name
