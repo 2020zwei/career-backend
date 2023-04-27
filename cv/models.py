@@ -10,7 +10,7 @@ class CV(models.Model):
     skills=ArrayField(models.CharField(max_length=200), blank=True)
     HobbiesandInterests=models.TextField(max_length=300)
     def __str__(self):
-        return self.user.first_name +" "+ self.user.last_name
+        return self.user.full_name
        
 
 class Education(models.Model):
