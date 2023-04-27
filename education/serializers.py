@@ -78,7 +78,7 @@ class QuizStatusSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             # Check if the user has completed the quiz
-            result = QuizResult.objects.filter(user__user__email=request.user.email, quiz=obj).first()
+            result = QuizResult.objects.filter(user__user__email=request.user.email, quiz=obj).last()
             if result:
                 return True
         return False
@@ -87,7 +87,7 @@ class QuizStatusSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             # Get the user's score for the quiz
-            result = QuizResult.objects.filter(user__user__email=request.user.email, quiz=obj).first()
+            result = QuizResult.objects.filter(user__user__email=request.user.email, quiz=obj).last()
             if result:
                 return result.score
         return None
