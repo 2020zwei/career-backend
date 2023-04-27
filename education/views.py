@@ -136,6 +136,6 @@ class TakeQuizView(CreateAPIView):
             quiz_result.score = score
             quiz_result.save()
 
-            return Response({'message': 'Quiz taken successfully'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Quiz taken successfully', 'status': True}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'Please login'}, status=status.HTTP_400_BAD_REQUEST)
