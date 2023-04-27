@@ -17,10 +17,18 @@ class  SubjectSerializer(serializers.ModelSerializer):
 
 
 class SubjectGradeSerializer(serializers.ModelSerializer):
+    total_points = serializers.SerializerMethodField()
 
     class Meta:
-        model=SubjectGrade
-        fields=['grade','pk', 'point']
+        model = SubjectGrade
+        fields = ['grade', 'pk', 'point', 'total_points']
+
+    def get_total_points(self, obj):
+        subject = obj.subject
+        total_points = obj.point
+        if subject.is_additional_marks_allowed and subject.additional_marks:
+            total_points += subject.additional_marks
+        return total_points
    
 
 
