@@ -12,4 +12,4 @@ class Goal(models.Model):
     countdown=models.DateTimeField(auto_now_add=False, blank=True, null=True)
 
     def __str__(self):
-        return self.user.first_name +" "+ self.user.last_name
+        return self.user.full_name

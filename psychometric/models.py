@@ -33,7 +33,7 @@ class TestResult(models.Model):
     test=models.ForeignKey(PsychometricTest,blank=True, null=True, on_delete=models.CASCADE)
     score=models.IntegerField(null=True)
     def __str__(self):
-        return self.user.first_name
+        return self.user.full_name
     
 class TestResultDetail(models.Model):
     result=models.ForeignKey(TestResult, on_delete=models.CASCADE)
