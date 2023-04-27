@@ -122,6 +122,7 @@ class TakeTestView(CreateAPIView):
             try:
                 test_id = request.data.get('test')
                 answers = request.data.get('answers')
+                print(request.user.student)
 
                 # Save the test result for the student
                 test_result = TestResult.objects.create(

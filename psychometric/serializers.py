@@ -9,23 +9,26 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    answer_id = serializers.IntegerField(source='id', read_only=True)
     class Meta:
         model=Answer
-        fields=['question','answer','weightage']
+        fields=['answer_id', 'answer', 'weightage']
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answer= AnswerSerializer(many=True)
+    answers = AnswerSerializer(many=True, source='answer')
+    question_id = serializers.IntegerField(source='id', read_only=True)
+
     class Meta:
         model=Question
-        fields=['test','type','question','answer']
+        fields=['question_id', 'type', 'question', 'answers']
 
 class PsychometricTestSerializer(serializers.ModelSerializer):
-
-    question= QuestionSerializer(many=True)
+    questions= QuestionSerializer(many=True, source='question')
+    test_id = serializers.IntegerField(source='id', read_only=True)
 
     class Meta:
         model=PsychometricTest
-        fields=['name','question']
+        fields=['test_id', 'name','questions']
 
 
 class PsychometricResultDetailSerializer(serializers.ModelSerializer):

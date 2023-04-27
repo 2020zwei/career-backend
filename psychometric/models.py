@@ -29,7 +29,7 @@ class Answer(models.Model):
         return self.answer
 
 class TestResult(models.Model):
-    user=models.OneToOneField(Student, blank=True, null=True,on_delete=models.CASCADE)
+    user=models.ForeignKey(Student, blank=True, null=True,on_delete=models.CASCADE)
     test=models.ForeignKey(PsychometricTest,blank=True, null=True, on_delete=models.CASCADE)
     score=models.IntegerField(null=True)
     def __str__(self):
