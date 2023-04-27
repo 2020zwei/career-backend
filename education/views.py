@@ -99,43 +99,46 @@ class TakeQuizView(CreateAPIView):
         # Get the quiz, student and their answers from the request data
 
         if request and request.user.is_authenticated:
-            quiz_id = request.data.get('quiz')
-            answers = request.data.get('answers')
+            try:
+                quiz_id = request.data.get('quiz')
+                answers = request.data.get('answers')
 
-            # Save the quiz result for the student
-            quiz_result = QuizResult.objects.create(
-                user=request.user.student, quiz_id=quiz_id, score=0
-            )
-
-            # Calculate the score for the quiz
-            score = 0
-            for answer in answers:
-                question_id = answer.get('question_id')
-                answer_id = answer.get('answer_id')
-
-                # Check if the answer is correct
-                is_correct = QuizResultDetail.objects.filter(
-                    question_id=question_id, answer_id=answer_id, 
-                    question__quiz_id=quiz_id, answer__is_correct=True
-                ).exists()
-
-                # Add to the score if the answer is correct
-                if is_correct:
-                    score += 1
-
-                # Save the quiz result detail
-                result_detail = QuizResultDetail(
-                    result_id=quiz_result.id,
-                    question_id=question_id,
-                    answer_id=answer_id,
-                    # is_correct=is_correct
+                # Save the quiz result for the student
+                quiz_result = QuizResult.objects.create(
+                    user=request.user.student, quiz_id=quiz_id, score=0
                 )
-                result_detail.save()
 
-            # Update the score for the quiz result
-            quiz_result.score = score
-            quiz_result.save()
+                # Calculate the score for the quiz
+                score = 0
+                for answer in answers:
+                    question_id = answer.get('question_id')
+                    answer_id = answer.get('answer_id')
 
-            return Response({'message': 'Quiz taken successfully', 'status': True}, status=status.HTTP_200_OK)
+                    # Check if the answer is correct
+                    is_correct = QuizResultDetail.objects.filter(
+                        question_id=question_id, answer_id=answer_id, 
+                        question__quiz_id=quiz_id, answer__is_correct=True
+                    ).exists()
+
+                    # Add to the score if the answer is correct
+                    if is_correct:
+                        score += 1
+
+                    # Save the quiz result detail
+                    result_detail = QuizResultDetail(
+                        result_id=quiz_result.id,
+                        question_id=question_id,
+                        answer_id=answer_id,
+                        # is_correct=is_correct
+                    )
+                    result_detail.save()
+
+                # Update the score for the quiz result
+                quiz_result.score = score
+                quiz_result.save()
+
+                return Response({'message': 'Quiz taken successfully', 'status': True}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'message': 'Please login'}, status=status.HTTP_400_BAD_REQUEST)
