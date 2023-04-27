@@ -12,7 +12,7 @@ class Choice(models.Model):
     apprentice= models.BooleanField(default="False")
     
     def __str__(self):
-        return self.user.first_name
+        return self.user.full_name
     
     class Meta:
         app_label = 'choices'
@@ -26,7 +26,7 @@ class Level6(models.Model):
     college=models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):
-        return self.choice.user.first_name
+        return self.choice.user.full_name
     
     class Meta:
         app_label = 'choices'
@@ -39,7 +39,7 @@ class Level8(models.Model):
     college=models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):
-        return self.choice.user.first_name
+        return self.choice.user.full_name
     
     class Meta:
         app_label = 'choices'
@@ -51,7 +51,7 @@ class Apprentice(models.Model):
     company=models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):
-        return self.choice.user.first_name
+        return self.choice.user.full_name
     
     class Meta:
         app_label = 'choices'
@@ -63,7 +63,7 @@ class Level5(models.Model):
     college=models.CharField(max_length=50,null=True,blank=True)   
     
     def __str__(self):
-        return self.choice.user.first_name
+        return self.choice.user.full_name
     
     class Meta:
         app_label = 'choices'
@@ -73,7 +73,7 @@ class Other(models.Model):
     idea=models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):
-        return self.choice.user.first_name
+        return self.choice.user.full_name
     
     class Meta:
         app_label = 'choices'
