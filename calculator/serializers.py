@@ -25,9 +25,13 @@ class SubjectGradeSerializer(serializers.ModelSerializer):
 
     def get_total_points(self, obj):
         subject = obj.subject
-        total_points = obj.point
-        if subject.is_additional_marks_allowed and subject.additional_marks:
-            total_points += subject.additional_marks
+        grade = obj.grade
+        if grade in ['H7', 'H8'] or grade in ['h7', 'h8'] :  # Exclude additional points for H7 and H8 grades
+            total_points = obj.point
+        else:
+            total_points = obj.point
+            if subject.is_additional_marks_allowed and subject.additional_marks:
+                total_points += subject.additional_marks
         return total_points
    
 
