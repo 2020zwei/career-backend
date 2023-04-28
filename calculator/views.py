@@ -32,16 +32,18 @@ class CalculatePointViewRelated(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        TOTAL_POINT=0
+        points = 0
+        total_points = 0
+        bonus_points = 0
         for obj in request.data:
             grade = obj.get('grade')
             subject_grade_obj = SubjectGrade.objects.filter(pk=grade).first()
             if subject_grade_obj is None:
                 raise ValidationError(f"No subject grade object found with following ids grade={grade}")
-            TOTAL_POINT += subject_grade_obj.point
+            points += subject_grade_obj.point
             if subject_grade_obj.subject.is_additional_marks_allowed:
-                TOTAL_POINT += subject_grade_obj.subject.additional_marks
+                bonus_points += subject_grade_obj.subject.additional_marks
 
         response_template = get_response_template()
-        response_template['data'] = {'success': True, 'total_points': TOTAL_POINT}
+        response_template['data'] = { 'total_points': total_points,'bonus_points':bonus_points,'points':points}
         return Response(data=response_template, status=status.HTTP_200_OK)
