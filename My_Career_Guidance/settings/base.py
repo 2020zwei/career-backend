@@ -178,5 +178,8 @@ MEDIA_ROOT = "media"
 EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_ACCESS_KEY_ID = os.environ['CAREER_GUIDANCE_AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['CAREER_GUIDANCE_AWS_SECRET_KEY_ID']
+AWS_STORAGE_BUCKET_NAME = 'CGB-Staging-Bucket'
 DEFAULT_FROM_EMAIL = 'hassan.shahzad@zweidevs.com'
 DOMAIN = 'https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/d2eqtmfyvf15r'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'

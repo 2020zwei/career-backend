@@ -30,6 +30,7 @@ django-extra-fields==3.0.2
 django-js-asset==2.0.0
 django-nested-admin==4.0.2
 django-rest-framework==0.1.0
+django-storages
 django-ses==3.3.0
 django-shell-plus==1.1.7
 django-templated-mail==1.1.1
