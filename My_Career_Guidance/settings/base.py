@@ -183,3 +183,4 @@ DEFAULT_FROM_EMAIL = 'hassan.shahzad@zweidevs.com'
 DOMAIN = 'https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/d2eqtmfyvf15r'
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
