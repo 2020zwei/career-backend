@@ -38,6 +38,7 @@ class SubjectGradeSerializer(serializers.ModelSerializer):
     def get_bonus_points(self, obj):
         subject = obj.subject
         grade = obj.grade
+        bonus_points = 0
         if grade in ['H7', 'H8'] or grade in ['h7', 'h8'] :  # Exclude additional points for H7 and H8 grades
             bonus_points = 0
         else:
