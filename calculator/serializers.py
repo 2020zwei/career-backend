@@ -17,11 +17,33 @@ class  SubjectSerializer(serializers.ModelSerializer):
 
 
 class SubjectGradeSerializer(serializers.ModelSerializer):
+    total_points = serializers.SerializerMethodField()
+    bonus_points = serializers.SerializerMethodField()
 
     class Meta:
-        model=SubjectGrade
-        fields=['grade','pk', 'point']
-   
+        model = SubjectGrade
+        fields = ['grade', 'pk', 'point', 'total_points', 'bonus_points']
+
+    def get_total_points(self, obj):
+        subject = obj.subject
+        grade = obj.grade
+        if grade in ['H7', 'H8'] or grade in ['h7', 'h8'] :  # Exclude additional points for H7 and H8 grades
+            total_points = obj.point
+        else:
+            total_points = obj.point
+            if subject.is_additional_marks_allowed and subject.additional_marks:
+                total_points += subject.additional_marks
+        return total_points
+
+    def get_bonus_points(self, obj):
+        subject = obj.subject
+        grade = obj.grade
+        if grade in ['H7', 'H8'] or grade in ['h7', 'h8'] :  # Exclude additional points for H7 and H8 grades
+            bonus_points = 0
+        else:
+            if subject.is_additional_marks_allowed and subject.additional_marks:
+                bonus_points = subject.additional_marks
+        return bonus_points
 
 
 

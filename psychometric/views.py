@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Sum
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView
-from .serializers import PsychometricTestSerializer
+from rest_framework.generics import CreateAPIView, ListAPIView
+from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer
 from .models import PsychometricTest,Answer,Question,TestType,TestResult,TestResultDetail
 from users.models import Student
 from rest_framework import status
@@ -52,7 +53,8 @@ class PsychometricViewRelated(CreateAPIView):
         
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class PsychometricDetails(CreateAPIView):
 
     permission_classes = [IsAuthenticated]
@@ -77,6 +79,7 @@ class PsychometricDetails(CreateAPIView):
         test.delete()
         return Response(status = status.HTTP_204_NO_CONTENT)
 
+
 class CalculatePoints(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -96,3 +99,62 @@ class CalculatePoints(CreateAPIView):
     
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PsychometricTestView(ListAPIView):
+    queryset = PsychometricTest.objects.all()
+    serializer_class = PsychometricStatusSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
+    
+
+class TakeTestView(CreateAPIView):
+    serializer_class = PsychometricResultDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Get the test, student and their answers from the request data
+        if request and request.user.is_authenticated:
+            try:
+                test_id = request.data.get('test')
+                answers = request.data.get('answers')
+                print(request.user.student)
+
+                # Save the test result for the student
+                test_result = TestResult.objects.create(
+                    user=request.user.student, test_id=test_id, score=0
+                )
+
+                # Calculate the score for the test
+                total_score = 0
+                for answer in answers:
+                    question_id = answer.get('question_id')
+                    answer_id = answer.get('answer_id')
+
+                    # Get the weightage of the selected answer for the question
+                    weightage = Answer.objects.get(id=answer_id).weightage
+
+                    # Add the weightage to the total score
+                    total_score += weightage
+
+                    # Save the test result detail
+                    result_detail = TestResultDetail(
+                        result=test_result,
+                        question_id=question_id,
+                        answer_id=answer_id
+                    )
+                    result_detail.save()
+
+                # Update the score for the test result
+                test_result.score = total_score
+                test_result.save()
+
+                return Response({'message': 'Quiz taken successfully', 'status': True}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'message': 'Please login'}, status=status.HTTP_400_BAD_REQUEST)
