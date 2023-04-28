@@ -101,9 +101,10 @@ class SignupUserSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
     class Meta:
         model=Student
-        fields=['first_name','last_name','school','dob']
+        fields=['full_name', 'school', 'dob', 'profile_image', 'email']
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
