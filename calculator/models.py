@@ -27,7 +27,7 @@ class Subject(models.Model):
 class SubjectGrade(models.Model):
     """Model to create Subject"""
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True,)
-    grade = models.CharField(max_length=5,unique=True)
+    grade = models.CharField(max_length=5)
     point=models.IntegerField()
     level = models.ForeignKey(Level,on_delete=models.CASCADE, related_name='subject_grade',blank=True)
 
