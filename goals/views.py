@@ -44,7 +44,7 @@ class GoalViewRelated(CreateAPIView):
           goal=request.data.get('goal')
           # actions=request.data.get('actions')
           realistic=request.data.get('realistic')
-          goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,actions=actions,realistic=realistic)
+          goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,realistic=realistic)
           goal_obj.save()
 
           return Response(data={'success': True, 'Goals': goal_obj.goal}, status=status.HTTP_200_OK)
