@@ -83,7 +83,7 @@ class GoalViewRelated2(CreateAPIView):
           countdown_str = request.data.get('date')
           countdown = datetime.strptime(countdown_str, '%Y-%m-%dT%H:%M:%S.%fZ')
           print(countdown)
-          goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
+          goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
           goal_obj.save()
 
           return Response(data={'success': True, 'Goals': goal_obj.goal}, status=status.HTTP_200_OK)
