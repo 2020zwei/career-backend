@@ -51,7 +51,7 @@ class GoalViewRelated(CreateAPIView):
           goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
           goal_obj.save()
 
-          return Response(data={'success': True, 'Goals': goal_obj.goal}, status=status.HTTP_200_OK)
+          return Response(data={'success': True, 'Goals': goal_obj.goal, 'Date': countdown}, status=status.HTTP_200_OK)
         except Exception as e:
           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
