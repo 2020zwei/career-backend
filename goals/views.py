@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from rest_framework import status
 from rest_framework.response import Response
+from datetime import datetime
 
 # Create your views here.
 class GoalViewRelated(CreateAPIView):
@@ -44,7 +45,8 @@ class GoalViewRelated(CreateAPIView):
           goal=request.data.get('goal')
           # actions=request.data.get('actions')
           realistic=request.data.get('realistic')
-          countdown =request.data.get('date')
+          countdown_str = request.data.get('date')
+          countdown = datetime.strptime(countdown_str, '%Y-%m-%dT%H:%M:%S.%fZ')
           goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
           goal_obj.save()
 
