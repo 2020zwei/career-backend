@@ -42,7 +42,7 @@ class GoalViewRelated(CreateAPIView):
           user_obj=request.user
           proffession=request.data.get('proffession')
           goal=request.data.get('goal')
-          actions=request.data.get('actions')
+          # actions=request.data.get('actions')
           realistic=request.data.get('realistic')
           goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,actions=actions,realistic=realistic)
           goal_obj.save()
