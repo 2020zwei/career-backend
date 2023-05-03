@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView
+from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView,UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import User,Student, School
 from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer, StudentSignUpSerializer, UserSignUpSerializer
@@ -38,7 +38,11 @@ class UserView(RetrieveAPIView):
             return queryset
         except Exception as e:
             raise ValidationError(e)
-
+        
+class UserUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = Student.objects.all()
 
 class SchoolView(CreateAPIView):
     permission_classes=[]

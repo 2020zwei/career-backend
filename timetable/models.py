@@ -10,7 +10,7 @@ from .choices import DAY_OF_THE_WEEK
 
 class Slot(models.Model):
     """Model to create TimeTable"""
-    
+    title = models.CharField(max_length=100,blank=True, null=True)
     timeslot = models.TimeField(auto_now=False, auto_now_add=False,null=True)
     endslot= models.TimeField(auto_now=False, auto_now_add=False,null=True)
     day = models.CharField(choices=DAY_OF_THE_WEEK.choices,max_length=1)

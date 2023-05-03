@@ -2,7 +2,7 @@ import os
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView
+from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
 from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer
 from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest
@@ -32,6 +32,11 @@ class EducationViewRelated(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
 
+class EducationViewUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EducationSerializer
+    queryset = Education.objects.all()
+
 class JuniorCertTestViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = JuniorCertTestSerializer
@@ -46,6 +51,10 @@ class JuniorCertTestViewRelated(CreateAPIView):
             return Response(serializer.data, headers=headers)
         except Exception as e:
             raise e
+class JuniorViewUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = JuniorCertTestSerializer
+    queryset = JuniorCertTest.objects.all()
 
 class LeavingCertTestViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -62,6 +71,11 @@ class LeavingCertTestViewRelated(CreateAPIView):
         except Exception as e:
             raise e
 
+class LeavingViewUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = LeavingCertTestSerializer
+    queryset = LeavingCertTest.objects.all()
+
 class ExperienceViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExperienceSerializer
@@ -73,6 +87,11 @@ class ExperienceViewRelated(CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
+
+class ExperienceViewUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ExperienceSerializer
+    queryset = Experience.objects.all()
 
 
 class ReferenceViewRelated(CreateAPIView):
@@ -87,6 +106,12 @@ class ReferenceViewRelated(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
 
+class ReferenceViewUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ReferenceSerializer
+    queryset = Reference.objects.all()
+
+
 class SkillsViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SkillSerializer
@@ -99,6 +124,12 @@ class SkillsViewRelated(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
 
+class SkillsUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SkillSerializer
+    queryset = Skills.objects.all()
+
+
 class QualityViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = QualitiesSerializer
@@ -110,6 +141,12 @@ class QualityViewRelated(CreateAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
+
+class QualityUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = QualitiesSerializer
+    queryset = Qualities.objects.all()
+
 
 class GeneratePDF(CreateAPIView):
     def get(self, request):
