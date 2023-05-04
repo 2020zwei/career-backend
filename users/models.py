@@ -32,6 +32,7 @@ class Student(models.Model):
     city = models.CharField(max_length=50, blank=True,null=True)
     country = models.CharField(max_length=50, blank=True,null=True)
     address = models.TextField(blank=True,null=True)
+    address2 = models.TextField(blank=True,null=True)
     eircode=models.CharField(max_length=7,null=True,blank=True)
     otp = models.CharField(max_length=5,null=True, blank=True)
     otp_verified = models.BooleanField(default=False)
