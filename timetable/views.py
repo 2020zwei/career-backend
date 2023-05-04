@@ -30,12 +30,6 @@ class AddTimeSlot(CreateAPIView):
             duration = datetime.combine(date.min, end_time) - datetime.combine(date.min, new_time)
             if Slot.objects.filter(timeslot=new_slot,user=user,day=day):
                     raise ValidationError(" You have already regesterd this slot")
-
-            elif duration > timedelta(seconds=900):
-                raise ValidationError("The duration can not be greater than 15 mins")
-            elif duration < timedelta(seconds=900):
-                raise ValidationError("The duration can not be less than 15 mins")
-
             else:
                 return {'user': self.request.user, 'year': str(year),'week':str(week_num),'user':user}
     except Exception as e:
