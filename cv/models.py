@@ -9,6 +9,16 @@ class CV(models.Model):
     is_juniorcert_test=models.BooleanField(default=False)
     skills=ArrayField(models.CharField(max_length=200), blank=True,null=True)
     HobbiesandInterests=models.TextField(max_length=300,null=True)
+    full_name = models.CharField(max_length=100, null=True)
+    school =  models.CharField(max_length=100,null=True)
+    city = models.CharField(max_length=50, blank=True,null=True)
+    town = models.CharField(max_length=50, blank=True,null=True)
+    address = models.TextField(blank=True,null=True)
+    address2 = models.TextField(blank=True,null=True)
+    eircode=models.CharField(max_length=7,null=True,blank=True)
+    email = models.EmailField(null=True,blank=True)
+
+
     def __str__(self):
         return self.user.full_name
        

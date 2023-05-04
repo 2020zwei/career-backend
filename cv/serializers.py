@@ -61,11 +61,14 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class CvSerializer(serializers.ModelSerializer):
-    
-    user = StudentSerializer(read_only=True)
+
     class Meta:
         model=CV
-        fields=['user','objective']
+        fields=['objective','full_name','address','address2','eircode','city','town','email']
+    
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user.student
+        return super(CvSerializer, self).create(validated_data=validated_data)
    
 
 class SkillSerializer(serializers.ModelSerializer):

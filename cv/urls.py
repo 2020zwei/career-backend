@@ -3,13 +3,14 @@ from .views import (CvViewRelated,EducationViewRelated,JuniorCertTestViewRelated
                     ExperienceViewRelated,ReferenceViewRelated, SkillsViewRelated,
                     QualityViewRelated,GeneratePDF,EducationViewUpdate, 
                     JuniorViewUpdate, LeavingViewUpdate,ExperienceViewUpdate,ReferenceViewUpdate,
-                    SkillsUpdate,QualityUpdate, LeavingCertTestViewRelated)
+                    SkillsUpdate,QualityUpdate, LeavingCertTestViewRelated,CVUpdate)
 
 
 urlpatterns = [
     
     
     path('create-cv/',CvViewRelated.as_view(),name="Create-Cv"),
+    path('update-cv/<int:pk>/',CVUpdate.as_view(),name="Update_CV"),
     path('add-education/',EducationViewRelated.as_view(),name="Add_Education"),
     path('update-education/<int:pk>/',EducationViewUpdate.as_view(),name="Update_Education"),
     path('add-junior-cert/',JuniorCertTestViewRelated.as_view(),name="Add_Junior_Cert"),

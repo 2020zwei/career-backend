@@ -26,6 +26,10 @@ class CvViewRelated(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
 
+class CVUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CvSerializer
+    queryset = CV.objects.all()
 
 
 class EducationViewRelated(CreateAPIView):
