@@ -6,7 +6,11 @@ class StudentSerializer(serializers.ModelSerializer):
     model=Student
     fields=['first_name','last_name','address','eircode']
 
-
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=TestType
+        fields=['id','type']
+    
 
 class AnswerSerializer(serializers.ModelSerializer):
     answer_id = serializers.IntegerField(source='id', read_only=True)

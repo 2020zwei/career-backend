@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.db.models import Sum
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView, ListAPIView
-from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer,TypeSerializer
 from .models import PsychometricTest,Answer,Question,TestType,TestResult,TestResultDetail
 from users.models import Student
 from rest_framework import status
@@ -158,3 +158,8 @@ class TakeTestView(CreateAPIView):
                 return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'message': 'Please login'}, status=status.HTTP_400_BAD_REQUEST)
+
+class TestTypeView(ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset= TestType.objects.all()
+    serializer_class=TypeSerializer
