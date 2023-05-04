@@ -56,7 +56,7 @@ class  ReferenceSerializer(serializers.ModelSerializer):
         
 class StudentSerializer(serializers.ModelSerializer):
     model=Student
-    fields=['first_name','last_name','address','eircode']
+    fields=['first_name','last_name','address','address2','eircode']
 
 
 
@@ -65,7 +65,7 @@ class CvSerializer(serializers.ModelSerializer):
     user = StudentSerializer(read_only=True)
     class Meta:
         model=CV
-        fields=['user','objective','is_juniorcert_test','skills','HobbiesandInterests']
+        fields=['user','objective']
    
 
 class SkillSerializer(serializers.ModelSerializer):

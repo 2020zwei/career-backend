@@ -7,8 +7,8 @@ class CV(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
     objective=models.TextField(max_length=300)
     is_juniorcert_test=models.BooleanField(default=False)
-    skills=ArrayField(models.CharField(max_length=200), blank=True)
-    HobbiesandInterests=models.TextField(max_length=300)
+    skills=ArrayField(models.CharField(max_length=200), blank=True,null=True)
+    HobbiesandInterests=models.TextField(max_length=300,null=True)
     def __str__(self):
         return self.user.full_name
        
