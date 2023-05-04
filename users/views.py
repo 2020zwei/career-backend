@@ -38,6 +38,16 @@ class UserView(RetrieveAPIView):
             return queryset
         except Exception as e:
             raise ValidationError(e)
+    
+    def patch(self, request):
+        try:
+            user = self.get_object()
+            serializer = UserSerializer(user, data=request.data, partial=True) # set partial=True to update a data partially
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'data':serializer.data, 'success':True})
+        except Exception as e:
+            raise ValidationError(e)
         
 class UserUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
