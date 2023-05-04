@@ -24,10 +24,11 @@ class AddTimeSlot(CreateAPIView):
             user=self.request.user.student
             new_slot= self.request.data.get("timeslot")
             end_slot=self.request.data.get("endslot")
+            day=self.request.data.get("day")
             new_time = datetime.strptime(new_slot, '%H:%M:%S').time()
             end_time = datetime.strptime(end_slot, '%H:%M:%S').time()
             duration = datetime.combine(date.min, end_time) - datetime.combine(date.min, new_time)
-            if Slot.objects.filter(timeslot__gte=new_slot,user=user):
+            if Slot.objects.filter(timeslot__gte=new_slot,user=user,day=day):
                     raise ValidationError(" You have already regesterd this slot")
 
             elif duration > timedelta(seconds=900):
