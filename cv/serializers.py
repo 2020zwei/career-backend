@@ -62,7 +62,7 @@ class CvSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=CV
-        fields=['objective','full_name','address','address2','eircode','city','town','email']
+        fields=['id','objective','full_name','address','address2','eircode','city','town','email']
     
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
