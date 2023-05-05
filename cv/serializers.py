@@ -49,10 +49,7 @@ class  ReferenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Reference
-        fields=['contactnumber','jobtitle','contactemail']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(ExperienceSerializer, self).create(validated_data=validated_data)
+        fields=['cv','contact_number','position','email','name']
         
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:

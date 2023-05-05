@@ -43,7 +43,7 @@ class UserView(RetrieveAPIView):
         try:
             user = self.get_object()
             serializer = UserSerializer(user, data=request.data, partial=True) # set partial=True to update a data partially
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response({'data':serializer.data, 'success':True})
         except Exception as e:

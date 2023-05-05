@@ -76,11 +76,12 @@ class JobTitle(models.Model):
         
     
 class Reference(models.Model):
-    user_title=models.CharField(choices=USER_TITLE.choices,max_length=1)
-    job_title=models.ForeignKey('JobTitle',on_delete=models.CASCADE)
+    user_title=models.CharField(choices=USER_TITLE.choices,max_length=1,null=True)
+    job_title=models.ForeignKey('JobTitle',null=True,on_delete=models.CASCADE)
     name=models.CharField(max_length=50,null=True,blank=True)
     contact_number = models.CharField(max_length=30,null=True,blank=True)
     email=models.CharField(max_length=50,null=True,blank=True)
     organization_address=models.CharField(max_length=50,null=True,blank=True)
     area_code=models.IntegerField(null=True,blank=True)
     cv=models.ForeignKey(CV, on_delete=models.CASCADE)
+    position=models.CharField(max_length=50,null=True,blank=True)
