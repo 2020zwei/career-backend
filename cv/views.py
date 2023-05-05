@@ -19,18 +19,27 @@ class CvViewRelated(CreateAPIView):
     serializer_class = CvSerializer
     lookup_field = 'id'
 
-    def get_object(self,id):
-        try:
-            queryset=Student.objects.get(id=self.request.user.student.id)
-            return queryset
-        except Exception as e:
-            raise ValidationError(e)
+    # def get_object(self,id):
+    #     try:
+    #         queryset=Student.objects.get(id=self.request.user.student.id)
+    #         return queryset
+    #     except Exception as e:
+    #         raise ValidationError(e)
         
+    # def get(self, request):
+    #     user=Student.objects.get(id=self.request.user.student.id)
+    #     test = self.get_object(user.id)
+    #     serializer = StudentSerializer(test)
+    #     return Response(serializer.data, status.HTTP_200_OK)
     def get(self, request):
-        user=Student.objects.get(id=self.request.user.student.id)
-        test = self.get_object(user.id)
-        serializer = StudentSerializer(test)
-        return Response(serializer.data, status.HTTP_200_OK)
+        """Fetch All Chocies"""
+        try:
+            cv=CV.objects.all()
+            serializer = CvSerializer(cv, many=True)
+            return Response(serializer.data)
+    
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
