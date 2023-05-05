@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import PsychometricTest, TestType, Question, Answer, TestResult, TestResultDetail
+from django.db.models import Sum
 from users.models import Student
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -7,9 +8,21 @@ class StudentSerializer(serializers.ModelSerializer):
     fields=['first_name','last_name','address','eircode']
 
 class TypeSerializer(serializers.ModelSerializer):
+    score = serializers.SerializerMethodField()
     class Meta:
         model=TestType
-        fields=['id','type']
+        fields=['id','type', 'score']
+        extra_kwargs={'required':False}
+
+    def get_score(self,obj):
+        """Fetch score by test type"""
+        type=TestType.objects.get(id=obj.id)
+        user_obj=self.context["request"].user
+        std_obj= Student.objects.get(user=user_obj.id)
+        ques_obj= Question.objects.filter(type=type)
+        res=TestResultDetail.objects.filter(result__user=std_obj).filter(question__type__type=type.type).aggregate(total=Sum("answer__weightage"))
+
+        return res
     
 
 class AnswerSerializer(serializers.ModelSerializer):
