@@ -10,6 +10,7 @@ urlpatterns = [
     
     
     path('create-cv/',CvViewRelated.as_view(),name="Create-Cv"),
+    path('get-cv/',CvViewRelated.as_view(),name="get-Cv"),
     path('update-cv/<int:pk>/',CVUpdate.as_view(),name="Update_CV"),
     path('add-education/',EducationViewRelated.as_view(),name="Add_Education"),
     path('update-education/<int:pk>/',EducationViewUpdate.as_view(),name="Update_Education"),

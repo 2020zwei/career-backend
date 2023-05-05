@@ -55,8 +55,9 @@ class  ReferenceSerializer(serializers.ModelSerializer):
         return super(ExperienceSerializer, self).create(validated_data=validated_data)
         
 class StudentSerializer(serializers.ModelSerializer):
-    model=Student
-    fields=['first_name','last_name','address','address2','eircode']
+    class Meta:
+        model=Student
+        fields=['full_name','address','address2','eircode','city','eircode']
 
 
 

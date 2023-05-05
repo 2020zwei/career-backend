@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
-from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer
+from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer
 from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest
 from users.models import Student
 from django.template.loader import render_to_string
@@ -17,6 +17,20 @@ from rest_framework.response import Response
 class CvViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CvSerializer
+    lookup_field = 'id'
+
+    def get_object(self,id):
+        try:
+            queryset=Student.objects.get(id=self.request.user.student.id)
+            return queryset
+        except Exception as e:
+            raise ValidationError(e)
+        
+    def get(self, request):
+        user=Student.objects.get(id=self.request.user.student.id)
+        test = self.get_object(user.id)
+        serializer = StudentSerializer(test)
+        return Response(serializer.data, status.HTTP_200_OK)
     
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
