@@ -101,6 +101,7 @@ class SignupUserSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_image = Base64ImageField()
     email = serializers.EmailField(source='user.email', read_only=True)
     class Meta:
         model=Student
