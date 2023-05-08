@@ -42,8 +42,8 @@ class LeavingCertTest(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class Experience(models.Model):
-    startdate = models.DateField()
-    enddate=models.DateField()
+    startdate = models.DateField(null=True, blank=True)
+    enddate=models.DateField(null=True, blank=True)
     jobtitle=models.CharField(choices=JOB_TITLE.choices,max_length=1)
     company=models.CharField(max_length=50, null=True)
     city=models.CharField(max_length=50, null=True)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qualities,LeavingCertTest
 from rest_framework.exceptions import  ValidationError
+from datetime import datetime
 from users.models import Student
 
 
@@ -33,16 +34,34 @@ class  LeavingCertTestSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
+class SlashDateField(serializers.Field):
+    """
+    Serializer field that converts a slash-separated date string to a date object.
+    """
+    def to_internal_value(self, value):
+        try:
+            date_obj = datetime.strptime(value, '%m/%Y').date()
+            return date_obj
+        except (ValueError, TypeError):
+            raise serializers.ValidationError('Invalid date format')
+    
+    def to_representation(self, value):
+        if value is None:
+            return None
+        return value.strftime('%m/%Y')
 
 class  ExperienceSerializer(serializers.ModelSerializer):
-    
-
+    startdate = SlashDateField(required=False, allow_null=True)
+    enddate = SlashDateField(required=False, allow_null=True)
     class Meta:
         model=Experience
         fields=['startdate','enddate','jobtitle','company','city','country','description','is_current_work']
+        extra_kwargs = {'enddate': {'allow_null': True, 'required': False}}
+
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(ExperienceSerializer, self).create(validated_data=validated_data)
+
 
 class  ReferenceSerializer(serializers.ModelSerializer):
     
