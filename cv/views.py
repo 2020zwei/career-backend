@@ -60,6 +60,18 @@ class CVUpdate(UpdateAPIView):
 class EducationViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = EducationSerializer
+    queryset = Education.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=Education.objects.filter(user=student.student).last()
+            serializer = EducationSerializer(edu)
+            return Response(serializer.data)
+    
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
@@ -77,6 +89,17 @@ class EducationViewUpdate(UpdateAPIView):
 class JuniorCertTestViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = JuniorCertTestSerializer
+    queryset = JuniorCertTest.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=JuniorCertTest.objects.filter(user=student.student).last()
+            serializer = JuniorCertTestSerializer(edu)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         try:
@@ -96,6 +119,17 @@ class JuniorViewUpdate(UpdateAPIView):
 class LeavingCertTestViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = LeavingCertTestSerializer
+    queryset = LeavingCertTest.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=LeavingCertTest.objects.filter(user=student.student).last()
+            serializer = LeavingCertTestSerializer(edu)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         try:
@@ -116,6 +150,17 @@ class LeavingViewUpdate(UpdateAPIView):
 class ExperienceViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExperienceSerializer
+    queryset = Experience.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=Experience.objects.filter(user=student.student).last()
+            serializer = ExperienceSerializer(edu)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
@@ -134,6 +179,17 @@ class ExperienceViewUpdate(UpdateAPIView):
 class ReferenceViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ReferenceSerializer
+    queryset = Reference.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            #cv =self.request.data.get("cv")
+            edu=Reference.objects.filter(cv=self.request.data[0]['cv']).last()
+            serializer = ReferenceSerializer(edu)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
@@ -152,6 +208,17 @@ class ReferenceViewUpdate(UpdateAPIView):
 class SkillsViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SkillSerializer
+    queryset = Skills.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=Skills.objects.filter(user=student.student).last()
+            serializer = SkillSerializer(edu)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
@@ -170,6 +237,17 @@ class SkillsUpdate(UpdateAPIView):
 class QualityViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = QualitiesSerializer
+    queryset = Qualities.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=Qualities.objects.filter(user=student.student).last()
+            serializer = QualitiesSerializer(edu)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)

@@ -49,6 +49,7 @@ class Experience(models.Model):
     city=models.CharField(max_length=50, null=True)
     country=models.CharField(max_length=50, null=True)
     description=models.TextField(max_length=300, null=True)
+    is_current_work=models.BooleanField(default=False)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 

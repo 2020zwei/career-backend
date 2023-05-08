@@ -39,7 +39,7 @@ class  ExperienceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Experience
-        fields=['startdate','enddate','jobtitle','company']
+        fields=['startdate','enddate','jobtitle','company','city','country','description','is_current_work']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(ExperienceSerializer, self).create(validated_data=validated_data)
