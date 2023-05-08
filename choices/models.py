@@ -5,11 +5,11 @@ from users.models import Student
 
 class Choice(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
-    level6= models.BooleanField(default="False")
-    Level5= models.BooleanField(default="False")
-    level8= models.BooleanField(default="False")
-    other=models.BooleanField(default="False")
-    apprentice= models.BooleanField(default="False")
+    level6= models.BooleanField(default=False)
+    Level5= models.BooleanField(default=False)
+    level8= models.BooleanField(default=False)
+    other=models.BooleanField(default=False)
+    apprentice= models.BooleanField(default=False)
     
     def __str__(self):
         return self.user.full_name
