@@ -17,11 +17,12 @@ from rest_framework.response import Response
 class CvViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CvSerializer
+    queryset=CV.objects.all()
     lookup_field = 'id'
 
     # def get_object(self,id):
     #     try:
-    #         queryset=Student.objects.get(id=self.request.user.student.id)
+    #         queryset=CV.objects.all()
     #         return queryset
     #     except Exception as e:
     #         raise ValidationError(e)
@@ -34,8 +35,9 @@ class CvViewRelated(CreateAPIView):
     def get(self, request):
         """Fetch All Chocies"""
         try:
-            cv=CV.objects.all()
-            serializer = CvSerializer(cv, many=True)
+            student =self.request.user
+            cv=CV.objects.filter(user=student.student).last()
+            serializer = CvSerializer(cv)
             return Response(serializer.data)
     
         except Exception as e:
