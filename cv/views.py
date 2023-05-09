@@ -56,7 +56,6 @@ class EducationViewRelated(CreateAPIView):
             student =self.request.user
             edu=Education.objects.filter(user=student.student)
             junior=JuniorCertTest.objects.filter(user=student.student)
-            breakpoint()
             serializer = EducationSerializer(edu, many=True)
             serializer2 = JuniorCertTestSerializer(junior, many=True)
             data = {
