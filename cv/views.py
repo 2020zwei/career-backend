@@ -20,18 +20,6 @@ class CvViewRelated(CreateAPIView):
     queryset=CV.objects.all()
     lookup_field = 'id'
 
-    # def get_object(self,id):
-    #     try:
-    #         queryset=CV.objects.all()
-    #         return queryset
-    #     except Exception as e:
-    #         raise ValidationError(e)
-        
-    # def get(self, request):
-    #     user=Student.objects.get(id=self.request.user.student.id)
-    #     test = self.get_object(user.id)
-    #     serializer = StudentSerializer(test)
-    #     return Response(serializer.data, status.HTTP_200_OK)
     def get(self, request):
         """Fetch All Chocies"""
         try:
@@ -66,20 +54,35 @@ class EducationViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            edu=Education.objects.filter(user=student.student).last()
-            serializer = EducationSerializer(edu)
-            return Response(serializer.data)
+            edu=Education.objects.filter(user=student.student)
+            junior=JuniorCertTest.objects.filter(user=student.student)
+            breakpoint()
+            serializer = EducationSerializer(edu, many=True)
+            serializer2 = JuniorCertTestSerializer(junior, many=True)
+            data = {
+            "education_data": serializer.data,
+            "junior_data": serializer2.data,
+        }
+            return Response(data)
     
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
-        serializer = self.get_serializer(data=request.data, many=many)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, headers=headers)
+        education_serializer_obj=EducationSerializer(data=request.data.get('education_data'),many=True, context=request)
+        junior_serializer_obj=JuniorCertTestSerializer(data=request.data.get('junior_data'),many=True, context=request)
+        if education_serializer_obj.is_valid(raise_exception=True):
+            if junior_serializer_obj.is_valid(raise_exception=True):
+                education_serializer_obj.save()
+                junior_serializer_obj.save()
+                data={
+                    "education_data": education_serializer_obj.data,
+                    "junior_data":junior_serializer_obj.data
+                }
+                return Response(data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(education_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EducationViewUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]

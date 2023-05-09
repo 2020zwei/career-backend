@@ -4,36 +4,6 @@ from rest_framework.exceptions import  ValidationError
 from datetime import datetime
 from users.models import Student
 
-
-class  EducationSerializer(serializers.ModelSerializer):
-    
-
-    class Meta:
-        model=Education
-        fields=['year','school','examtaken']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(EducationSerializer, self).create(validated_data=validated_data)
-
-class  JuniorCertTestSerializer(serializers.ModelSerializer):
-    
-
-    class Meta:
-        model=JuniorCertTest
-        fields=['subject','level','result']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
-
-class  LeavingCertTestSerializer(serializers.ModelSerializer):
-    
-
-    class Meta:
-        model=LeavingCertTest
-        fields=['subject','level','result']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
 class SlashDateField(serializers.Field):
     """
     Serializer field that converts a slash-separated date string to a date object.
@@ -49,6 +19,36 @@ class SlashDateField(serializers.Field):
         if value is None:
             return None
         return value.strftime('%m/%Y')
+
+class  EducationSerializer(serializers.ModelSerializer):
+    year = SlashDateField(required=False, allow_null=True)
+
+    class Meta:
+        model=Education
+        fields=['year','school','examtaken']
+    def create(self, validated_data):
+        validated_data['user'] = self.context.user.student
+        return super(EducationSerializer, self).create(validated_data=validated_data)
+
+class  JuniorCertTestSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model=JuniorCertTest
+        fields=['subject','level','result']
+    def create(self, validated_data):
+        validated_data['user'] = self.context.user.student
+        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
+
+class  LeavingCertTestSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model=LeavingCertTest
+        fields=['subject','level','result']
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user.student
+        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
 
 class  ExperienceSerializer(serializers.ModelSerializer):
     startdate = SlashDateField(required=False, allow_null=True)

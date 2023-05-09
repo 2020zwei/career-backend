@@ -24,19 +24,19 @@ class CV(models.Model):
        
 
 class Education(models.Model):
-    year=models.PositiveSmallIntegerField()
-    school = models.CharField(max_length=50)
-    examtaken=models.CharField(max_length=50)
+    year=models.DateField(null=True, blank=True)
+    school = models.CharField(max_length=50,null=True, blank=True)
+    examtaken=models.CharField(max_length=50,null=True, blank=True)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class JuniorCertTest(models.Model):
-    subject = models.CharField(choices=SUBJECTS.choices,max_length=2)
-    level=models.CharField(choices=JUNIOR_CERT_TEST_LEVEL.choices,max_length=2)
-    result=models.CharField(choices=JUNIOR_CERT_TEST_RESULT.choices,max_length=2)
+    subject = models.CharField(max_length=50, null=True)
+    level=models.CharField(choices=JUNIOR_CERT_TEST_LEVEL.choices,max_length=2,null=True, blank=True)
+    result=models.CharField(choices=JUNIOR_CERT_TEST_RESULT.choices,max_length=2,null=True, blank=True)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class LeavingCertTest(models.Model):
-    subject = models.CharField(choices=SUBJECTS.choices,max_length=2)
+    subject = models.CharField(max_length=50, null=True)
     level=models.CharField(choices=LEAVING_CERT_TEST_LEVEL.choices,max_length=2)
     result=models.CharField(choices=LEAVING_CERT_TEST_RESULT.choices,max_length=2)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
