@@ -68,9 +68,25 @@ class EducationViewRelated(CreateAPIView):
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
+        student =self.request.user
         many = isinstance(request.data, list)
-        education_serializer_obj=EducationSerializer(data=request.data.get('education_data'),many=True, context=request)
-        junior_serializer_obj=JuniorCertTestSerializer(data=request.data.get('junior_data'),many=True, context=request)
+        # education_serializer_obj=EducationSerializer(data=request.data.get('education_data'),many=True, context=request)
+        # junior_serializer_obj=JuniorCertTestSerializer(data=request.data.get('junior_data'),many=True, context=request)
+        education_data = request.data.get('education_data')
+        junior_data = request.data.get('junior_data')
+        breakpoint()
+        if education_data[0]['id'] is not None:
+            education_instance = Education.objects.get(id=education_data[0]['id'])
+            education_serializer_obj=EducationSerializer(education_instance, data=education_data, context=request)
+        else:
+            education_serializer_obj=EducationSerializer(data=education_data,many=True, context=request)
+
+        if junior_data[0]['id'] is not None:
+            junior_instance = JuniorCertTest.objects.get(id=junior_data[0]['id'])
+            junior_serializer_obj=JuniorCertTestSerializer(junior_instance, data=junior_data, context=request)
+        else:
+            junior_serializer_obj=JuniorCertTestSerializer(data=junior_data,many=True, context=request)
+
         if education_serializer_obj.is_valid(raise_exception=True):
             if junior_serializer_obj.is_valid(raise_exception=True):
                 education_serializer_obj.save()

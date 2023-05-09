@@ -29,6 +29,13 @@ class  EducationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context.user.student
         return super(EducationSerializer, self).create(validated_data=validated_data)
+    
+    def update(self, instance, validated_data):
+        instance.year = validated_data.get('year', instance.year)
+        instance.school = validated_data.get('school', instance.school)
+        instance.examtaken = validated_data.get('examtaken', instance.examtaken)
+        instance.save()
+        return instance
 
 class  JuniorCertTestSerializer(serializers.ModelSerializer):
     
@@ -39,6 +46,13 @@ class  JuniorCertTestSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context.user.student
         return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
+    
+    def update(self, instance, validated_data):
+        instance.subject = validated_data.get('subject', instance.subject)
+        instance.level = validated_data.get('level', instance.level)
+        instance.result = validated_data.get('result', instance.result)
+        instance.save()
+        return instance
 
 class  LeavingCertTestSerializer(serializers.ModelSerializer):
     
