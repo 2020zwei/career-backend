@@ -25,7 +25,7 @@ class  EducationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Education
-        fields=['year','school','examtaken']
+        fields=['id','year','school','examtaken']
     def create(self, validated_data):
         validated_data['user'] = self.context.user.student
         return super(EducationSerializer, self).create(validated_data=validated_data)
@@ -35,7 +35,7 @@ class  JuniorCertTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=JuniorCertTest
-        fields=['subject','level','result']
+        fields=['id','subject','level','result']
     def create(self, validated_data):
         validated_data['user'] = self.context.user.student
         return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
