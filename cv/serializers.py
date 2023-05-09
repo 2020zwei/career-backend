@@ -20,39 +20,58 @@ class SlashDateField(serializers.Field):
             return None
         return value.strftime('%m/%Y')
 
+class EducationListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                Education.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(Education.objects.create(**data))
+        return ret
+
 class  EducationSerializer(serializers.ModelSerializer):
     year = SlashDateField(required=False, allow_null=True)
 
     class Meta:
         model=Education
         fields=['id','year','school','examtaken']
-    def create(self, validated_data):
-        validated_data['user'] = self.context.user.student
-        return super(EducationSerializer, self).create(validated_data=validated_data)
-    
+        list_serializer_class = EducationListSerializer
+        extra_kwargs = {
+            'id':{
+                'read_only': False,
+                'allow_null': True,
+            }
+        }        
+class JuniorListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
-        instance.year = validated_data.get('year', instance.year)
-        instance.school = validated_data.get('school', instance.school)
-        instance.examtaken = validated_data.get('examtaken', instance.examtaken)
-        instance.save()
-        return instance
+        # Perform creations and updates.
+        ret = []
 
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                JuniorCertTest.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(JuniorCertTest.objects.create(**data))
+        return ret
 class  JuniorCertTestSerializer(serializers.ModelSerializer):
     
 
     class Meta:
         model=JuniorCertTest
         fields=['id','subject','level','result']
-    def create(self, validated_data):
-        validated_data['user'] = self.context.user.student
-        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
-    
-    def update(self, instance, validated_data):
-        instance.subject = validated_data.get('subject', instance.subject)
-        instance.level = validated_data.get('level', instance.level)
-        instance.result = validated_data.get('result', instance.result)
-        instance.save()
-        return instance
+        list_serializer_class = JuniorListSerializer
+        extra_kwargs = {
+            'id':{
+                'read_only': False,
+                'allow_null': True,
+            }
+        }
 
 class  LeavingCertTestSerializer(serializers.ModelSerializer):
     
