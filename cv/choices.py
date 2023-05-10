@@ -112,3 +112,13 @@ class JOB_TITLE(models.TextChoices):
     WorkShadow = "2", _('WORK SHADOW')
     Other = "3", _('OTHER')
 
+class SKILLS(models.TextChoices):
+    SelfStarter= "1", _('SELF STARTER')
+    PeopleSkills= "2", _('People Skills')
+    CriticalThinkingSkills= "3", _('Critical Thinking Skills')
+    # Practical Skills
+    # Communication Skills
+    # Teamwork Skills
+    # (ICT) Information Skills
+    # Creative Skills
+    # Critical Problem Solving

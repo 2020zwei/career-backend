@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import Student
-from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT
+from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT, SKILLS
 from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
@@ -55,6 +55,7 @@ class Experience(models.Model):
 
 class Skills(models.Model):
     skill=models.CharField(max_length=50, null=True)
+    skill_dropdown=models.CharField(choices=SKILLS.choices,max_length=2,null=True, blank=True)
     description=models.TextField(max_length=300)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 

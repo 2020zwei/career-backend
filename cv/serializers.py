@@ -83,13 +83,28 @@ class  LeavingCertTestSerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user.student
         return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
 
+class ExperienceListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                Experience.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(Experience.objects.create(**data))
+        return ret
 class  ExperienceSerializer(serializers.ModelSerializer):
     startdate = SlashDateField(required=False, allow_null=True)
     enddate = SlashDateField(required=False, allow_null=True)
     class Meta:
         model=Experience
-        fields=['startdate','enddate','jobtitle','company','city','country','description','is_current_work']
-        extra_kwargs = {'enddate': {'allow_null': True, 'required': False}}
+        fields=['id','startdate','enddate','jobtitle','company','city','country','description','is_current_work']
+        list_serializer_class = ExperienceListSerializer
+        extra_kwargs = {'enddate': {'allow_null': True, 'required': False},
+                        'id':{'read_only': False,'allow_null': True,}}
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
@@ -125,7 +140,7 @@ class SkillSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Skills
-        fields=['skill','description']
+        fields=['id','skill_dropdown']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(SkillSerializer, self).create(validated_data=validated_data)

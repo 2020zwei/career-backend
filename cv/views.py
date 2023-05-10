@@ -155,25 +155,28 @@ class LeavingViewUpdate(UpdateAPIView):
 class ExperienceViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExperienceSerializer
-    queryset = Experience.objects.all()
 
     def get(self, request):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            edu=Experience.objects.filter(user=student.student).last()
-            serializer = ExperienceSerializer(edu)
+            edu=Experience.objects.filter(user=student.student)
+            serializer = ExperienceSerializer(edu, many=True)
             return Response(serializer.data)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request, *args, **kwargs):
-        many = isinstance(request.data, list)
-        serializer = self.get_serializer(data=request.data, many=many)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, headers=headers)
+    def post(self, request, *args, **kwargs):
+        try:
+            experience_serializer_obj=ExperienceSerializer(instance='',data=request.data,many=True, context=request)
+
+            if experience_serializer_obj.is_valid(raise_exception=True):
+                    experience_serializer_obj.save()
+                    return Response(experience_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(experience_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ExperienceViewUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -219,8 +222,8 @@ class SkillsViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            edu=Skills.objects.filter(user=student.student).last()
-            serializer = SkillSerializer(edu)
+            edu=Skills.objects.filter(user=student.student)
+            serializer = SkillSerializer(edu,many=True)
             return Response(serializer.data)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
