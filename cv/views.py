@@ -236,13 +236,17 @@ class SkillsViewRelated(CreateAPIView):
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request, *args, **kwargs):
-        many = isinstance(request.data, list)
-        serializer = self.get_serializer(data=request.data, many=many)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, headers=headers)
+    def post(self, request, *args, **kwargs):
+        try:
+            skill_serializer_obj=SkillSerializer(instance='',data=request.data,many=True, context=request)
+
+            if skill_serializer_obj.is_valid(raise_exception=True):
+                    skill_serializer_obj.save()
+                    return Response(skill_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(skill_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class SkillsUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]

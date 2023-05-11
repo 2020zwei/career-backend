@@ -166,16 +166,29 @@ class CvSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(CvSerializer, self).create(validated_data=validated_data)
-   
+
+class SkillListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                Skills.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(Skills.objects.create(**data))
+        return ret 
 
 class SkillSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Skills
         fields=['id','skill_dropdown']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(SkillSerializer, self).create(validated_data=validated_data)
+        list_serializer_class = SkillListSerializer
+        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
+
 
 class QualityListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
