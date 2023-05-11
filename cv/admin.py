@@ -13,13 +13,13 @@ class ExperienceTestAdminSite(admin.ModelAdmin):
     list_display=['user','startdate','enddate','jobtitle','company','city','country','description']
 
 class ReferenceAdminSite(admin.ModelAdmin):
-    list_display=['cv','user_title','name','job_title','contact_number','organization_address','area_code','email']
+    list_display=['user_title','name','job_title','contact_number','organization_address','area_code','email']
 
 class SkillsAdminSite(admin.ModelAdmin):
-    list_display=['user','skill','description']
+    list_display=['user','skill','skill_dropdown','description']
 
 class QualitiesAdminSite(admin.ModelAdmin):
-    list_display=['user','quality','description']
+    list_display=['user','quality','interest','description']
 
 class JobTitleAdmin(admin.ModelAdmin):
     list_display=['title']

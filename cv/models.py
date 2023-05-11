@@ -64,6 +64,7 @@ class Skills(models.Model):
 
 class Qualities(models.Model):
     quality=models.CharField(max_length=50, null=True)
+    interest=models.TextField(max_length=300,null=True, blank=True)
     description=models.TextField(max_length=300)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 
@@ -85,5 +86,5 @@ class Reference(models.Model):
     email=models.CharField(max_length=50,null=True,blank=True)
     organization_address=models.CharField(max_length=50,null=True,blank=True)
     area_code=models.IntegerField(null=True,blank=True)
-    cv=models.ForeignKey(CV, on_delete=models.CASCADE)
     position=models.CharField(max_length=50,null=True,blank=True)
+    user=models.ForeignKey(Student,on_delete=models.CASCADE,null=True,blank=True)

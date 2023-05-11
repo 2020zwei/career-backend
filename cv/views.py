@@ -192,20 +192,24 @@ class ReferenceViewRelated(CreateAPIView):
     def get(self, request):
         """Fetch All Chocies"""
         try:
-            #cv =self.request.data.get("cv")
-            edu=Reference.objects.filter(cv=self.request.data[0]['cv']).last()
-            serializer = ReferenceSerializer(edu)
+            student =self.request.user
+            edu=Reference.objects.filter(user=student.student)
+            serializer = ReferenceSerializer(edu, many=True)
             return Response(serializer.data)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request, *args, **kwargs):
-        many = isinstance(request.data, list)
-        serializer = self.get_serializer(data=request.data, many=many)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, headers=headers)
+    def post(self, request, *args, **kwargs):
+        try:
+            refer_serializer_obj=ReferenceSerializer(instance='',data=request.data,many=True, context=request)
+
+            if refer_serializer_obj.is_valid(raise_exception=True):
+                    refer_serializer_obj.save()
+                    return Response(refer_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(refer_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ReferenceViewUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -251,19 +255,23 @@ class QualityViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            edu=Qualities.objects.filter(user=student.student).last()
-            serializer = QualitiesSerializer(edu)
+            edu=Qualities.objects.filter(user=student.student)
+            serializer = QualitiesSerializer(edu,many=True)
             return Response(serializer.data)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request, *args, **kwargs):
-        many = isinstance(request.data, list)
-        serializer = self.get_serializer(data=request.data, many=many)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, headers=headers)
+    def post(self, request, *args, **kwargs):
+        try:
+            quality_serializer_obj=QualitiesSerializer(instance='',data=request.data,many=True, context=request)
+
+            if quality_serializer_obj.is_valid(raise_exception=True):
+                    quality_serializer_obj.save()
+                    return Response(quality_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(quality_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class QualityUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]

@@ -110,13 +110,33 @@ class  ExperienceSerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user.student
         return super(ExperienceSerializer, self).create(validated_data=validated_data)
 
+class ReferenceListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                Reference.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(Reference.objects.create(**data))
+        return ret
 
 class  ReferenceSerializer(serializers.ModelSerializer):
     
 
     class Meta:
         model=Reference
-        fields=['cv','contact_number','position','email','name']
+        fields=['id','contact_number','position','email','name']
+        list_serializer_class = ReferenceListSerializer
+        extra_kwargs = {
+            'id':{
+                'read_only': False,
+                'allow_null': True,
+            }
+        }
         
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -145,13 +165,31 @@ class SkillSerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user.student
         return super(SkillSerializer, self).create(validated_data=validated_data)
 
+class QualityListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                Qualities.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(Qualities.objects.create(**data))
+        return ret
+
 class QualitiesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Qualities
-        fields=['quality','description']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(QualitiesSerializer, self).create(validated_data=validated_data)
+        fields=['id','interest']
+        list_serializer_class = QualityListSerializer
+        extra_kwargs = {
+            'id':{
+                'read_only': False,
+                'allow_null': True,
+            }
+        }
 
     

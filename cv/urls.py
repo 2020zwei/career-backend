@@ -30,9 +30,9 @@ urlpatterns = [
     path('add-skill/',SkillsViewRelated.as_view(),name="Add_Skill"),
     path('get-skill/',SkillsViewRelated.as_view(),name="Get_Skill"),
     path('update-skill/<int:pk>/',SkillsUpdate.as_view(),name="Update_Skills"),
-    path('add-quality/',QualityViewRelated.as_view(),name="Add_Quality"),
-    path('get-quality/',QualityViewRelated.as_view(),name="Get_Quality"),
-    path('update-quality/<int:pk>/',QualityUpdate.as_view(),name="Update_Quality"),
+    path('add-interest/',QualityViewRelated.as_view(),name="Add_Interest"),
+    path('get-interest/',QualityViewRelated.as_view(),name="Get_Interest"),
+    path('update-interest/<int:pk>/',QualityUpdate.as_view(),name="Update_Interest"),
     path('cv/',GeneratePDF.as_view(),name="CV"),
 
 
