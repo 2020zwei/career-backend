@@ -97,8 +97,6 @@ class ExperienceListSerializer(serializers.ListSerializer):
                 ret.append(Experience.objects.create(**data))
         return ret
 class  ExperienceSerializer(serializers.ModelSerializer):
-    startdate = SlashDateField(required=False, allow_null=True)
-    enddate = SlashDateField(required=False, allow_null=True)
     class Meta:
         model=Experience
         fields=['id','startdate','enddate','jobtitle','company','city','country','description','is_current_work']
@@ -143,13 +141,27 @@ class StudentSerializer(serializers.ModelSerializer):
         model=Student
         fields=['full_name','address','address2','eircode','city','eircode']
 
+class CVListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
 
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                CV.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(CV.objects.create(**data))
+        return ret
 
 class CvSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=CV
         fields=['id','objective','full_name','address','address2','eircode','city','town','email']
+        list_serializer_class = CVListSerializer
+        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
     
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student

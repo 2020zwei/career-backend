@@ -116,9 +116,9 @@ class SKILLS(models.TextChoices):
     SelfStarter= "1", _('SELF STARTER')
     PeopleSkills= "2", _('People Skills')
     CriticalThinkingSkills= "3", _('Critical Thinking Skills')
-    # Practical Skills
-    # Communication Skills
-    # Teamwork Skills
-    # (ICT) Information Skills
-    # Creative Skills
-    # Critical Problem Solving
+    PracticalSkills= "4", _('Practical Skills')
+    CommunicationSkills= "5", _('Communication Skills')
+    TeamworkSkills= "6", _('Teamwork Skills')
+    InformationSkills= "7", _('Information Skills')
+    CreativeSkills= "8", _('Creative Skills')
+    CriticalProblemSolving= "9", _('Critical Problem Solving')

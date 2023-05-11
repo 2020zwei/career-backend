@@ -24,20 +24,24 @@ class CvViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            cv=CV.objects.filter(user=student.student).last()
-            serializer = CvSerializer(cv)
+            cv=CV.objects.filter(user=student.student)
+            serializer = CvSerializer(cv, many=True)
             return Response(serializer.data)
     
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-    def create(self, request, *args, **kwargs):
-        many = isinstance(request.data, list)
-        serializer = self.get_serializer(data=request.data, many=many)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, headers=headers)
+    def post(self, request, *args, **kwargs):
+        try:
+            cv_serializer_obj=CvSerializer(instance='',data=request.data,many=True, context=request)
+
+            if cv_serializer_obj.is_valid(raise_exception=True):
+                    cv_serializer_obj.save()
+                    return Response(cv_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(cv_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class CVUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -285,15 +289,15 @@ class GeneratePDF(CreateAPIView):
         try:
 
           student =self.request.user
-          user_obj=Student.objects.get(id=student.id)
-          cv_obj =CV.objects.get(user=student.id)
-          education_obj=Education.objects.get(user=student.id)
-          junior_cert_obj=JuniorCertTest.objects.get(user=student.id)
-          leave_cert_obj=LeavingCertTest.objects.get(user=student.id)
-          exp_obj=Experience.objects.get(user=student.id)
-          skill_obj=Skills.objects.get(user=student.id)
-          quality_obj=Qualities.objects.get(user=student.id)
-          refer_obj=Reference.objects.get(cv=cv_obj.id)
+          user_obj=Student.objects.get(id=student.student.id)
+          cv_obj =CV.objects.filter(user=student.id)
+          education_obj=Education.objects.filter(user=student.id)
+          junior_cert_obj=JuniorCertTest.objects.filter(user=student.id)
+          leave_cert_obj=LeavingCertTest.objects.filter(user=student.id)
+          exp_obj=Experience.objects.filter(user=student.id)
+          skill_obj=Skills.objects.filter(user=student.id)
+          quality_obj=Qualities.objects.filter(user=student.id)
+          refer_obj=Reference.objects.filter(user=student.id)
           temp_name = "general/templates/" 
           cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
           open(temp_name + cv_template, "w").write(render_to_string('cv.html', {'student_detail': user_obj,'cv_detail':cv_obj,'education_detail':education_obj,'Junior_Cert_detail':junior_cert_obj,'Leave_Cert_detail':leave_cert_obj,'skill_detail':skill_obj,'qualities_detail':quality_obj,'Experience_detail':exp_obj,'Reference_detail':refer_obj}))
