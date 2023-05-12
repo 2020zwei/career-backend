@@ -66,7 +66,6 @@ class ChoiceSerializer(serializers.ModelSerializer):
     
     def validate(self, attrs):
         user = self.context['request'].user.student
-        breakpoint()
         if Choice.objects.filter(user=user).exists():
             pass # or you can simply allow updating by doing nothing
         return attrs
