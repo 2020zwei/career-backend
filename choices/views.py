@@ -194,7 +194,7 @@ class Level6Update(UpdateAPIView):
 
 class SelectedChoice(CreateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ChoiceDetailSerializer
+    serializer_class = ChoiceSerializer
     
     def get(self, request):
         """Fetch All Chocies"""
@@ -211,7 +211,7 @@ class SelectedChoice(CreateAPIView):
         try:
             resp=request.data
             count= len(resp[0])
-            if count>4:
+            if count>3:
                 return Response("The choices can not be greater than 3")
             else:
                 many = isinstance(request.data, list)

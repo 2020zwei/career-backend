@@ -63,10 +63,31 @@ class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model=Choice
         fields=['id','level6','Level5','level8','apprentice','other']
-
+    
+    def validate(self, attrs):
+        user = self.context['request'].user.student
+        breakpoint()
+        if Choice.objects.filter(user=user).exists():
+            pass # or you can simply allow updating by doing nothing
+        return attrs
+   
+    def create(self, validated_data):
+        user = self.context['request'].user.student
+        if Choice.objects.filter(user=user).exists():
+            instance = Choice.objects.get(user=user)
+            instance.level6 = validated_data.get('level6', instance.level6)
+            instance.Level5 = validated_data.get('Level5', instance.Level5)
+            instance.level8 = validated_data.get('level8', instance.level8)
+            instance.other = validated_data.get('other', instance.other)
+            instance.apprentice = validated_data.get('apprentice', instance.apprentice)
+            instance.save()
+            return instance
+        validated_data['user'] = self.context['request'].user.student
+        return super(ChoiceSerializer, self).create(validated_data=validated_data)
+    
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        return {key: value for key, value in data.items() if value is True}
+        return {key for key, value in data.items() if value is True}
 
 class ChoiceDetailSerializer(serializers.ModelSerializer):
 
