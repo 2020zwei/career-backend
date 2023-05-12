@@ -8,10 +8,13 @@ class StudentSerializer(serializers.ModelSerializer):
     fields=['first_name','last_name','address','eircode']
 
 
+class ColumnNamesSerializer(serializers.Serializer):
+    column_names = serializers.ListField(child=serializers.CharField())
+
 class Level6_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level6
-        fields=['code','point','college','title']
+        fields=['id','code','point','college','title']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(Level6_Serializer, self).create(validated_data=validated_data)
@@ -21,7 +24,7 @@ class Level6_Serializer(serializers.ModelSerializer):
 class Level8_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level8
-        fields=['code','point','college','title']
+        fields=['id','code','point','college','title']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(Level8_Serializer, self).create(validated_data=validated_data)
@@ -31,7 +34,7 @@ class Level8_Serializer(serializers.ModelSerializer):
 class Apprentice_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Apprentice
-        fields=['name','level','company']
+        fields=['id','name','level','company']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(Apprentice_Serializer, self).create(validated_data=validated_data)
@@ -41,7 +44,7 @@ class Apprentice_Serializer(serializers.ModelSerializer):
 class Level5_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level5
-        fields=['code','college','title']
+        fields=['id','code','college','title']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(Level5_Serializer, self).create(validated_data=validated_data)
@@ -51,12 +54,19 @@ class Level5_Serializer(serializers.ModelSerializer):
 class Other_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Other
-        fields=['idea']
+        fields=['id','idea']
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(Other_Serializer, self).create(validated_data=validated_data)
 
+class ChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Choice
+        fields=['id','level6','Level5','level8','apprentice','other']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return {key: value for key, value in data.items() if value is True}
 
 class ChoiceDetailSerializer(serializers.ModelSerializer):
 
