@@ -83,6 +83,23 @@ class  LeavingCertTestSerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user.student
         return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
 
+class ExperienceDateField(serializers.Field):
+    """
+    Serializer field that converts a slash-separated date string to a date object.
+    """
+    def to_internal_value(self, value):
+        try:
+            date_obj = datetime.strptime(value, '%d-%m-%Y').date()
+            return date_obj
+        except (ValueError, TypeError):
+            raise serializers.ValidationError('Invalid date format')
+    
+    def to_representation(self, value):
+        if value is None:
+            return None
+        return value.strftime('%d-%m-%Y')
+
+
 class ExperienceListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
         # Perform creations and updates.
@@ -97,6 +114,8 @@ class ExperienceListSerializer(serializers.ListSerializer):
                 ret.append(Experience.objects.create(**data))
         return ret
 class  ExperienceSerializer(serializers.ModelSerializer):
+    startdate = ExperienceDateField(required=False, allow_null=True)
+    enddate = ExperienceDateField(required=False, allow_null=True)
     class Meta:
         model=Experience
         fields=['id','startdate','enddate','jobtitle','company','city','country','description','is_current_work']
