@@ -59,6 +59,7 @@ matplotlib-inline==0.1.6
 nest-asyncio==1.5.6
 oauthlib==3.2.2
 packaging==23.0
+pangocffi==0.11.0
 paramiko==3.1.0
 parso==0.8.3
 pathspec==0.10.1
