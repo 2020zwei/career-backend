@@ -228,7 +228,7 @@ class ColumnNamesView(APIView):
 
     def get(self, request):
         try:
-            choice=request.headers['choice']
+            choice=request.GET.get('choice')
             if choice=='level6':
                 column_names = [field.name for field in Level6._meta.get_fields()]
                 return Response(column_names)
