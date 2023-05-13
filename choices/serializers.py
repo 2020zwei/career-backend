@@ -15,7 +15,11 @@ class Level6_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level6
         fields=['id','code','point','college','title','choice']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
+        student = self.context['request'].user.student
+        choices = Choice.objects.get(user=student)
+        validated_data['choice'] = choices
         return super(Level6_Serializer, self).create(validated_data=validated_data)
 
 
@@ -24,7 +28,11 @@ class Level8_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level8
         fields=['id','code','point','college','title','choice']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
+        student = self.context['request'].user.student
+        choices = Choice.objects.get(user=student)
+        validated_data['choice'] = choices
         return super(Level8_Serializer, self).create(validated_data=validated_data)
 
 
@@ -33,7 +41,11 @@ class Apprentice_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Apprentice
         fields=['id','name','level','company','choice']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
+        student = self.context['request'].user.student
+        choices = Choice.objects.get(user=student)
+        validated_data['choice'] = choices
         return super(Apprentice_Serializer, self).create(validated_data=validated_data)
 
 
@@ -42,7 +54,11 @@ class Level5_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level5
         fields=['id','code','college','title','choice']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
+        student = self.context['request'].user.student
+        choices = Choice.objects.get(user=student)
+        validated_data['choice'] = choices
         return super(Level5_Serializer, self).create(validated_data=validated_data)
 
 
@@ -51,7 +67,11 @@ class Other_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Other
         fields=['id','idea','choice']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
+        student = self.context['request'].user.student
+        choices = Choice.objects.get(user=student)
+        validated_data['choice'] = choices
         return super(Other_Serializer, self).create(validated_data=validated_data)
 
 class ChoiceSerializer(serializers.ModelSerializer):

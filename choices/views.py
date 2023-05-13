@@ -271,18 +271,21 @@ class ColumnNamesView(APIView):
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]
+                return Response(column_names)
             if choice=='other':
                 all_fields = Other._meta.get_fields()
 
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
-                column_names = [f.name for f in all_fields if f.name not in excluded_fields]            
+                column_names = [f.name for f in all_fields if f.name not in excluded_fields]      
+                return Response(column_names)      
             if choice=='apprentice':
                 all_fields = Apprentice._meta.get_fields()
 
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]
+                return Response(column_names)
             else:
                 column_names = [field.name for field in Choice._meta.get_fields()]
                 return Response(column_names)
