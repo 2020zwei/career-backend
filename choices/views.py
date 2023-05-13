@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from .serializers import *
 from .models import *
@@ -73,6 +73,11 @@ class Level8Update(UpdateAPIView):
     serializer_class = Level8
     queryset = Level8.objects.all()
 
+class Level8Delete(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Level8.objects.all()
+    serializer_class = Level8_Serializer
+
 class Level5ViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = Level5_Serializer
@@ -102,6 +107,10 @@ class Level5Update(UpdateAPIView):
     serializer_class = Level5
     queryset = Level5.objects.all()
 
+class Level5Delete(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Level5.objects.all()
+    serializer_class = Level5_Serializer
 
 class ApprenticeViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -132,6 +141,10 @@ class ApprenticeUpdate(UpdateAPIView):
     serializer_class = Apprentice
     queryset = Apprentice.objects.all()
 
+class ApprenticeDelete(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Apprentice.objects.all()
+    serializer_class = Apprentice_Serializer
 
 class OtherViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -162,6 +175,11 @@ class OtherUpdate(UpdateAPIView):
     serializer_class = Other
     queryset = Other.objects.all()
 
+class OtherDelete(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Other.objects.all()
+    serializer_class = Other_Serializer
+
 class Level6ViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = Level6_Serializer
@@ -191,6 +209,10 @@ class Level6Update(UpdateAPIView):
     serializer_class = Level6_Serializer
     queryset = Level6.objects.all()
 
+class Level6Delete(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Level6.objects.all()
+    serializer_class = Level6_Serializer
 
 class SelectedChoice(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -230,20 +252,37 @@ class ColumnNamesView(APIView):
         try:
             choice=request.GET.get('choice')
             if choice=='level6':
-                column_names = [field.name for field in Level6._meta.get_fields()]
+                all_fields = Level6._meta.get_fields()
+
+                # Filter the list to include only the fields you want to include
+                excluded_fields = ['id', 'choice']
+                column_names = [f.name for f in all_fields if f.name not in excluded_fields]
                 return Response(column_names)
             if choice=='level5':
-                column_names = [field.name for field in Level5._meta.get_fields()]
+                all_fields = Level5._meta.get_fields()
+
+                # Filter the list to include only the fields you want to include
+                excluded_fields = ['id', 'choice']
+                column_names = [f.name for f in all_fields if f.name not in excluded_fields]
                 return Response(column_names)
             if choice=='level8':
-                column_names = [field.name for field in Level8._meta.get_fields()]
-                return Response(column_names)
+                all_fields = Level8._meta.get_fields()
+
+                # Filter the list to include only the fields you want to include
+                excluded_fields = ['id', 'choice']
+                column_names = [f.name for f in all_fields if f.name not in excluded_fields]
             if choice=='other':
-                column_names = [field.name for field in Other._meta.get_fields()]
-                return Response(column_names)            
+                all_fields = Other._meta.get_fields()
+
+                # Filter the list to include only the fields you want to include
+                excluded_fields = ['id', 'choice']
+                column_names = [f.name for f in all_fields if f.name not in excluded_fields]            
             if choice=='apprentice':
-                column_names = [field.name for field in Apprentice._meta.get_fields()]
-                return Response(column_names)
+                all_fields = Apprentice._meta.get_fields()
+
+                # Filter the list to include only the fields you want to include
+                excluded_fields = ['id', 'choice']
+                column_names = [f.name for f in all_fields if f.name not in excluded_fields]
             else:
                 column_names = [field.name for field in Choice._meta.get_fields()]
                 return Response(column_names)
