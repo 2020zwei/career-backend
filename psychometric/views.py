@@ -3,7 +3,7 @@ from django.db.models import Sum
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
-from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer,TypeSerializer
+from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer,TypeSerializer, TestResultDetailSerializer
 from .models import PsychometricTest,Answer,Question,TestType,TestResult,TestResultDetail
 from users.models import Student
 from rest_framework import status
@@ -125,17 +125,17 @@ class PsychometricTestView(ListAPIView):
         return context
     
 
+
 class TakeTestView(CreateAPIView):
     serializer_class = PsychometricResultDetailSerializer
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        # Get the test, student and their answers from the request data
+        # Get the test, student, and their answers from the request data
         if request and request.user.is_authenticated:
             try:
                 test_id = request.data.get('test')
                 answers = request.data.get('answers')
-                print(request.user.student)
 
                 # Save the test result for the student
                 test_result = TestResult.objects.create(
@@ -166,7 +166,12 @@ class TakeTestView(CreateAPIView):
                 test_result.score = total_score
                 test_result.save()
 
-                return Response({'message': 'Quiz taken successfully', 'status': True}, status=status.HTTP_200_OK)
+                response_data = {
+                    'message': 'Quiz taken successfully',
+                    'status': True,
+                    'test_id': test_result.id
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -176,3 +181,19 @@ class TestTypeView(ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset= TestType.objects.all()
     serializer_class=TypeSerializer
+
+    
+class TestResultDetailAPIView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TestResultDetailSerializer
+
+    def retrieve(self, request,id):
+        result_id = id  # Get the test result ID from the URL parameter
+
+        try:
+            result_detail = TestResultDetail.objects.filter(result_id=result_id)
+
+            serializer = self.get_serializer(result_detail, many=True)
+            return Response(serializer.data)
+        except TestResultDetail.DoesNotExist:
+            return Response({'message': 'Test result not found'}, status=status.HTTP_404_NOT_FOUND)

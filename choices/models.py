@@ -22,7 +22,7 @@ class Level6(models.Model):
     choice=models.ForeignKey(Choice,related_name="lvl6", on_delete=models.CASCADE)
     code=models.CharField(max_length=50,null=True,blank=True)
     title=models.CharField(max_length=50,null=True,blank=True)
-    point=models.IntegerField(null=True,blank=True)
+    point=models.CharField(max_length=50,null=True,blank=True)
     college=models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):
@@ -35,7 +35,7 @@ class Level8(models.Model):
     choice=models.ForeignKey(Choice,related_name="lvl8", on_delete=models.CASCADE)
     code=models.CharField(max_length=50,null=True,blank=True)
     title=models.CharField(max_length=50,null=True,blank=True)
-    point=models.IntegerField(null=True,blank=True)
+    point=models.CharField(max_length=50,null=True,blank=True)
     college=models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):

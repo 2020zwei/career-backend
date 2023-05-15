@@ -4,7 +4,7 @@ from nested_admin import NestedTabularInline, NestedModelAdmin
 # Register your models here.
 
 class TestTypeAdminSite(admin.ModelAdmin):
-    list_display=['type']
+    list_display=['type','description']
 
 class AnswerInline(NestedTabularInline):
     model = Answer

@@ -55,7 +55,7 @@ class PsychometricResultDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResultDetail
-        fields = ['result', 'question', 'answer']
+        fields = ['id','result', 'question', 'answer']
 
 
 class PsychometricStatusSerializer(serializers.ModelSerializer):
@@ -89,3 +89,14 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
         questions = obj.question.all()
         total_score = sum([max(question.answer.all(), key=lambda x: x.weightage).weightage for question in questions])
         return total_score
+
+
+class TestResultDetailSerializer(serializers.ModelSerializer):
+    test_name = serializers.CharField(source='result.test.name')
+    question_type = serializers.CharField(source='question.type.type')
+    score = serializers.IntegerField(source='answer.weightage')
+    description = serializers.CharField(source='question.type.description')
+
+    class Meta:
+        model = TestResultDetail
+        fields = ['test_name', 'question_type', 'score', 'description']
