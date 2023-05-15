@@ -84,15 +84,28 @@ class CalculatePoints(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     
-    def get(self, request,id):
+    def get(self, request):
         """Fetch score by test type"""
         try:
-            type=TestType.objects.get(id=id)
             user_obj=request.user
             std_obj= Student.objects.get(user=user_obj.id)
-            ques_obj= Question.objects.filter(type=type)
-            res=TestResultDetail.objects.filter(result__user=std_obj).filter(question__type__type=type.type).aggregate(total=Sum("answer__weightage"))
-
+            test_results = TestResult.objects.filter(user=std_obj).select_related('test')
+            test_result_details = TestResultDetail.objects.filter(result__in=test_results).select_related('question__type')
+            question_type_scores = test_result_details.values('question__type__type').annotate(total_score=Sum('answer__weightage'))
+            res=[]
+            for test_result in test_results:
+                test_data = {
+                    "test-name": test_result.test.name,
+                    "scores": []
+                }
+                for score in question_type_scores:
+                    score_data = {
+                        "name": score['question__type__type'],
+                        "score": score['total_score']
+                    }
+                    test_data["scores"].append(score_data)
+                res.append(test_data)
+                            
 
 
             return Response(res)
