@@ -28,5 +28,7 @@ class GoalSerializer2(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         actions = representation.pop('action')
         action_data = {f'action{index + 1}': action['action'] for index, action in enumerate(actions)}
+        if not action_data:
+            action_data = {}
         representation['actions'] = action_data
         return representation
