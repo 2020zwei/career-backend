@@ -89,22 +89,21 @@ class CalculatePoints(CreateAPIView):
         try:
             user_obj=request.user
             std_obj= Student.objects.get(user=user_obj.id)
-            test_results = TestResult.objects.filter(user=std_obj).select_related('test')
-            test_result_details = TestResultDetail.objects.filter(result__in=test_results).select_related('question__type')
+            test_results = TestResult.objects.filter(user=std_obj).last()
+            test_result_details = TestResultDetail.objects.filter(result=test_results).select_related('question__type')
             question_type_scores = test_result_details.values('question__type__type').annotate(total_score=Sum('answer__weightage'))
             res=[]
-            for test_result in test_results:
-                test_data = {
-                    "test_name": test_result.test.name,
-                    "scores": []
+            test_data = {
+                "test_name": test_results.test.name,
+                "scores": []
+            }
+            for score in question_type_scores:
+                score_data = {
+                    "name": score['question__type__type'],
+                    "score": score['total_score']
                 }
-                for score in question_type_scores:
-                    score_data = {
-                        "name": score['question__type__type'],
-                        "score": score['total_score']
-                    }
-                    test_data["scores"].append(score_data)
-                res.append(test_data)
+                test_data["scores"].append(score_data)
+            res.append(test_data)
                             
 
 
