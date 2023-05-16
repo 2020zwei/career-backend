@@ -5,7 +5,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.views import APIView
 from django.http import HttpResponse
 from .serializers import GoalSerializer, GoalSerializer2
-from .models import Goal
+from .models import Goal, Action
 from users.models import Student
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -81,10 +81,18 @@ class GoalViewRelated2(CreateAPIView):
           goal=request.data.get('goal')
           realistic=request.data.get('realistic')
           countdown_str = request.data.get('date')
+          actions = request.data.get('actions', [])
+          action_list = []
+
+          # Extract the actions from the dictionary
+          for key, value in actions.items():
+              action_list.append(value)
           countdown = datetime.strptime(countdown_str, '%Y-%m-%dT%H:%M:%S.%fZ')
           print(countdown)
           goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
           goal_obj.save()
+          for action_text in action_list:
+            Action.objects.create(goal=goal_obj, action=action_text)
 
           return Response(data={'success': True, 'Goals': goal_obj.goal}, status=status.HTTP_200_OK)
         except Exception as e:

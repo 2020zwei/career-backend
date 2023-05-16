@@ -13,8 +13,13 @@ class  GoalSerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user.student
         return super(GoalSerializer, self).create(validated_data=validated_data)
 
+class ActionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Action
+        fields = ['action']
 
 class GoalSerializer2(serializers.ModelSerializer):
+    action=ActionSerializer(many=True)
     class Meta:
         model = Goal
-        fields = ['id', 'proffession', 'goal', 'realistic', 'countdown']
+        fields = ['id', 'proffession', 'goal', 'realistic', 'countdown', 'action']

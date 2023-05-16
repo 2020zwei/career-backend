@@ -16,8 +16,8 @@ class Goal(models.Model):
 
 # Create your models here.
 class Action(models.Model):
-    goal=models.ForeignKey(Goal, on_delete=models.CASCADE)
-    action=models.CharField(max_length=50)
+    goal=models.ForeignKey(Goal, on_delete=models.CASCADE,related_name="action", blank=True, null=True)
+    action=models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         return self.action
