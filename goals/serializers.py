@@ -30,5 +30,5 @@ class GoalSerializer2(serializers.ModelSerializer):
         action_data = {f'action{index + 1}': action['action'] for index, action in enumerate(actions)}
         if not action_data:
             action_data = {}
-        representation['actions'] = action_data
+        representation['action'] = action_data
         return representation
