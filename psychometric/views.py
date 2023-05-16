@@ -187,16 +187,6 @@ class TestResultDetailAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TestResultDetailSerializer
 
-    def retrieve(self, request,id):
-        result_id = id  # Get the test result ID from the URL parameter
-
-        try:
-            result_detail = TestResultDetail.objects.filter(result_id=result_id)
-
-            serializer = self.get_serializer(result_detail, many=True)
-            return Response(serializer.data)
-        except TestResultDetail.DoesNotExist:
-            return Response({'message': 'Test result not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, format=None):
         try:
@@ -212,3 +202,18 @@ class TestResultDetailAPIView(RetrieveAPIView):
                 return Response({'message': 'No result found'})
         except Exception as e:
                 return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
+        
+class ResultDetailAPIView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TestResultDetailSerializer
+
+    def retrieve(self, request,id):
+        result_id = id  # Get the test result ID from the URL parameter
+
+        try:
+            result_detail = TestResultDetail.objects.filter(result_id=result_id)
+
+            serializer = self.get_serializer(result_detail, many=True)
+            return Response(serializer.data)
+        except TestResultDetail.DoesNotExist:
+            return Response({'message': 'Test result not found'}, status=status.HTTP_404_NOT_FOUND)
