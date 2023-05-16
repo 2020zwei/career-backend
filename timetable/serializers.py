@@ -22,7 +22,7 @@ class TimeSlotRelatedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Slot
-        fields=['title','timeslot','day','endslot']
+        fields=['id','title','timeslot','day','endslot']
     def update(self, instance, validated_data):
         if Slot.objects.filter(timeslot=validated_data['timeslot'],user=self.context['user']):
             raise ValidationError(" You have already regesterd this slot")
