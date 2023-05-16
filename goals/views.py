@@ -87,7 +87,7 @@ class GoalViewRelated2(CreateAPIView):
           # Extract the actions from the dictionary
           for key, value in actions.items():
               action_list.append(value)
-          countdown = datetime.strptime(countdown_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+          countdown = datetime.strptime(countdown_str, '%d-%m-%Y')
           print(countdown)
           goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
           goal_obj.save()
