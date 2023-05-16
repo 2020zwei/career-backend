@@ -23,3 +23,10 @@ class GoalSerializer2(serializers.ModelSerializer):
     class Meta:
         model = Goal
         fields = ['id', 'proffession', 'goal', 'realistic', 'countdown', 'action']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        actions = representation.pop('action')
+        action_data = {f'action{index + 1}': action['action'] for index, action in enumerate(actions)}
+        representation['actions'] = action_data
+        return representation
