@@ -9,5 +9,5 @@ urlpatterns = [
     path('take-test/', TakeTestView.as_view(), name='take-test'),
     path('testType/', TestTypeView.as_view(), name='test-type'),
     path('result/<int:id>/', TestResultDetailAPIView.as_view(),name="Test Result"),
-    
+    path('result', TestResultDetailAPIView.as_view(),name="View Test Result"),
 ]

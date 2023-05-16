@@ -197,3 +197,18 @@ class TestResultDetailAPIView(RetrieveAPIView):
             return Response(serializer.data)
         except TestResultDetail.DoesNotExist:
             return Response({'message': 'Test result not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, format=None):
+        try:
+            user = request.user.student
+            test_name=test_name = request.query_params.get('name')
+            test = PsychometricTest.objects.get(name=test_name)
+            testresult=TestResult.objects.filter(test=test).filter(user=user).last()
+            result = TestResultDetail.objects.filter(result_id=testresult)
+            if result:
+                serializer = TestResultDetailSerializer(result, many=True)
+                return Response(serializer.data)
+            else:
+                return Response({'message': 'No result found'})
+        except Exception as e:
+                return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
