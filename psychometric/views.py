@@ -83,35 +83,6 @@ class PsychometricDetails(CreateAPIView):
 class CalculatePoints(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
-    
-    # def get(self, request):
-    #     """Fetch score by test type"""
-    #     try:
-    #         user_obj=request.user
-    #         std_obj= Student.objects.get(user=user_obj.id)
-    #         test_results = TestResult.objects.filter(user=std_obj).select_related('test')
-    #         test_result_details = TestResultDetail.objects.filter(result__in=test_results).select_related('question__type')
-    #         question_type_scores = test_result_details.values('question__type__type').annotate(total_score=Sum('answer__weightage'))
-    #         res=[]
-    #         for test_result in test_results:
-    #             test_data = {
-    #                 "test_name": test_result.test.name,
-    #                 "scores": []
-    #             }
-    #             for score in question_type_scores:
-    #                 score_data = {
-    #                     "name": score['question__type__type'],
-    #                     "score": score['total_score']
-    #                 }
-    #                 test_data["scores"].append(score_data)
-    #             res.append(test_data)
-                            
-
-
-    #         return Response(res)
-    
-    #     except Exception as e:
-    #        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     def get(self, request):
         """Fetch score by test type"""
         try:
@@ -220,21 +191,41 @@ class TestResultDetailAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TestResultDetailSerializer
 
-
     def get(self, request, format=None):
         try:
             user = request.user.student
-            test_name=test_name = request.query_params.get('name')
+            test_name = request.query_params.get('name')
             test = PsychometricTest.objects.get(name=test_name)
-            testresult=TestResult.objects.filter(test=test).filter(user=user).first()
-            result = TestResultDetail.objects.filter(result_id=testresult)
-            if result:
-                serializer = TestResultDetailSerializer(result, many=True)
-                return Response(serializer.data)
+            test_result = TestResult.objects.filter(test=test, user=user).first()
+            
+            if test_result:
+                result_details = TestResultDetail.objects.filter(result=test_result)
+                question_type_scores = result_details.values('question__type__type').annotate(total_score=Sum('answer__weightage'))
+                
+                serialized_data = []
+                for score in question_type_scores:
+                    question_type = score['question__type__type']
+                    total_score = score['total_score']
+                    
+                    # Get the description and test name from the related models
+                    description = result_details.filter(question__type__type=question_type).first().question.type.description
+                    test_name = test_result.test.name
+                    
+                    data = {
+                        'test_name': test_name,
+                        'question_type': question_type,
+                        'score': total_score,
+                        'description': description
+                    }
+                    serialized_data.append(data)
+
+                return Response(serialized_data)
             else:
                 return Response({'message': 'No result found'})
+        
         except Exception as e:
-                return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
+
         
 class ResultDetailAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
