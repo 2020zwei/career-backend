@@ -23,17 +23,24 @@ class TimeSlotRelatedSerializer(serializers.ModelSerializer):
     class Meta:
         model=Slot
         fields=['id','title','timeslot','day','endslot']
-    def update(self, instance, validated_data):
-        if Slot.objects.filter(timeslot=validated_data['timeslot'],user=self.context['user']):
-            raise ValidationError(" You have already regesterd this slot")
-        else:
-         instance.timeslot=validated_data['timeslot']
-         instance.endslot=validated_data['endslot']
-         instance.title=validated_data['title']
-         instance.day=validated_data['day']
-         instance.save()
-         return instance
     
+    def update(self, instance, validated_data):
+        timeslot = validated_data.get('timeslot')
+        endslot = validated_data.get('endslot')
 
+        if timeslot and endslot:
+            if Slot.objects.filter(timeslot=timeslot, user=self.context['user']).exclude(pk=instance.pk).exists():
+                raise ValidationError("You have already registered this slot")
+
+        instance.timeslot = timeslot
+        instance.endslot = endslot
+        instance.title = validated_data.get('title', instance.title)
+        instance.day = validated_data.get('day', instance.day)
+        instance.save()
+        response_data = {
+        'success': True,
+        'instance': instance,
+        }
+        return instance
 
     
