@@ -105,7 +105,7 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', read_only=True)
     class Meta:
         model=Student
-        fields=['full_name', 'school', 'dob', 'profile_image', 'email','address','city','country']
+        fields=['full_name', 'school', 'dob', 'profile_image', 'email','address','city','country','cv_completed']
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:

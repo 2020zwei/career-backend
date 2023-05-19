@@ -35,6 +35,7 @@ class Student(models.Model):
     address2 = models.TextField(blank=True,null=True)
     eircode=models.CharField(max_length=7,null=True,blank=True)
     otp = models.CharField(max_length=5,null=True, blank=True)
+    cv_completed=models.BooleanField(default=False)
     otp_verified = models.BooleanField(default=False)
     
     def __str__(self):

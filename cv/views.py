@@ -209,6 +209,9 @@ class ReferenceViewRelated(CreateAPIView):
 
             if refer_serializer_obj.is_valid(raise_exception=True):
                     refer_serializer_obj.save()
+                    student = request.user.student
+                    student.cv_completed = True
+                    student.save()
                     return Response(refer_serializer_obj.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(refer_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
