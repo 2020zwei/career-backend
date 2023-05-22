@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Subject,Level,SubjectGrade
+from .models import Subject,Level,SubjectGrade, UserPoints
 from rest_framework.exceptions import  ValidationError
 
 
@@ -46,6 +46,10 @@ class SubjectGradeSerializer(serializers.ModelSerializer):
                 bonus_points = subject.additional_marks
         return bonus_points
 
+class UserPointsSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model=UserPoints
+        fields=['id','subjects','levels','grades','total_points']
 
     
