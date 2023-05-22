@@ -48,5 +48,5 @@ class UserPoints(models.Model):
     total_points = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"UserPoints for {self.user.username}"
+        return self.choice.user.full_name
 
