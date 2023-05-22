@@ -58,7 +58,6 @@ class CalculatePointViewRelated(APIView):
         try:
             user = request.user.student
             UserPoints.objects.filter(user=user).delete()  # Delete previous records
-            breakpoint()
             points = 0
             bonus_points = 0
             for obj in request.data:
