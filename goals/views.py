@@ -99,6 +99,28 @@ class GoalViewRelated2(CreateAPIView):
           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GoalPDF(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Get goals of user"""
+        try:
+          student =self.request.user
+          print(student)
+          goal_obj =Goal.objects.filter(user=student.student)
+          print(goal_obj)
+          temp_name = "general/templates/" 
+          goal_template = str(student.student.full_name)+"-"+"goal" + ".html"
+          open(temp_name + goal_template, "w").write(render_to_string('goal.html', {'student_detail': student,'goal_detail':goal_obj}))
+          HTML(temp_name + goal_template).write_pdf(str(student.student.first_name)+'.pdf')
+          file_location = f'{student.student.first_name}.pdf'
+          with open(file_location, 'rb') as f:
+            file_data = f.read()
+          response = HttpResponse(file_data, content_type='application/pdf')
+          response['Content-Disposition'] = 'attachment; filename="'+ student.student.first_name +'".pdf'
+          return response
+        except Exception as e:
+          return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class GoalDetail(APIView):
     """
