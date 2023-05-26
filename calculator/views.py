@@ -7,6 +7,7 @@ from .models import Subject,Level,SubjectGrade, UserPoints
 from rest_framework.exceptions import  ValidationError
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework import viewsets
 from common.response_template import get_response_template
 
 
@@ -62,8 +63,6 @@ class CalculatePointViewRelated(APIView):
             bonus_points = 0
             for obj in request.data:
                 grade_id= obj.get('grade')
-                subject_id = obj.get('subject')
-                level_id = obj.get('level')
                 subject_grade_obj = SubjectGrade.objects.filter(pk=grade_id).first()
                 if subject_grade_obj is None:
                     raise ValidationError(f"No subject grade object found with following ids grade={grade_id}")
@@ -77,9 +76,7 @@ class CalculatePointViewRelated(APIView):
 
                 # Add subject, grade, and level to user's UserPoints
                 user_points, _ = UserPoints.objects.get_or_create(user=user)
-                user_points.subjects.add(subject)
                 user_points.grades.add(subject_grade_obj)
-                user_points.levels.add(subject_grade_obj.level)
 
 
             # Update total points in UserPoints
@@ -96,20 +93,16 @@ class CalculatePointViewRelated(APIView):
 
 class UserPointsView(APIView):
     permission_classes = [IsAuthenticated]
+    queryset = UserPoints.objects.all()
+    serializer_class = UserPointsSerializer
 
     def get(self, request):
         try:
             user = request.user.student
-            user_points = UserPoints.objects.get(user=user)
-
-            # Serialize user_points data
-            serializer = UserPointsSerializer(user_points)
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except UserPoints.DoesNotExist:
-            return Response({'message': 'User points not found'}, status=status.HTTP_404_NOT_FOUND)
-
+            if user:
+                user_points = UserPoints.objects.filter(user=user)
+                serializer = UserPointsSerializer(user_points, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-

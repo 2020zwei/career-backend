@@ -46,10 +46,23 @@ class SubjectGradeSerializer(serializers.ModelSerializer):
                 bonus_points = subject.additional_marks
         return bonus_points
 
-class UserPointsSerializer(serializers.ModelSerializer):
+class SubjectGradesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubjectGrade
+        fields = ['grade', 'level','subject']
+
+class SubjectSerializer(serializers.ModelSerializer):
+    level = SubjectGradesSerializer(many=True, read_only=True)
 
     class Meta:
-        model=UserPoints
-        fields=['id','subjects','levels','grades','total_points']
+        model = Subject
+        fields = ['name', 'level']
+
+class UserPointsSerializer(serializers.ModelSerializer):
+    grades = SubjectGradesSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = UserPoints
+        fields = ['id', 'grades','total_points']
 
     

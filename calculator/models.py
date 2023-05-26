@@ -42,9 +42,7 @@ class SubjectGrade(models.Model):
 
 class UserPoints(models.Model):
     user = models.ForeignKey(Student, on_delete=models.CASCADE)
-    subjects = models.ManyToManyField(Subject, related_name='user_points')
     grades = models.ManyToManyField(SubjectGrade, related_name='user_points')
-    levels = models.ManyToManyField(Level, related_name='user_points')
     total_points = models.IntegerField(default=0)
 
     def __str__(self):
