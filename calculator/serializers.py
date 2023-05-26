@@ -51,7 +51,7 @@ class SubjectGradesSerializer(serializers.ModelSerializer):
         model = SubjectGrade
         fields = ['grade', 'level','subject']
 
-class SubjectSerializer(serializers.ModelSerializer):
+class SubjectsSerializer(serializers.ModelSerializer):
     level = SubjectGradesSerializer(many=True, read_only=True)
 
     class Meta:
