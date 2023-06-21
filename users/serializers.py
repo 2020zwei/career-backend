@@ -12,6 +12,9 @@ from drf_extra_fields.fields import Base64ImageField
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from django.contrib.auth.hashers import make_password
+import base64
+from django.core.files.base import ContentFile
+from django.conf import settings as setting
 
 
 User = get_user_model()
@@ -101,11 +104,20 @@ class SignupUserSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile_image = Base64ImageField()
+    profile_image = Base64ImageField(required= False)
     email = serializers.EmailField(source='user.email', read_only=True)
     class Meta:
         model=Student
         fields=['full_name', 'school', 'dob', 'profile_image', 'email','address','city','country','cv_completed']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        profile_image = representation.get('profile_image')
+        if profile_image is None:
+            representation['profile_image'] = 'https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg?AWSAccessKeyId=AKIA6OTH6666Q3UAKHF2&Signature=oIEmDWSVsNxSm5rpTRDJYvlw%2BLg%3D&Expires=1687348379'
+        return representation
+    
+
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -114,12 +126,17 @@ class SchoolSerializer(serializers.ModelSerializer):
 
 
 class StudentSignUpSerializer(serializers.ModelSerializer):
-    
-    profile_image = Base64ImageField()
+    profile_image = Base64ImageField(required= False, allow_null= True)
     class Meta:
         model=Student
         fields=('first_name','last_name','profile_image','school','user','full_name',"dob")
-
+    
+    def to_internal_value(self, data):
+        if 'profile_image' not in data:
+            # Set the default value for 'profile_image' field
+            data['profile_image'] = setting.DEFAULT_PROFILE_IMAGE_PATH
+        return super().to_internal_value(data)
+    
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
