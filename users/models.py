@@ -25,8 +25,9 @@ class Student(models.Model):
     first_name = models.CharField(max_length=100,blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     full_name = models.CharField(max_length=100)
-    school =  models.ForeignKey(School,on_delete=models.CASCADE,blank=True)
-    profile_image = models.ImageField(upload_to='profile_images',null=True,blank=True,validators=[validate_file_size])  
+    school =  models.CharField(max_length=50, blank=True,null=True)
+    profile_image = models.ImageField(upload_to='profile_images',null=True,blank=True,validators=[validate_file_size],max_length=255)
+
     dob = models.DateField(null=True,blank=True)
     user=models.OneToOneField(User,on_delete=models.CASCADE,related_name='student')
     city = models.CharField(max_length=50, blank=True,null=True)

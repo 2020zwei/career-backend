@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from common.response_template import get_response_template
-
+from django.conf import settings
 
 class SignupUser(APIView):
     permission_classes = []
@@ -20,8 +20,27 @@ class SignupUser(APIView):
             user_serializer_obj  = UserSignUpSerializer(data=request.data)
             user_serializer_obj.is_valid(raise_exception=True)
             user_obj = user_serializer_obj.save()
-            request.data["user"] = user_obj.pk
-            student_serializer_obj = StudentSignUpSerializer(data=request.data)
+            school_name = request.data.get('school')
+            # profile_image = request.data.get('profile_image') or settings.DEFAULT_PROFILE_IMAGE_PATH
+            try:
+                school_obj = School.objects.get(school=school_name)
+            except School.DoesNotExist:
+                # Create a new School object if it doesn't exist
+                school_data = {
+                    'school': school_name,
+                }
+            
+            # Create the Student object
+            student_data = {
+                'first_name': request.data.get('first_name'),
+                'last_name': request.data.get('last_name'),
+                'full_name': request.data.get('full_name'),
+                'school': request.data.get('school'),
+                'user': user_obj.pk,
+                'profile_image': request.data.get('profile_image'),
+                'dob': request.data.get('dob')
+            }
+            student_serializer_obj = StudentSignUpSerializer(data=student_data)
             student_serializer_obj.is_valid(raise_exception=True)
             student_serializer_obj.save()
             response_template = get_response_template()
@@ -48,7 +67,6 @@ class UserView(RetrieveAPIView):
                 return Response({'data':serializer.data, 'success':True})
         except Exception as e:
             raise ValidationError(e)
-        
 class UserUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
