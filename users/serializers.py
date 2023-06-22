@@ -14,6 +14,8 @@ from django.contrib.auth.hashers import make_password
 import base64
 from django.core.files.base import ContentFile
 from django.conf import settings as setting
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 User = get_user_model()
@@ -33,6 +35,10 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
 
         self.email_field = get_user_email_field_name(User)
         self.fields[self.email_field] = serializers.EmailField()
+    
+    @classmethod
+    def get_token(cls, user):
+        return RefreshToken.for_user(user)
 
     def validate(self, attrs):
         password = attrs.get("password")
@@ -45,7 +51,12 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
             if self.user and not self.user.check_password(password):
                 self.fail("invalid_password")
         if self.user and self.user.is_active:
-            return attrs
+            data = super().validate(attrs)
+            refresh = self.get_token(self.user)
+
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            return data
         self.fail("inactive_account")
 
 

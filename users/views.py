@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView,UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import User,Student, School
-from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer, StudentSignUpSerializer, UserSignUpSerializer
+from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer, StudentSignUpSerializer, UserSignUpSerializer, CustomTokenCreateSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
@@ -11,6 +11,22 @@ from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from common.response_template import get_response_template
 from django.conf import settings
+from rest_framework_simplejwt.views import TokenViewBase
+
+class CustomTokenObtainPairView(TokenViewBase):
+    """
+    Takes a set of user credentials and returns an access and refresh JSON web
+    token pair to prove the authentication of those credentials.
+    """
+    serializer_class = CustomTokenCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
 
 class SignupUser(APIView):
     permission_classes = []
