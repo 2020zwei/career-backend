@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Student, School
-from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, TokenCreateSerializer
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from djoser.compat import get_user_email_field_name
@@ -24,8 +23,8 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
     password = serializers.CharField(required=False, style={"input_type": "password"})
 
     default_error_messages = {
-        "invalid_credentials": settings.CONSTANTS.messages.INVALID_CREDENTIALS_ERROR,
-        "inactive_account": settings.CONSTANTS.messages.INACTIVE_ACCOUNT_ERROR,
+        "invalid_password": "Invalid password",
+        "inactive_account": "Invalid email",
     }
 
     def __init__(self, *args, **kwargs):
@@ -44,10 +43,10 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
         if not self.user:
             self.user = User.objects.filter(email=email).first()
             if self.user and not self.user.check_password(password):
-                self.fail("invalid_credentials")
+                self.fail("invalid_password")
         if self.user and self.user.is_active:
             return attrs
-        self.fail("invalid_credentials")
+        self.fail("inactive_account")
 
 
 class SignupUserSerializer(serializers.Serializer):
@@ -114,7 +113,8 @@ class UserSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         profile_image = representation.get('profile_image')
         if profile_image is None:
-            representation['profile_image'] = 'https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg?AWSAccessKeyId=AKIA6OTH6666Q3UAKHF2&Signature=oIEmDWSVsNxSm5rpTRDJYvlw%2BLg%3D&Expires=1687348379'
+            # representation['profile_image'] = 'https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg?AWSAccessKeyId=AKIA6OTH6666Q3UAKHF2&Signature=oIEmDWSVsNxSm5rpTRDJYvlw%2BLg%3D&Expires=1687348379'
+            representation['profile_image']='https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg'
         return representation
     
 
