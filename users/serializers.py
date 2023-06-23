@@ -49,7 +49,8 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
         if not self.user:
             self.user = User.objects.filter(email=email).first()
             if self.user and not self.user.check_password(password):
-                self.fail("invalid_password")
+                raise serializers.ValidationError(
+                {'error': 'Invalid password'})
         if self.user and self.user.is_active:
             data = super().validate(attrs)
             refresh = self.get_token(self.user)
@@ -57,7 +58,8 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
             return data
-        self.fail("inactive_account")
+        raise serializers.ValidationError(
+                {'error': 'Invalid email'})
 
 
 class SignupUserSerializer(serializers.Serializer):
