@@ -24,7 +24,7 @@ from users.serializers import CustomTokenCreateSerializer
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
-    path('auth/jwt/create', CustomTokenObtainPairView.as_view(), name='token_create'),
+    path('auth/jwt/create/', CustomTokenObtainPairView.as_view(), name='token_create'),
     path('user/',include("users.urls")),
     path('timetable/',include("timetable.urls")),
     path('calculator/',include("calculator.urls")),
