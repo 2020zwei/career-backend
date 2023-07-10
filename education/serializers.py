@@ -27,7 +27,7 @@ class QuizSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Quiz
-        fields=['quiz_id', 'name', 'questions']
+        fields=['quiz_id', 'name', 'youtube_link', 'questions']
 
 
 class QuizResultDetailSerializer(serializers.ModelSerializer):
@@ -72,7 +72,7 @@ class QuizStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Quiz
-        fields = ['id', 'name', 'description', 'complete', 'score', 'total_score']
+        fields = ['id', 'name', 'youtube_link', 'description', 'complete', 'score', 'total_score']
 
     def get_complete(self, obj):
         request = self.context.get('request')
