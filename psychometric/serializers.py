@@ -97,14 +97,18 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
             # Get all test results for the user
             results = TestResult.objects.filter(user__user__email=request.user.email, test=obj)
             test_results = []
+            test_results = []
             for result in results:
-                question_scores = [
-                    {
-                        'question_type': question.type.type,
-                        'score': max(question.answer.all(), key=lambda x: x.weightage).weightage
+                question_type_scores = TestResultDetail.objects.filter(result=result).values('question__question', 'answer__weightage')
+
+                question_scores = []
+                for score in question_type_scores:
+                    score_data = {
+                        'question': score['question__type'],
+                        'score': score['answer__weightage']
                     }
-                    for question in result.test.question.all()
-                ]
+                    question_scores.append(score_data)
+
                 test_result = {
                     'test_name': obj.name,
                     'score': result.score,
