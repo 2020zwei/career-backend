@@ -38,7 +38,7 @@ class  EducationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Education
-        fields=['id','year','school','examtaken']
+        fields=['id','year','school','examtaken', 'enddate', 'present']
         list_serializer_class = EducationListSerializer
         extra_kwargs = {
             'id':{
@@ -118,7 +118,7 @@ class  ExperienceSerializer(serializers.ModelSerializer):
     enddate = ExperienceDateField(required=False, allow_null=True)
     class Meta:
         model=Experience
-        fields=['id','startdate','enddate','jobtitle','company','city','country','description','is_current_work']
+        fields=['id','startdate','enddate','job_title','company','city','country','description','is_current_work']
         list_serializer_class = ExperienceListSerializer
         extra_kwargs = {'enddate': {'allow_null': True, 'required': False},
                         'id':{'read_only': False,'allow_null': True,}}
@@ -180,7 +180,12 @@ class CvSerializer(serializers.ModelSerializer):
         model=CV
         fields=['id','objective','full_name','address','address2','eircode','city','town','email']
         list_serializer_class = CVListSerializer
-        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
+        extra_kwargs = {
+            'id': {'read_only': False, 'allow_null': True},
+            'objective': {'required': False},
+            'address2': {'required': False},
+            'eircode': {'required': False}
+        }
     
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student

@@ -27,6 +27,8 @@ class Education(models.Model):
     year=models.DateField(null=True, blank=True)
     school = models.CharField(max_length=50,null=True, blank=True)
     examtaken=models.CharField(max_length=50,null=True, blank=True)
+    enddate=models.DateField(null=True, blank=True)
+    present=models.BooleanField(default=False)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class JuniorCertTest(models.Model):
@@ -45,6 +47,7 @@ class Experience(models.Model):
     startdate = models.DateField(null=True, blank=True)
     enddate=models.DateField(null=True, blank=True)
     jobtitle=models.CharField(choices=JOB_TITLE.choices,max_length=1)
+    job_title=models.CharField(max_length=50, null=True)
     company=models.CharField(max_length=50, null=True)
     city=models.CharField(max_length=50, null=True)
     country=models.CharField(max_length=50, null=True)

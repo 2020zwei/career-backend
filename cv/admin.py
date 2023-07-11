@@ -10,7 +10,7 @@ class JuniorCertTestAdminSite(admin.ModelAdmin):
 class LeavingCertTestAdminSite(admin.ModelAdmin):
     list_display=['user','subject','level','result']
 class ExperienceTestAdminSite(admin.ModelAdmin):
-    list_display=['user','startdate','enddate','jobtitle','company','city','country','description']
+    list_display=['user','startdate','enddate','job_title','company','city','country','description']
 
 class ReferenceAdminSite(admin.ModelAdmin):
     list_display=['user_title','name','job_title','contact_number','organization_address','area_code','email']
