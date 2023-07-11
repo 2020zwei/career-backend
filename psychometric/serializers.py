@@ -99,7 +99,7 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
             test_results = []
             test_results = []
             for result in results:
-                question_type_scores = TestResultDetail.objects.filter(result=result).values('question__question', 'answer__weightage')
+                question_type_scores = TestResultDetail.objects.filter(result=result).values('question__type__type', 'answer__weightage')
 
                 question_scores = []
                 for score in question_type_scores:
