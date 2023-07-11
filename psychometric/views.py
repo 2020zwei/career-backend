@@ -93,6 +93,7 @@ class CalculatePoints(CreateAPIView):
 
             for test_result in test_results:
                 test_data = {
+                    "id": test_result.id,
                     "test_name": test_result.test.name,
                     "scores": []
                 }

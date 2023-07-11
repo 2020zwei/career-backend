@@ -15,6 +15,7 @@ urlpatterns = [
     path('get-education/',EducationViewRelated.as_view(),name="Get_Education"),
     path('add-education/',EducationViewRelated.as_view(),name="Add_Education"),
     path('update-education/<int:pk>/',EducationViewUpdate.as_view(),name="Update_Education"),
+    path('delete-education/<int:pk>/',EducationViewRelated.as_view(), name="Delete_Education"),
     path('add-junior-cert/',JuniorCertTestViewRelated.as_view(),name="Add_Junior_Cert"),
     path('get-junior-cert/',JuniorCertTestViewRelated.as_view(),name="Get_Junior_Cert"),
     path('update-junior/<int:pk>/',JuniorViewUpdate.as_view(),name="Update_Junior"),

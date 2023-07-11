@@ -33,8 +33,25 @@ class EducationListSerializer(serializers.ListSerializer):
                 ret.append(Education.objects.create(**data))
         return ret
 
+class EducationDateField(serializers.Field):
+    """
+    Serializer field that converts a slash-separated date string to a date object.
+    """
+    def to_internal_value(self, value):
+        try:
+            date_obj = datetime.strptime(value, '%d-%m-%Y').date()
+            return date_obj
+        except (ValueError, TypeError):
+            raise serializers.ValidationError('Invalid date format')
+    
+    def to_representation(self, value):
+        if value is None:
+            return None
+        return value.strftime('%d-%m-%Y')
+
 class  EducationSerializer(serializers.ModelSerializer):
     year = SlashDateField(required=False, allow_null=True)
+    enddate = EducationDateField(required=False, allow_null=True)
 
     class Meta:
         model=Education
