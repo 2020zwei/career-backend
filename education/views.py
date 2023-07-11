@@ -109,6 +109,7 @@ class TakeQuizView(CreateAPIView):
                 quiz_result = QuizResult.objects.create(
                     user=request.user.student, quiz_id=quiz_id, score=0
                 )
+                total_score = quiz.question.count()
 
                 # Calculate the score for the quiz
                 score = 0
@@ -139,7 +140,7 @@ class TakeQuizView(CreateAPIView):
                 quiz_result.score = score
                 quiz_result.save()
 
-                return Response({'message': 'Quiz taken successfully', 'status': True, 'score':score, 'quiz':quiz.name}, status=status.HTTP_200_OK)
+                return Response({'message': 'Quiz taken successfully', 'status': True, 'obtained_score':score, 'quiz':quiz.name, 'total_score':total_score}, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
