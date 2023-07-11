@@ -97,7 +97,6 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
             # Get all test results for the user
             results = TestResult.objects.filter(user__user__email=request.user.email, test=obj)
             test_results = []
-            test_results = []
             for result in results:
                 question_type_scores = TestResultDetail.objects.filter(result=result).values('question__type__type').annotate(total_score=Sum('answer__weightage'))
 
@@ -105,7 +104,7 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
                 for score in question_type_scores:
                     score_data = {
                         'question': score['question__type__type'],
-                        'score': score['answer__weightage']
+                        'score': score['total_score']
                     }
                     question_scores.append(score_data)
 
