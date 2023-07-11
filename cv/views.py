@@ -262,6 +262,7 @@ class SkillsViewRelated(CreateAPIView):
             if skill_serializer_obj.is_valid(raise_exception=True):
                     if quality_serializer_obj.is_valid(raise_exception=True):
                         skill_serializer_obj.save()
+                        quality_serializer_obj.save()
                     data={
                         "skill_data": skill_serializer_obj.data,
                         "quality_data":quality_serializer_obj.data
