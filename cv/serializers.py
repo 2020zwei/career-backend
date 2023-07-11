@@ -38,7 +38,7 @@ class  EducationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Education
-        fields=['id','year','school','examtaken']
+        fields=['id','year','school','examtaken', 'enddate', 'present']
         list_serializer_class = EducationListSerializer
         extra_kwargs = {
             'id':{
@@ -180,7 +180,12 @@ class CvSerializer(serializers.ModelSerializer):
         model=CV
         fields=['id','objective','full_name','address','address2','eircode','city','town','email']
         list_serializer_class = CVListSerializer
-        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
+        extra_kwargs = {
+            'id': {'read_only': False, 'allow_null': True},
+            'objective': {'required': False},
+            'address2': {'required': False},
+            'eircode': {'required': False}
+        }
     
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student

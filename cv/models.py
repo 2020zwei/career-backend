@@ -27,6 +27,8 @@ class Education(models.Model):
     year=models.DateField(null=True, blank=True)
     school = models.CharField(max_length=50,null=True, blank=True)
     examtaken=models.CharField(max_length=50,null=True, blank=True)
+    enddate=models.DateField(null=True, blank=True)
+    present=models.BooleanField(default=False)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class JuniorCertTest(models.Model):
