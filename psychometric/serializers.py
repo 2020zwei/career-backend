@@ -100,7 +100,7 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
             for result in results:
                 question_scores = [
                     {
-                        'question_type': question.type,
+                        'question_type': question.type.type,
                         'score': max(question.answer.all(), key=lambda x: x.weightage).weightage
                     }
                     for question in result.test.question.all()
