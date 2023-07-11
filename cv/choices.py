@@ -122,3 +122,13 @@ class SKILLS(models.TextChoices):
     InformationSkills= "7", _('Information Skills')
     CreativeSkills= "8", _('Creative Skills')
     CriticalProblemSolving= "9", _('Critical Problem Solving')
+
+class QUALITY(models.TextChoices):
+    Intuitive= "1", _('Intuitive')
+    Persistent= "2", _('Persistent')
+    Enthusiastic= "3", _('Enthusiastic')
+    Persuasive= "4", _('Persuasive')
+    Empathic= "5", _('Empathic')
+    Patient = "6", _('Patient')
+    A_Good_Listener= "7", _('A_Good_Listener')
+    Expressive= "8", _('Expressive')

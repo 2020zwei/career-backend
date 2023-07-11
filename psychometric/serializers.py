@@ -62,10 +62,11 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
     complete = serializers.SerializerMethodField()
     score = serializers.SerializerMethodField()
     total_score = serializers.SerializerMethodField()
+    test_results = serializers.SerializerMethodField()
 
     class Meta:
         model = PsychometricTest
-        fields = ['id', 'name', 'complete', 'score', 'total_score']
+        fields = ['id', 'name', 'complete', 'score', 'total_score','test_results']
 
     def get_complete(self, obj):
         request = self.context.get('request')
@@ -89,6 +90,18 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
         questions = obj.question.all()
         total_score = sum([max(question.answer.all(), key=lambda x: x.weightage).weightage for question in questions])
         return total_score
+    
+    def get_test_results(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            # Get all test results for the user
+            results = TestResult.objects.filter(user__user__email=request.user.email, test=obj)
+            test_results = [
+                {'test_name': obj.name, 'score': result.score}
+                for result in results
+            ]
+            return test_results
+        return []
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):

@@ -234,18 +234,30 @@ class SkillsViewRelated(CreateAPIView):
         try:
             student =self.request.user
             edu=Skills.objects.filter(user=student.student)
+            quality=Qualities.objects.filter(user=student.student)
             serializer = SkillSerializer(edu,many=True)
-            return Response(serializer.data)
+            serializer2= QualitiesSerializer(quality, many =True)
+            data={
+                'skill_data':serializer.data,
+                'quality_data':serializer2.data,
+            }
+            return Response(data)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         try:
             skill_serializer_obj=SkillSerializer(instance='',data=request.data,many=True, context=request)
+            quality_serializer_obj=QualitiesSerializer(instance='',data=request.data.get('quality_data'),many=True, context=request)
 
             if skill_serializer_obj.is_valid(raise_exception=True):
-                    skill_serializer_obj.save()
-                    return Response(skill_serializer_obj.data, status=status.HTTP_201_CREATED)
+                    if quality_serializer_obj.is_valid(raise_exception=True):
+                        skill_serializer_obj.save()
+                    data={
+                        "skill_data": skill_serializer_obj.data,
+                        "quality_data":quality_serializer_obj.data
+                    }                        
+                    return Response(data, status=status.HTTP_201_CREATED)
             else:
                 return Response(skill_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:

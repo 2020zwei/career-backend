@@ -232,7 +232,7 @@ class QualitiesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Qualities
-        fields=['id','interest']
+        fields=['id','quality_dropdown']
         list_serializer_class = QualityListSerializer
         extra_kwargs = {
             'id':{
