@@ -6,6 +6,7 @@ from .models import Quiz,Question,QuizResult,Answer,QuizResultDetail
 from users.models import Student
 from rest_framework import status
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -103,10 +104,12 @@ class TakeQuizView(CreateAPIView):
                 quiz_id = request.data.get('quiz')
                 answers = request.data.get('answers')
 
+                quiz = get_object_or_404(Quiz, id=quiz_id)
                 # Save the quiz result for the student
                 quiz_result = QuizResult.objects.create(
                     user=request.user.student, quiz_id=quiz_id, score=0
                 )
+                total_score = quiz.question.count()
 
                 # Calculate the score for the quiz
                 score = 0
@@ -137,7 +140,7 @@ class TakeQuizView(CreateAPIView):
                 quiz_result.score = score
                 quiz_result.save()
 
-                return Response({'message': 'Quiz taken successfully', 'status': True}, status=status.HTTP_200_OK)
+                return Response({'message': 'Quiz taken successfully', 'status': True, 'obtained_score':score, 'quiz':quiz.name, 'total_score':total_score}, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
         else:
