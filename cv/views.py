@@ -89,6 +89,15 @@ class EducationViewRelated(CreateAPIView):
                 return Response(education_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete_education(request, pk):
+        """Delete Education"""
+        try:
+            education = Education.objects.get(pk=pk)
+            education.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class EducationViewUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
