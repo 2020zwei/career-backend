@@ -104,7 +104,7 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
                 question_scores = []
                 for score in question_type_scores:
                     score_data = {
-                        'question': score['question__type'],
+                        'question': score['question__question'],
                         'score': score['answer__weightage']
                     }
                     question_scores.append(score_data)
