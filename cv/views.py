@@ -256,8 +256,8 @@ class SkillsViewRelated(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            skill_serializer_obj=SkillSerializer(instance='',data=request.data.get('skill_data'), context=request)
-            quality_serializer_obj=QualitiesSerializer(instance='',data=request.data.get('quality_data'), context=request)
+            skill_serializer_obj=SkillSerializer(instance='',data=request.data.get('skill_data'),many=True, context=request)
+            quality_serializer_obj=QualitiesSerializer(instance='',data=request.data.get('quality_data'),many=True, context=request)
 
             if skill_serializer_obj.is_valid(raise_exception=True):
                     if quality_serializer_obj.is_valid(raise_exception=True):
