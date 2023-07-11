@@ -118,7 +118,7 @@ class  ExperienceSerializer(serializers.ModelSerializer):
     enddate = ExperienceDateField(required=False, allow_null=True)
     class Meta:
         model=Experience
-        fields=['id','startdate','enddate','jobtitle','company','city','country','description','is_current_work']
+        fields=['id','startdate','enddate','job_title','company','city','country','description','is_current_work']
         list_serializer_class = ExperienceListSerializer
         extra_kwargs = {'enddate': {'allow_null': True, 'required': False},
                         'id':{'read_only': False,'allow_null': True,}}
