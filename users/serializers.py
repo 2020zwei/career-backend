@@ -25,8 +25,8 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
     password = serializers.CharField(required=False, style={"input_type": "password"})
 
     default_error_messages = {
-        "invalid_password": "Invalid password",
-        "inactive_account": "Invalid email",
+        "invalid_password": "The password is not correct",
+        "inactive_account": "The given email is not registered",
     }
 
     def __init__(self, *args, **kwargs):
