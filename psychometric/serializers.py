@@ -96,25 +96,47 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             # Get all test results for the user
             results = TestResult.objects.filter(user__user__email=request.user.email, test=obj)
-            test_results = []
-            for result in results:
-                question_type_scores = TestResultDetail.objects.filter(result=result).values('question__type__type').annotate(total_score=Sum('answer__weightage'))
+            if results:
+                test_results = []
+                for result in results:
+                    question_type_scores = TestResultDetail.objects.filter(result=result).values('question__type__type').annotate(total_score=Sum('answer__weightage'))
 
-                question_scores = []
-                for score in question_type_scores:
-                    score_data = {
-                        'question': score['question__type__type'],
-                        'score': score['total_score']
+                    question_scores = []
+                    for score in question_type_scores:
+                        score_data = {
+                            'question': score['question__type__type'],
+                            'score': score['total_score']
+                        }
+                        question_scores.append(score_data)
+
+                    test_result = {
+                        'test_name': obj.name,
+                        'score': result.score,
+                        'question_scores': question_scores
+                    }
+                    test_results.append(test_result)
+                return test_results
+            else:
+                questions = Question.objects.filter(test=obj)
+                question_types = set()
+                question_scores=[]
+                test_results=[]
+                for question in questions:
+                    question_types.add(question.type.type)
+                ques_list=list(question_types)
+                for item in ques_list:
+                    score_data={
+                        'question':item,
+                        'score':0
                     }
                     question_scores.append(score_data)
-
                 test_result = {
-                    'test_name': obj.name,
-                    'score': result.score,
-                    'question_scores': question_scores
-                }
+                        'test_name': obj.name,
+                        'score': 0,
+                        'question_scores': question_scores
+                    }
                 test_results.append(test_result)
-            return test_results
+                return test_results
         return []
 
 
