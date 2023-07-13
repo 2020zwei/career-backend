@@ -36,7 +36,7 @@ class TimeSlotRelatedSerializer(serializers.ModelSerializer):
         instance.timeslot = timeslot
         instance.endslot = endslot
         instance.title = validated_data.get('title', instance.title)
-        # instance.day = validated_data.get('day', instance.day)
+        instance.day = day
         instance.save()
         response_data = {
         'success': True,
