@@ -184,6 +184,8 @@ DOMAIN = 'https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Or any desired higher value
+
 
 AWS_STORAGE_BUCKET_NAME = 'cgb-staging-bucket'
 AWS_S3_SIGNATURE_NAME = 's3v4',
