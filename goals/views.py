@@ -131,9 +131,9 @@ class GoalViewRelated2(CreateAPIView):
     #       return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
       
 custom_styles = {
-    'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=24, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
-    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=18, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
-    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=20, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
+    'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=25, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
+    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=20, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
+    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=22, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
     'centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=12,leading=20, textColor=(292, 453, 609)),
 }
 

@@ -257,37 +257,37 @@ class ColumnNamesView(APIView):
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]
-                return Response(column_names)
+                return Response({"data":column_names, "rows":10})
             if choice=='level5':
                 all_fields = Level5._meta.get_fields()
 
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]
-                return Response(column_names)
+                return Response({"data":column_names, "rows":5})
             if choice=='level8':
                 all_fields = Level8._meta.get_fields()
 
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]
-                return Response(column_names)
+                return Response({"data":column_names, "rows":10})
             if choice=='other':
                 all_fields = Other._meta.get_fields()
 
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]      
-                return Response(column_names)      
+                return Response({"data":column_names, "rows":4})      
             if choice=='apprentice':
                 all_fields = Apprentice._meta.get_fields()
 
                 # Filter the list to include only the fields you want to include
                 excluded_fields = ['id', 'choice']
                 column_names = [f.name for f in all_fields if f.name not in excluded_fields]
-                return Response(column_names)
+                return Response({"data":column_names, "rows":5})
             else:
                 column_names = [field.name for field in Choice._meta.get_fields()]
-                return Response(column_names)
+                return Response({"data":column_names, "rows":6})
         except Exception as e:
             raise e
