@@ -17,7 +17,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 from PyPDF2 import PdfReader, PdfWriter, PageObject
 from io import BytesIO
-from reportlab.platypus import BaseDocTemplate,PageTemplate,SimpleDocTemplate, Paragraph, Spacer, Frame
+from reportlab.platypus import BaseDocTemplate,PageTemplate,SimpleDocTemplate, Paragraph, Image, Frame
 from reportlab.lib import colors
 
 
@@ -146,9 +146,9 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     # Create a list to store the content
     content = []
 
-    # Calculate the center position to position the frame within the A4 page size
-    frame_width = 400  # Adjust this value to set the width of the frame
-    frame_height = 400  # Adjust this value to set the height of the frame
+    # Calculate the center position to position the frame within the A3 page size
+    frame_width = 500  # Adjust this value to set the width of the frame
+    frame_height = 500  # Adjust this value to set the height of the frame
     x_offset = (A4[0] - frame_width) / 2
     y_offset = (A4[1] - frame_height) / 2
 
@@ -156,21 +156,23 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
 
     # Add the data to the content list using custom layouts (Frames and Paragraphs)
     frame = Frame(x_offset, y_offset, frame_width, frame_height, showBoundary=0,
-                  leftPadding=190,
-                  topPadding=150,
+                  leftPadding=200,
+                  topPadding=200,
                   rightPadding=0,
                   bottomPadding=0)
     
 
     # Add the Paragraphs to the frame
-    content.append(Paragraph("LOGO", custom_styles['bold_centered']))
+    image = Image('general/templates/myCareerGuidanceIcon.png', width=180, height=60)  # Adjust the width and height as needed
+    content.append(image)
     content.append(Paragraph(f"{student.student.full_name} Goal", custom_styles['italic_bold_centered']))
     content.append(Paragraph(f"{goal_obj.proffession}", custom_styles['italic_centered']))
     content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['italic_centered']))
     content.append(Paragraph(f"By doing:\n{action_obj}", custom_styles['italic_centered']))
-    content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
-    content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
-    content.append(Paragraph(f"{goal_obj.countdown}", custom_styles['italic_centered']))
+    if goal_obj.realistic is True:
+      content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
+      content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
+      content.append(Paragraph(f"{goal_obj.countdown}", custom_styles['italic_centered']))
 
     # Build the content and save it to the buffer
     doc.addPageTemplates([PageTemplate(frames=[frame])])
