@@ -70,7 +70,7 @@ class Level8ViewRelated(CreateAPIView):
 
 class Level8Update(UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = Level8
+    serializer_class = Level8_Serializer
     queryset = Level8.objects.all()
 
 class Level8Delete(DestroyAPIView):
@@ -104,7 +104,7 @@ class Level5ViewRelated(CreateAPIView):
 
 class Level5Update(UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = Level5
+    serializer_class = Level5_Serializer
     queryset = Level5.objects.all()
 
 class Level5Delete(DestroyAPIView):
@@ -138,7 +138,7 @@ class ApprenticeViewRelated(CreateAPIView):
 
 class ApprenticeUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = Apprentice
+    serializer_class = Apprentice_Serializer
     queryset = Apprentice.objects.all()
 
 class ApprenticeDelete(DestroyAPIView):
@@ -172,7 +172,7 @@ class OtherViewRelated(CreateAPIView):
 
 class OtherUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = Other
+    serializer_class = Other_Serializer
     queryset = Other.objects.all()
 
 class OtherDelete(DestroyAPIView):

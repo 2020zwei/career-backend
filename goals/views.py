@@ -132,8 +132,9 @@ class GoalViewRelated2(CreateAPIView):
       
 custom_styles = {
     'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=24, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
-    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=18, leading=30, alignment=1,textColor=(0.099,0.111,0.222)),
-    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=20, leading=30, alignment=1,textColor=(0.29296875,0.453125,0.609375)),
+    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=18, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
+    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=20, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
+    'centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=12,leading=20, textColor=(292, 453, 609)),
 }
 
 def create_pdf_with_content(content_data, student, goal_obj, action_obj):
@@ -146,33 +147,35 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     # Create a list to store the content
     content = []
 
-    # Calculate the center position to position the frame within the A3 page size
-    frame_width = 500  # Adjust this value to set the width of the frame
-    frame_height = 500  # Adjust this value to set the height of the frame
+    # Calculate the center position to position the frame within the A4 page size
+    frame_width = 600  # Adjust this value to set the width of the frame
+    frame_height = 600  # Adjust this value to set the height of the frame
     x_offset = (A4[0] - frame_width) / 2
     y_offset = (A4[1] - frame_height) / 2
 
-
-
     # Add the data to the content list using custom layouts (Frames and Paragraphs)
     frame = Frame(x_offset, y_offset, frame_width, frame_height, showBoundary=0,
-                  leftPadding=200,
-                  topPadding=200,
+                  leftPadding=220,
+                  topPadding=260,  # Adjust this value to add space between logo and first line
                   rightPadding=0,
                   bottomPadding=0)
-    
+
+    image = Image('general/templates/logo.png', width=220, height=50)  # Adjust the width and height as needed
+    content.append(image)
 
     # Add the Paragraphs to the frame
-    image = Image('general/templates/myCareerGuidanceIcon.png', width=180, height=60)  # Adjust the width and height as needed
-    content.append(image)
+    content.append(Paragraph(" hello ", custom_styles['centered']))
     content.append(Paragraph(f"{student.student.full_name} Goal", custom_styles['italic_bold_centered']))
     content.append(Paragraph(f"{goal_obj.proffession}", custom_styles['italic_centered']))
     content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['italic_centered']))
-    content.append(Paragraph(f"By doing:\n{action_obj}", custom_styles['italic_centered']))
+
+    # Add the "By doing:" text followed by a line break and the action_obj
+    content.append(Paragraph(f"By doing:<br/>{action_obj}", custom_styles['italic_centered']))
+
     if goal_obj.realistic is True:
-      content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
-      content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
-      content.append(Paragraph(f"{goal_obj.countdown}", custom_styles['italic_centered']))
+        content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
+        content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
+        content.append(Paragraph(f"{goal_obj.countdown}", custom_styles['italic_centered']))
 
     # Build the content and save it to the buffer
     doc.addPageTemplates([PageTemplate(frames=[frame])])
