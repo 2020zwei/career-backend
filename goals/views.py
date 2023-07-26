@@ -170,7 +170,11 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['italic_centered']))
 
     # Add the "By doing:" text followed by a line break and the action_obj
-    content.append(Paragraph(f"By doing:<br/>{action_obj}", custom_styles['italic_centered']))
+    # content.append(Paragraph(f"By doing:<br/>{action_obj}", custom_styles['italic_centered']))
+    actions_text = "<br/>".join([str(action) for action in action_obj])
+    # Now add the actions_text to the content list
+    content.append(Paragraph(f"By doing:<br/>{actions_text}", custom_styles['italic_centered']))
+
 
     if goal_obj.realistic is True:
         content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
@@ -194,7 +198,7 @@ class GoalPDF(CreateAPIView):
             student =self.request.user
             print(student)
             goal_obj =Goal.objects.filter(user=student.student).last()
-            action_obj=Action.objects.filter(goal=goal_obj).last()
+            action_obj=Action.objects.filter(goal=goal_obj)
             print(goal_obj)
 
             # Get the additional data that you want to add to the PDF
@@ -210,7 +214,6 @@ class GoalPDF(CreateAPIView):
                 {goal_obj.proffession}
 
                 By doing:
-                {action_obj.action}
 
                 I can do this {goal_obj.realistic}
 

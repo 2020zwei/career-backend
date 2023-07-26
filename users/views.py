@@ -95,7 +95,7 @@ class SchoolView(CreateAPIView):
     def get(self, request):
         """Fetch All Tests By User"""
         try:
-            schools=School.objects.all()
+            schools = School.objects.order_by('school')
             serializer = SchoolSerializer(schools, many=True)
             return Response({'data':serializer.data, 'success':True})
     

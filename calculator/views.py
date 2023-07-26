@@ -15,7 +15,7 @@ from common.response_template import get_response_template
 class SubjectViewRelated(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SubjectSerializer
-    queryset=Subject.objects.all()
+    queryset = Subject.objects.all().order_by('name') 
 
     
 class SubjectGradeViewRelated(ListAPIView):
