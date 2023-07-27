@@ -71,7 +71,7 @@ class CalculatePointViewRelated(APIView):
                     raise ValidationError(f"No subject found for subject grade with id {subject_grade_obj.id}")
 
                 points += subject_grade_obj.point
-                if subject_grade_obj.subject.is_additional_marks_allowed:
+                if subject_grade_obj.subject.is_additional_marks_allowed and subject_grade_obj.level.subjectlevel == 'higher':
                     bonus_points += subject_grade_obj.subject.additional_marks
 
                 # Add subject, grade, and level to user's UserPoints
