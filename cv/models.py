@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
-    objective=models.TextField(max_length=300)
+    objective=models.TextField(max_length=300,null=True, blank=True)
     is_juniorcert_test=models.BooleanField(default=False)
     skills=ArrayField(models.CharField(max_length=200), blank=True,null=True)
     HobbiesandInterests=models.TextField(max_length=300,null=True)
