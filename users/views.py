@@ -116,7 +116,7 @@ class SendPasswordResetOTPView(APIView):
             send_mail(
                 'Your Password Reset OTP',
                 f'Your password reset otp is {otp}',
-                'hassan.shahzad@zweidevs.com',
+                'taloot.khan@zweidevs.com',
                 [email])
         except:
             pass
