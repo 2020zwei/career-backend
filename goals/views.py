@@ -160,7 +160,7 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
                   rightPadding=0,
                   bottomPadding=0)
 
-    image = Image('general/templates/logo.png', width=220, height=50)  # Adjust the width and height as needed
+    image = Image('general/templates/logo.png', width=280, height=60)  # Adjust the width and height as needed
     content.append(image)
 
     # Add the Paragraphs to the frame

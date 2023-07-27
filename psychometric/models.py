@@ -11,6 +11,7 @@ class TestType(models.Model):
 
 class PsychometricTest(models.Model):
     name = models.CharField(max_length=300)
+    intro=models.TextField(max_length=300, null=True, blank=True)
     def __str__(self):
         return self.name
 

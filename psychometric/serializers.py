@@ -66,7 +66,7 @@ class PsychometricStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PsychometricTest
-        fields = ['id', 'name', 'complete', 'score', 'total_score','test_results']
+        fields = ['id', 'name','intro', 'complete', 'score', 'total_score','test_results']
 
     def get_complete(self, obj):
         request = self.context.get('request')
