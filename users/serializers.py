@@ -13,6 +13,7 @@ from django.core import exceptions as django_exceptions
 from django.contrib.auth.hashers import make_password
 import base64
 from django.core.files.base import ContentFile
+from datetime import date
 from django.conf import settings as setting
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -143,6 +144,14 @@ class StudentSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model=Student
         fields=('first_name','last_name','profile_image','school','user','full_name',"dob")
+
+    def validate_dob(self, value):
+        """
+        Validate that the 'dob' field is not greater than today's date.
+        """
+        if value > date.today():
+            raise serializers.ValidationError("Date of birth cannot be in the future.")
+        return value
     
     def to_internal_value(self, data):
         if 'profile_image' not in data:
