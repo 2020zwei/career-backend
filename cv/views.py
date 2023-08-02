@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
-from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer
-from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest
+from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer, InterestSerializer
+from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest, Interests
 from users.models import Student
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -329,6 +329,37 @@ class QualityUpdate(UpdateAPIView):
     serializer_class = QualitiesSerializer
     queryset = Qualities.objects.all()
 
+class InterestViewRelated(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = InterestSerializer
+    queryset = Interests.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            edu=Interests.objects.filter(user=student.student)
+            serializer = InterestSerializer(edu,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            interest_serializer_obj=InterestSerializer(instance='',data=request.data,many=True, context=request)
+
+            if interest_serializer_obj.is_valid(raise_exception=True):
+                    interest_serializer_obj.save()
+                    return Response(interest_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(interest_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class InterestUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = InterestSerializer
+    queryset = Interests.objects.all()
 
 class GeneratePDF(CreateAPIView):
     def get(self, request):

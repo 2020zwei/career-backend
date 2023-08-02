@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qualities,LeavingCertTest
+from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qualities,LeavingCertTest, Interests
 from rest_framework.exceptions import  ValidationError
-from datetime import datetime
+from datetime import datetime, date
 from users.models import Student
 
 class SlashDateField(serializers.Field):
@@ -62,7 +62,15 @@ class  EducationSerializer(serializers.ModelSerializer):
                 'read_only': False,
                 'allow_null': True,
             }
-        }        
+        }  
+    def validate_enddate(self, value):
+        """
+        Validate that the 'dob' field is not greater than today's date.
+        """
+        if value > date.today():
+            raise serializers.ValidationError("End date cannot be in the future.")
+        return value  
+        
 class JuniorListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
         # Perform creations and updates.
@@ -142,7 +150,24 @@ class  ExperienceSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
-        return super(ExperienceSerializer, self).create(validated_data=validated_data)
+        return super(ExperienceSerializer, self).create(validated_data=validated_data)  
+    
+    def validate_enddate(self, value):
+        """
+        Validate that the 'dob' field is not greater than today's date.
+        """
+        if value > date.today():
+            raise serializers.ValidationError("End date cannot be in the future.")
+        return value  
+    
+    def validate_startdate(self, value):
+        """
+        Validate that the 'dob' field is not greater than today's date.
+        """
+        if value > date.today():
+            raise serializers.ValidationError("Start date cannot be in the future.")
+        return value
+    
 
 class ReferenceListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
@@ -258,4 +283,24 @@ class QualitiesSerializer(serializers.ModelSerializer):
             }
         }
 
+class InterestListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                Interests.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(Interests.objects.create(**data))
+        return ret 
+
+class InterestSerializer(serializers.ModelSerializer):
     
+    class Meta:
+        model=Interests
+        fields=['id','interests']
+        list_serializer_class = InterestListSerializer
+        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}

@@ -92,3 +92,11 @@ class Reference(models.Model):
     area_code=models.IntegerField(null=True,blank=True)
     position=models.CharField(max_length=50,null=True,blank=True)
     user=models.ForeignKey(Student,on_delete=models.CASCADE,null=True,blank=True)
+
+class Interests(models.Model):
+    interests=models.CharField(max_length=50, null=True)
+    description=models.TextField(max_length=300)
+    user=models.ForeignKey(Student,on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural="skills"

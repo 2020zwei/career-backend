@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CV,Education,JuniorCertTest,Experience,Reference,Qualities,Skills,JobTitle,LeavingCertTest
+from .models import CV,Education,JuniorCertTest,Experience,Reference,Qualities,Skills,JobTitle,LeavingCertTest, Interests
 # Register your models here.
 class CVAdminSite(admin.ModelAdmin):
     list_display=['user','is_juniorcert_test']
@@ -24,6 +24,8 @@ class QualitiesAdminSite(admin.ModelAdmin):
 class JobTitleAdmin(admin.ModelAdmin):
     list_display=['title']
 
+class InterestAdmin(admin.ModelAdmin):
+    list_display=['user','interests']
 
 admin.site.register(CV,CVAdminSite)
 admin.site.register(Education,EducationAdminSite)
@@ -34,3 +36,4 @@ admin.site.register(Reference,ReferenceAdminSite)
 admin.site.register(Skills,SkillsAdminSite)
 admin.site.register(Qualities,QualitiesAdminSite)
 admin.site.register(JobTitle,JobTitleAdmin)
+admin.site.register(Interests,InterestAdmin)
