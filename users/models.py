@@ -38,7 +38,8 @@ class Student(models.Model):
     otp = models.CharField(max_length=5,null=True, blank=True)
     cv_completed=models.BooleanField(default=False)
     otp_verified = models.BooleanField(default=False)
-    
+    current_step = models.IntegerField(default=1)
+
     def __str__(self):
         """return name of Student"""
         return self.full_name

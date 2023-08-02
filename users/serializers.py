@@ -121,7 +121,7 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', read_only=True)
     class Meta:
         model=Student
-        fields=['full_name', 'school', 'dob', 'profile_image', 'email','address','city','country','cv_completed']
+        fields=['full_name', 'school', 'dob', 'profile_image', 'email','address','city','country','current_step','cv_completed']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

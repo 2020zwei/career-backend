@@ -37,6 +37,10 @@ class CvViewRelated(CreateAPIView):
 
             if cv_serializer_obj.is_valid(raise_exception=True):
                     cv_serializer_obj.save()
+                    student = self.request.user.student
+                    if student.cv_completed is not True:
+                        student.current_step = 1
+                        student.save()
                     return Response(cv_serializer_obj.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(cv_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -84,6 +88,10 @@ class EducationViewRelated(CreateAPIView):
                         "education_data": education_serializer_obj.data,
                         "junior_data":junior_serializer_obj.data
                     }
+                    student = self.request.user.student
+                    if student.cv_completed is not True:
+                        student.current_step = 2
+                        student.save()
                     return Response(data, status=status.HTTP_201_CREATED)
             else:
                 return Response(education_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -185,6 +193,10 @@ class ExperienceViewRelated(CreateAPIView):
 
             if experience_serializer_obj.is_valid(raise_exception=True):
                     experience_serializer_obj.save()
+                    student = self.request.user.student
+                    if student.cv_completed is not True:
+                        student.current_step = 3
+                        student.save()
                     return Response(experience_serializer_obj.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(experience_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -218,9 +230,11 @@ class ReferenceViewRelated(CreateAPIView):
 
             if refer_serializer_obj.is_valid(raise_exception=True):
                     refer_serializer_obj.save()
-                    student = request.user.student
-                    student.cv_completed = True
-                    student.save()
+                    student = self.request.user.student
+                    if student.cv_completed is not True:
+                        student.current_step = 6
+                        student.cv_completed = True
+                        student.save()
                     return Response(refer_serializer_obj.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(refer_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -266,7 +280,11 @@ class SkillsViewRelated(CreateAPIView):
                     data={
                         "skill_data": skill_serializer_obj.data,
                         "quality_data":quality_serializer_obj.data
-                    }                        
+                    }
+                    student = self.request.user.student
+                    if student.cv_completed is not True:
+                        student.current_step = 4
+                        student.save()                 
                     return Response(data, status=status.HTTP_201_CREATED)
             else:
                 return Response(skill_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
