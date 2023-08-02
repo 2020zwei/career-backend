@@ -156,11 +156,11 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     # Add the data to the content list using custom layouts (Frames and Paragraphs)
     frame = Frame(x_offset, y_offset, frame_width, frame_height, showBoundary=0,
                   leftPadding=220,
-                  topPadding=260,  # Adjust this value to add space between logo and first line
+                  topPadding=240,  # Adjust this value to add space between logo and first line
                   rightPadding=0,
                   bottomPadding=0)
 
-    image = Image('general/templates/logo.png', width=280, height=60)  # Adjust the width and height as needed
+    image = Image('general/templates/logo.png', width=280, height=50)  # Adjust the width and height as needed
     content.append(image)
 
     # Add the Paragraphs to the frame
