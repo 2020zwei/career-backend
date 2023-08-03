@@ -19,6 +19,7 @@ urlpatterns = [
     path('add-junior-cert/',JuniorCertTestViewRelated.as_view(),name="Add_Junior_Cert"),
     path('get-junior-cert/',JuniorCertTestViewRelated.as_view(),name="Get_Junior_Cert"),
     path('update-junior/<int:pk>/',JuniorViewUpdate.as_view(),name="Update_Junior"),
+    path('delete-junior-cert/<int:pk>/',JuniorCertTestViewRelated.as_view(), name="Delete_Junior"),
     path('add-leaving-cert/',LeavingCertTestViewRelated.as_view(),name="Add_Leaving_Cert"),
     path('get-leaving-cert/',LeavingCertTestViewRelated.as_view(),name="Get_Leaving_Cert"),
     path('update-leaving/<int:pk>/',LeavingViewUpdate.as_view(),name="Update_Leaving"),

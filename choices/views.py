@@ -50,7 +50,7 @@ class Level8ViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            choice=Level8.objects.filter(choice__user=student.student)
+            choice=Level8.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Level8_Serializer(choice, many=True)
             return Response(serializer.data)
     
@@ -85,7 +85,7 @@ class Level5ViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            choice=Level5.objects.filter(choice__user=student.student)
+            choice=Level5.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Level5_Serializer(choice, many=True)
             return Response(serializer.data)
     
@@ -119,7 +119,7 @@ class ApprenticeViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            choice=Apprentice.objects.filter(choice__user=student.student)
+            choice=Apprentice.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Apprentice_Serializer(choice, many=True)
             return Response(serializer.data)
     
@@ -153,7 +153,7 @@ class OtherViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            choice=Other.objects.filter(choice__user=student.student)
+            choice=Other.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Other_Serializer(choice, many=True)
             return Response(serializer.data)
     
@@ -187,7 +187,7 @@ class Level6ViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            choice=Level6.objects.filter(choice__user=student.student)
+            choice=Level6.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Level6_Serializer(choice, many=True)
             return Response(serializer.data)
     

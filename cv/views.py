@@ -137,6 +137,16 @@ class JuniorCertTestViewRelated(CreateAPIView):
             return Response(serializer.data, headers=headers)
         except Exception as e:
             raise e
+    
+    def delete(self, request, pk):
+        """Delete Junior"""
+        try:
+            education = JuniorCertTest.objects.get(pk=pk)
+            education.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 class JuniorViewUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = JuniorCertTestSerializer
