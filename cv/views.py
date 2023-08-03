@@ -98,7 +98,7 @@ class EducationViewRelated(CreateAPIView):
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(request, pk):
+    def delete(self, request, pk):
         """Delete Education"""
         try:
             education = Education.objects.get(pk=pk)
