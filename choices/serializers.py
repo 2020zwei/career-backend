@@ -15,7 +15,7 @@ class Level6_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level6
         fields=['id','code','point','college','title','choice','order_number']
-        extra_kwargs = {'choice':{'allow_null': True,'required': False},'order_number': {'read_only': True}}
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
         try:
@@ -32,7 +32,7 @@ class Level8_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level8
         fields=['id','code','point','college','title','choice','order_number']
-        extra_kwargs = {'choice':{'allow_null': True,'required': False},'order_number': {'read_only': True}}
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
         try:
@@ -49,7 +49,7 @@ class Apprentice_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Apprentice
         fields=['id','name','level','company','choice','order_number']
-        extra_kwargs = {'choice':{'allow_null': True,'required': False},'order_number': {'read_only': True}}
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
         student = self.context['request'].user.student
         try:
@@ -67,7 +67,7 @@ class Level5_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level5
         fields=['id','code','college','title','choice','order_number']
-        extra_kwargs = {'choice':{'allow_null': True,'required': False},'order_number': {'read_only': True}}
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
         try:
@@ -85,7 +85,7 @@ class Other_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Other
         fields=['id','idea','choice','order_number']
-        extra_kwargs = {'choice':{'allow_null': True,'required': False},'order_number': {'read_only': True}}
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
         try:

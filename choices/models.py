@@ -32,12 +32,6 @@ class Level6(models.Model):
     class Meta:
         app_label = 'choices'
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Calculate the next order number only for new records
-            max_order = Level6.objects.aggregate(models.Max('order_number'))['order_number__max'] or 0
-            self.order_number = max_order + 1
-        super(Level6, self).save(*args, **kwargs)
 
 class Level8(models.Model):
     choice=models.ForeignKey(Choice,related_name="lvl8", on_delete=models.CASCADE)
@@ -53,12 +47,6 @@ class Level8(models.Model):
     class Meta:
         app_label = 'choices'
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Calculate the next order number only for new records
-            max_order = Level8.objects.aggregate(models.Max('order_number'))['order_number__max'] or 0
-            self.order_number = max_order + 1
-        super(Level8, self).save(*args, **kwargs)
 
 class Apprentice(models.Model):
     choice=models.ForeignKey(Choice,related_name="app", on_delete=models.CASCADE)
@@ -73,12 +61,6 @@ class Apprentice(models.Model):
     class Meta:
         app_label = 'choices'
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Calculate the next order number only for new records
-            max_order = Apprentice.objects.aggregate(models.Max('order_number'))['order_number__max'] or 0
-            self.order_number = max_order + 1
-        super(Apprentice, self).save(*args, **kwargs)
 
 class Level5(models.Model):
     choice=models.ForeignKey(Choice,related_name="lvl5", on_delete=models.CASCADE)
@@ -93,12 +75,6 @@ class Level5(models.Model):
     class Meta:
         app_label = 'choices'
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Calculate the next order number only for new records
-            max_order = Level5.objects.aggregate(models.Max('order_number'))['order_number__max'] or 0
-            self.order_number = max_order + 1
-        super(Level5, self).save(*args, **kwargs)
 
 class Other(models.Model):
     choice=models.ForeignKey(Choice,related_name="othr", on_delete=models.CASCADE)
@@ -111,9 +87,3 @@ class Other(models.Model):
     class Meta:
         app_label = 'choices'
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Calculate the next order number only for new records
-            max_order = Other.objects.aggregate(models.Max('order_number'))['order_number__max'] or 0
-            self.order_number = max_order + 1
-        super(Other, self).save(*args, **kwargs)
