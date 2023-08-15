@@ -45,7 +45,7 @@ class PsychometricTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=PsychometricTest
-        fields=['test_id', 'name','questions']
+        fields=['test_id', 'name','intro','questions']
 
 
 class PsychometricResultDetailSerializer(serializers.ModelSerializer):

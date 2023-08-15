@@ -22,7 +22,7 @@ class GoalSerializer2(serializers.ModelSerializer):
     action=ActionSerializer(many=True)
     class Meta:
         model = Goal
-        fields = ['id', 'proffession', 'goal', 'realistic', 'countdown', 'action']
+        fields = ['id', 'proffession', 'goal','description','realistic', 'countdown', 'action']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

@@ -87,6 +87,7 @@ class GoalViewRelated2(CreateAPIView):
           print(user_obj.student)
           proffession=request.data.get('proffession')
           goal=request.data.get('goal')
+          description=request.data.get('description')
           realistic=request.data.get('realistic')
           countdown_str = request.data.get('date')
           actions = request.data.get('actions', [])
@@ -97,7 +98,7 @@ class GoalViewRelated2(CreateAPIView):
               action_list.append(value)
           countdown = datetime.strptime(countdown_str, '%d-%m-%Y')
           print(countdown)
-          goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
+          goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession, goal=goal,description=description,realistic=realistic, countdown=countdown)
           goal_obj.save()
           for action_text in action_list:
             Action.objects.create(goal=goal_obj, action=action_text)
