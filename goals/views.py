@@ -132,9 +132,9 @@ class GoalViewRelated2(CreateAPIView):
     #       return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
       
 custom_styles = {
-    'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=26, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
-    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=22, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
-    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=23, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
+    'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=24, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
+    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=20, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
+    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=20, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
     'centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=12,leading=20, textColor=(292, 453, 609)),
 }
 
@@ -157,7 +157,7 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     # Add the data to the content list using custom layouts (Frames and Paragraphs)
     frame = Frame(x_offset, y_offset, frame_width, frame_height, showBoundary=0,
                   leftPadding=220,
-                  topPadding=240,  # Adjust this value to add space between logo and first line
+                  topPadding=230,  # Adjust this value to add space between logo and first line
                   rightPadding=0,
                   bottomPadding=0)
 
@@ -169,6 +169,7 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     content.append(Paragraph(f"{student.student.full_name} Goal", custom_styles['italic_bold_centered']))
     content.append(Paragraph(f"{goal_obj.proffession}", custom_styles['italic_centered']))
     content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['italic_centered']))
+    content.append(Paragraph(f"{goal_obj.description}", custom_styles['italic_centered']))
 
     # Add the "By doing:" text followed by a line break and the action_obj
     # content.append(Paragraph(f"By doing:<br/>{action_obj}", custom_styles['italic_centered']))
