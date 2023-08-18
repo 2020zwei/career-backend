@@ -146,7 +146,6 @@ custom_styles = {
 def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     # Create a buffer to store the PDF content
     buffer = BytesIO()
-
     # Create a BaseDocTemplate with the buffer and specify A4 page size
     doc = BaseDocTemplate(buffer, pagesize=A4)
 
@@ -186,7 +185,7 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     if goal_obj.realistic is True:
         content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
         content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
-        content.append(Paragraph(f"{goal_obj.countdown}", custom_styles['italic_centered']))
+        content.append(Paragraph(f"{goal_obj.countdown.day}-{goal_obj.countdown.month}-{goal_obj.countdown.year}", custom_styles['italic_centered']))
 
     # Build the content and save it to the buffer
     doc.addPageTemplates([PageTemplate(frames=[frame])])
