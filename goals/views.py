@@ -19,6 +19,7 @@ from PyPDF2 import PdfReader, PdfWriter, PageObject
 from io import BytesIO
 from reportlab.platypus import BaseDocTemplate,PageTemplate,SimpleDocTemplate, Paragraph, Image, Frame
 from reportlab.lib import colors
+from django.db import IntegrityError
 
 
 # Create your views here.
@@ -104,6 +105,10 @@ class GoalViewRelated2(CreateAPIView):
             Action.objects.create(goal=goal_obj, action=action_text)
 
           return Response(data={'success': True, 'Goals': goal_obj.goal}, status=status.HTTP_200_OK)
+        
+        except IntegrityError as e:
+            error_message = "Value too long for field 'proffession'. Maximum length is 50 characters."
+            return Response({'message': error_message}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
