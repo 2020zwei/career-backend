@@ -12,6 +12,12 @@ from weasyprint import HTML
 from rest_framework.exceptions import  ValidationError
 from rest_framework import status
 from rest_framework.response import Response
+from reportlab.lib.pagesizes import A4
+from io import BytesIO
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Frame
+from reportlab.platypus import Table, TableStyle
 
 
 class CvViewRelated(CreateAPIView):
@@ -371,24 +377,162 @@ class InterestUpdate(UpdateAPIView):
     serializer_class = InterestSerializer
     queryset = Interests.objects.all()
 
+# def create_pdf_with_content(user_obj,cv_obj, education_obj,junioir_cert_obj, leave_cert_obj, exp_obj, skill_obj, quality_obj,refer_obj):
+#     # Create a buffer to store the PDF content
+#     buffer = BytesIO()
+#     # Create a SimpleDocTemplate with the buffer and specify A4 page size
+#     doc = SimpleDocTemplate(buffer, pagesize=A4)
+
+#     # Create styles for the Paragraphs
+#     styles = getSampleStyleSheet()
+#     custom_styles = {
+#         'title': ParagraphStyle('Title', parent=styles['Title'], alignment=1, fontSize=18),
+#         'text_centered': ParagraphStyle('TextCentered', parent=styles['Normal'], alignment=1),
+#         'italic': ParagraphStyle('Italic', parent=styles['Normal'], fontName='Times-Italic'),
+#         'bullet': ParagraphStyle('Bullet', parent=styles['Bullet'], spaceBefore=10),
+#         'bold': ParagraphStyle('Bold', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=14, leading=30),
+#         'title': ParagraphStyle('Title', parent=styles['Title'], alignment=1, fontSize=18),
+#         'subheading': ParagraphStyle('Subheading', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=12, spaceBefore=10),
+#         'normal': ParagraphStyle('Normal', parent=styles['Normal'], fontSize=12, spaceBefore=6),
+
+#     }
+
+#     # Create a list to store the content
+#     content = []
+
+#     # Add the title and contact information
+#     content.append(Paragraph(f"<b>{user_obj.first_name} {user_obj.last_name}</b>", custom_styles['title']))
+#     content.append(Paragraph(f"{user_obj.full_name} • {cv_obj.email}", custom_styles['text_centered']))
+#     # content.append(Spacer(1, 10, color=colors.black, width=600, height=1))  # Line separator
+
+#     # Add the personal statement
+#     content.append(Paragraph("<b>PERSONAL STATEMENT</b>", custom_styles['bold']))
+#     content.append(Paragraph("Students may use a short statement summarising the purpose of the CV", custom_styles['italic']))
+#     content.append(Spacer(1, 10))  # Add some space
+
+#     # Add skills and qualities
+#     content.append(Paragraph("<b>SKILLS AND QUALITIES</b>", custom_styles['bold']))
+#     # Add skills using bullet points
+#     # skills = ["Skill 1 description attached.", "Skill 2 description attached.", "Skill 3 description attached."]
+#     skills= skill_obj
+#     for skill in skills:
+#         content.append(Paragraph(f"• {skill.get_skill_dropdown_display()}", custom_styles['bullet']))
+
+#     # Add qualities using bullet points
+#     # qualities = ["Quality 1 description attached.", "Quality 2 description attached.", "Quality 3 description attached."]
+#     qualities=quality_obj
+#     for quality in qualities:
+#         content.append(Paragraph(f"• {quality.get_quality_dropdown_display()}", custom_styles['bullet']))
+    
+#     content.append(Paragraph("<b>EDUCATION</b>", custom_styles['bold']))
+
+#     # Create a table for Junior Cert
+#     junior_cert_table_data = [
+#         # ["MONTH YEAR", "JUNIOR CERT", "SCHOOL"],
+#         ["Subject", "Grade"],
+#         [f"{junioir_cert_obj.subject} ", f"{junioir_cert_obj.result}"],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         # Add more rows as needed
+#     ]
+#     junior_cert_table = Table(junior_cert_table_data, colWidths=[80, 200, 200])
+#     junior_cert_table.setStyle(TableStyle([
+#         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#         ('BACKGROUND', (0, 1), (-1, 1), colors.beige),
+#     ]))
+#     content.append(junior_cert_table)
+    
+#     # Create a table for Leaving Cert
+#     leaving_cert_table_data = [
+#         # ["MONTH YEAR", "LEAVING CERT", "SCHOOL"],
+#         ["Subject", "Grade"],
+#         [f"{leave_cert_obj.subject}", f"{leave_cert_obj.result}"],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         [" ", " "],
+#         # Add more rows as needed
+#     ]
+#     leaving_cert_table = Table(leaving_cert_table_data, colWidths=[80, 200, 200])
+#     leaving_cert_table.setStyle(TableStyle([
+#         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+#         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+#         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#         ('BACKGROUND', (0, 1), (-1, 1), colors.beige),
+#     ]))
+#     content.append(leaving_cert_table)
+
+#     content.append(Paragraph("WORK EXPERIENCE", custom_styles['subheading']))
+
+#     # Add job details
+#     # job_details = [
+#     #     ("DATES FROM – TO (MOST RECENT)", "JOB TITLE, COMPANY, ADDRESS."),
+#     #     ("Describe your responsibilities and achievements in terms of impact and results. Use examples, but keep it short.", "DATES FROM – TO"),
+#     #     ("JOB TITLE, COMPANY", "Describe your responsibilities and achievements in terms of impact and results. Use examples, but keep it short."),
+#     # ]
+#     job_details= exp_obj
+
+#     for job_detail in job_details:
+#         content.append(Paragraph(job_detail.job_title, custom_styles['normal']))
+#         content.append(Paragraph(job_detail.company, custom_styles['normal']))
+#         content.append(Spacer(1, 10)) 
+
+
+#     # Build the content and save it to the buffer
+#     doc.build(content)
+
+#     # Move the buffer's file pointer to the beginning
+#     buffer.seek(0)
+
+#     return buffer
+
 class GeneratePDF(CreateAPIView):
     def get(self, request):
         """Fetch All Notes By Officer"""
         try:
-
           student =self.request.user
           user_obj=Student.objects.get(id=student.student.id)
-          cv_obj =CV.objects.filter(user=student.id)
-          education_obj=Education.objects.filter(user=student.id)
-          junior_cert_obj=JuniorCertTest.objects.filter(user=student.id)
-          leave_cert_obj=LeavingCertTest.objects.filter(user=student.id)
-          exp_obj=Experience.objects.filter(user=student.id)
-          skill_obj=Skills.objects.filter(user=student.id)
-          quality_obj=Qualities.objects.filter(user=student.id)
-          refer_obj=Reference.objects.filter(user=student.id)
+          cv_obj =CV.objects.get(user=student.student)
+          education_obj=Education.objects.filter(user=student.student)
+          junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+          leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+          exp_obj=Experience.objects.filter(user=student.student)
+          skill_obj=Skills.objects.filter(user=student.student)
+          quality_obj=Qualities.objects.filter(user=student.student)
+          interest_obj=Interests.objects.filter(user=student.student)
+          refer_obj=Reference.objects.filter(user=student.student)
           temp_name = "general/templates/" 
           cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
-          open(temp_name + cv_template, "w").write(render_to_string('cv.html', {'student_detail': user_obj,'cv_detail':cv_obj,'education_detail':education_obj,'Junior_Cert_detail':junior_cert_obj,'Leave_Cert_detail':leave_cert_obj,'skill_detail':skill_obj,'qualities_detail':quality_obj,'Experience_detail':exp_obj,'Reference_detail':refer_obj}))
+          context = {
+            'student_detail': user_obj,
+            'cv_detail': cv_obj,
+            'education_detail': education_obj,
+            'Junior_Cert_detail': junior_cert_obj,
+            'Leave_Cert_detail': leave_cert_obj,
+            'skill_detail': skill_obj,
+            'qualities_detail': quality_obj,
+            'Experience_detail': exp_obj,
+            'Interest_detail':interest_obj,
+            'Reference_detail': refer_obj,
+            }
+        #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
+          rendered_template = render_to_string('cv.html', context)
+          print(context)
+          open(temp_name + cv_template, "w").write(rendered_template)
           HTML(temp_name + cv_template).write_pdf(str(user_obj.first_name)+'.pdf')
           file_location = f'{user_obj.first_name}.pdf'
           with open(file_location, 'rb') as f:
@@ -398,3 +542,25 @@ class GeneratePDF(CreateAPIView):
           return response
         except Exception as e:
           return Response({'message': "Please complete all fields to download CV"}, status=status.HTTP_400_BAD_REQUEST)
+
+# # class GeneratePDF(CreateAPIView):
+#     def get(self, request):
+#         """Fetch All Notes By Officer"""
+#         student =self.request.user
+#         user_obj=Student.objects.get(id=student.student.id)
+#         cv_obj =CV.objects.get(user=student.student)
+#         education_obj=Education.objects.filter(user=student.student)
+#         junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+#         leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+#         exp_obj=Experience.objects.filter(user=student.student)
+#         skill_obj=Skills.objects.filter(user=student.student)
+#         quality_obj=Qualities.objects.filter(user=student.student)
+#         refer_obj=Reference.objects.filter(user=student.student)
+#         pdf_buffer = create_pdf_with_content(user_obj,cv_obj,education_obj, junior_cert_obj,leave_cert_obj,exp_obj,skill_obj,quality_obj,refer_obj)
+
+#     # Create a response with the PDF content
+#         response = HttpResponse(content_type="application/pdf")
+#         response["Content-Disposition"] = "inline; filename=generated_pdf.pdf"
+#         response.write(pdf_buffer.getvalue())
+
+#         return response
