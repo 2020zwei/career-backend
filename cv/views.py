@@ -541,7 +541,7 @@ class GeneratePDF(CreateAPIView):
           response['Content-Disposition'] = 'attachment; filename="'+ user_obj.first_name +'".pdf'
           return response
         except Exception as e:
-          return Response({'message': "Please complete all fields to download CV"}, status=status.HTTP_400_BAD_REQUEST)
+          return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # # class GeneratePDF(CreateAPIView):
 #     def get(self, request):
