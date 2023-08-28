@@ -507,7 +507,7 @@ class GeneratePDF(CreateAPIView):
           student =self.request.user
           user_obj=Student.objects.get(id=student.student.id)
           cv_obj =CV.objects.get(user=student.student)
-          education_obj=Education.objects.get(user=student.student)
+          education_obj=Education.objects.filter(user=student.student).first()
           junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
           leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
           exp_obj=Experience.objects.filter(user=student.student)
@@ -531,7 +531,6 @@ class GeneratePDF(CreateAPIView):
             }
         #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
           rendered_template = render_to_string('cv.html', context)
-          print(context)
           open(temp_name + cv_template, "w").write(rendered_template)
           HTML(temp_name + cv_template).write_pdf(str(user_obj.first_name)+'.pdf')
           file_location = f'{user_obj.first_name}.pdf'
@@ -541,7 +540,7 @@ class GeneratePDF(CreateAPIView):
           response['Content-Disposition'] = 'attachment; filename="'+ user_obj.first_name +'".pdf'
           return response
         except Exception as e:
-          return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+          return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
 
 # # class GeneratePDF(CreateAPIView):
 #     def get(self, request):
