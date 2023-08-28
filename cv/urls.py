@@ -35,10 +35,7 @@ urlpatterns = [
     path('add-interest/',InterestViewRelated.as_view(),name="Add_Interest"),
     path('get-interest/',InterestViewRelated.as_view(),name="Get_Interest"),
     path('update-interest/<int:pk>/',InterestUpdate.as_view(),name="Update_Interest"),
-    
     path('cv/',GeneratePDF.as_view(),name="CV"),
 
 
-
-    
 ]

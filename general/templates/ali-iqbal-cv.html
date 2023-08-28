@@ -15,16 +15,8 @@
       th {
         color: #595959;
       }
-      {% comment %} tr,
-      th,
-      table,
-      td {
-        border: 1px solid !important;
-      } {% endcomment %}
-      {% comment %} th,
-      td {
-        width: 800px;
-      } {% endcomment %}
+      
+      
       li {
         color: #7c7c7c;
         font-size: 0.9rem;
@@ -44,16 +36,9 @@
       li {
         bottom: 10px;
       }
-      {% comment %} table {
-        width: 20%;
-        border-collapse: collapse;
-      } {% endcomment %}
-      {% comment %} th, {% endcomment %}
-      {% comment %} td {
-        border: 1px solid #ddd;
-        padding: 4px;
-        text-align: left;
-      } {% endcomment %}
+      
+      
+      
       table {
       border-collapse: collapse;
       width: 100%;
@@ -81,16 +66,16 @@
   <body>
     <div style="text-align: center; padding: 20px 0; text-transform: uppercase">
       <h1 style="font-size: 2.9rem; font-weight: 600">
-        <span style="color: #646464">{{student_detail.first_name}}</span>
-        <span>{{student_detail.last_name}}</span>
+        <span style="color: #646464">ali</span>
+        <span>iqbal</span>
       </h1>
-      <p style="color: #858585">{{cv_detail.email}} - {{cv_detail.address}}</p>
+      <p style="color: #858585">ali.iqbal@gmail.com - asdfasd</p>
     </div>
     <hr style="height: 1px; background-color: #858585" />
     <div style="max-width: 800px; margin: 0 auto; padding: 20px">
       <div style="padding-top: 15px">
         <h2>PERSONAL STATEMENT</h2>
-        <p>{{cv_detail.objective}}</p>
+        <p>Noneee</p>
       </div>
       <div style="display: flex; align-items: center">
         <h2>SKILLS AND QUALITIES</h2>
@@ -102,16 +87,26 @@
         <div style="display: flex">
           <ul style="margin-right: 10rem">
             <h3>Skills:</h3>
-            {% for skill in skill_detail %}
-            <li>{{skill.get_skill_dropdown_display}}</li>
-            {% endfor %}
+            
+            <li>People Skills</li>
+            
+            <li>Critical Thinking Skills</li>
+            
+            <li>Practical Skills</li>
+            
           </ul>
 
           <ul style="margin-right: 1rem">
             <h3>Qualities:</h3>
-            {% for quality in qualities_detail %}
-            <li>{{quality.get_quality_dropdown_display}}</li>
-            {% endfor %}
+            
+            <li>Persistent</li>
+            
+            <li>Enthusiastic</li>
+            
+            <li>Intuitive</li>
+            
+            <li>None</li>
+            
           </ul>
         </div>
       </div>
@@ -134,24 +129,24 @@
             ">
             <div>
               <p style="color: #595959; font-weight: 600">
-                {{education_detail.year}}
+                
               </p>
               <p>
                 <span style="color: #298855; font-weight: 600">
                   JUNIOR CERT,
                 </span>
-                {{education_detail.school}}
+                
               </p>
             </div>
             <div>
               <p style="color: #595959; font-weight: 600">
-                {{education_detail.year}}
+                
               </p>
               <p>
                 <span style="color: #298855; font-weight: 600">
                   LEAVING CERT,
                 </span>
-                {{education_detail.school}}
+                
               </p>
             </div>
           </div>
@@ -162,12 +157,12 @@
                   <th>Subject</th>
                   <th>Grade</th>
                 </tr>
-                {% for item in Junior_Cert_detail %}
+                
                 <tr>
-                  <td>{{ item.subject }}</td>
-                  <td>{{ item.grade }}</td>
+                  <td>asdas</td>
+                  <td></td>
                 </tr>
-                {% endfor %}
+                
               </table>
             </div>
             <div class="table-container">
@@ -176,12 +171,7 @@
                   <th>Subject</th>
                   <th>Grade</th>
                 </tr>
-                {% for item in Leave_Cert_detail %}
-                <tr>
-                  <td>{{ item.subject }}</td>
-                  <td>{{ item.grade }}</td>
-                </tr>
-                {% endfor %}
+                
               </table>
             </div>
           </div>
@@ -191,7 +181,7 @@
       <div>
         <div style="margin-bottom: 20px; margin-top: 20px">
           <h2>WORK EXPERIENCE</h2>
-          {% for item in Experience_detail %}
+          
           <div
             style="
               border-left: dotted;
@@ -201,17 +191,37 @@
               margin-bottom: 20px;
             ">
             <p style="color: #595959; font-weight: 600">
-              {{item.startdate}} - {{item.enddate}}
+              Aug. 2, 2023 - Aug. 3, 2023
             </p>
             <p>
               <span style="color: #298855; font-weight: 600"
-                >{{item.job_title}},</span
+                >not yet,</span
               >
-              {{item.company}}, {{item.city}}.
+              H&amp;M, Mux.
             </p>
-            <p>{{item.description}}</p>
+            <p>hellooo</p>
           </div>
-          {% endfor %}
+          
+          <div
+            style="
+              border-left: dotted;
+              padding-inline: 3rem;
+              border-left-color: darkgray;
+              margin-top: 20px;
+              margin-bottom: 20px;
+            ">
+            <p style="color: #595959; font-weight: 600">
+              Aug. 3, 2023 - Aug. 24, 2023
+            </p>
+            <p>
+              <span style="color: #298855; font-weight: 600"
+                >engineer,</span
+              >
+              zweidevs, johar town.
+            </p>
+            <p>nothing lasts forever</p>
+          </div>
+          
         </div>
       </div>
 
@@ -225,11 +235,11 @@
 
       <div class="hobbies-interests">
         <h2>HOBBIES AND INTERESTS</h2>
-        {% for item in Interest_detail %}
+        
         <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
-          {{item.interests}}, {{item.description}}
+          adsdasxzcazx, 
         </p>
-        {% endfor %}
+        
       </div>
 
       <div class="additional-info">
@@ -243,11 +253,11 @@
 
       <div class="referees">
         <h2>REFEREES</h2>
-        {% for item in Reference_detail %}
+        
         <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
-          {{item.name}}, {{item.position}}
+          asdasd, asdada
         </p>
-        {% endfor %}
+        
       </div>
     </div>
   </body>
