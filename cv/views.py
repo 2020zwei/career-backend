@@ -1,6 +1,7 @@
 import os
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core.mail import EmailMessage
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -515,7 +516,8 @@ class GeneratePDF(CreateAPIView):
             quality_obj=Qualities.objects.filter(user=student.student)
             interest_obj=Interests.objects.filter(user=student.student)
             refer_obj=Reference.objects.filter(user=student.student)
-            temp_name = "general/templates/" 
+            temp_name = "general/templates/"
+            print(user_obj.first_name)
             cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
             context = {
                 'student_detail': user_obj,
@@ -532,18 +534,77 @@ class GeneratePDF(CreateAPIView):
             #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
             rendered_template = render_to_string('cv.html', context)
             open(temp_name + cv_template, "w").write(rendered_template)
-            HTML(temp_name + cv_template).write_pdf(str(user_obj.first_name)+'.pdf')
-            file_location = f'{user_obj.first_name}.pdf'
+            HTML(temp_name + cv_template).write_pdf(str("cv")+'.pdf')
+            file_location = f'{"cv"}.pdf'
             with open(file_location, 'rb') as f:
                 file_data = f.read()
             response = HttpResponse(file_data, content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="'+ user_obj.first_name +'".pdf'
+            response['Content-Disposition'] = 'attachment; filename="'+ "cv" +'".pdf'
             os.remove(temp_name + cv_template)
-            os.remove(user_obj.first_name +".pdf")
+            os.remove("cv.pdf")
             return response
         except Exception as e:
             return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
 
+class GenerateAndSendPDF(CreateAPIView):
+    def get(self, request):
+        """Generate PDF, Send Email with Attachment, and Delete Files"""
+        # try:
+        student = self.request.user
+        user_obj = Student.objects.get(id=student.student.id)
+        print(user_obj.user.email)
+        cv_obj =CV.objects.get(user=student.student)
+        education_obj=Education.objects.filter(user=student.student).first()
+        junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+        leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+        exp_obj=Experience.objects.filter(user=student.student)
+        skill_obj=Skills.objects.filter(user=student.student)
+        quality_obj=Qualities.objects.filter(user=student.student)
+        interest_obj=Interests.objects.filter(user=student.student)
+        refer_obj=Reference.objects.filter(user=student.student)
+
+        temp_name = "general/templates/"
+        cv_template = str(user_obj.first_name) + "-" + str(user_obj.last_name) + "-" + "cv" + ".html"
+        pdf_filename = str(user_obj.first_name) + ".pdf"
+        context = {
+            'student_detail': user_obj,
+            'cv_detail': cv_obj,
+            'education_detail': education_obj,
+            'Junior_Cert_detail': junior_cert_obj,
+            'Leave_Cert_detail': leave_cert_obj,
+            'skill_detail': skill_obj,
+            'qualities_detail': quality_obj,
+            'Experience_detail': exp_obj,
+            'Interest_detail':interest_obj,
+            'Reference_detail': refer_obj,
+        }
+
+        rendered_template = render_to_string('cv.html', context)
+        open(temp_name + cv_template, "w").write(rendered_template)
+        HTML(temp_name + cv_template).write_pdf(pdf_filename)
+
+        with open(pdf_filename, 'rb') as f:
+            file_data = f.read()
+
+        email = EmailMessage(
+            'Your CV PDF',
+            'Please find your CV PDF attached.',
+            'taloot.khan@zweidevs.com',  # Replace with your email address
+            [user_obj.user.email],  # List of recipient email addresses
+        )
+        email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
+
+        email.send()
+
+        # Delete the generated files
+        os.remove(temp_name + cv_template)
+        os.remove(pdf_filename)
+
+        return Response({'message': "CV PDF sent successfully"}, status=status.HTTP_200_OK)
+
+        # except Exception as e:
+        #     return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
+        
 # # class GeneratePDF(CreateAPIView):
 #     def get(self, request):
 #         """Fetch All Notes By Officer"""

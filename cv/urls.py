@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (CvViewRelated,EducationViewRelated,JuniorCertTestViewRelated,
                     ExperienceViewRelated,ReferenceViewRelated, SkillsViewRelated,
-                    QualityViewRelated,GeneratePDF,EducationViewUpdate, 
+                    QualityViewRelated,GeneratePDF,EducationViewUpdate, GenerateAndSendPDF,
                     JuniorViewUpdate, LeavingViewUpdate,ExperienceViewUpdate,ReferenceViewUpdate,
                     SkillsUpdate,QualityUpdate, LeavingCertTestViewRelated,CVUpdate, InterestViewRelated, InterestUpdate)
 
@@ -36,6 +36,7 @@ urlpatterns = [
     path('get-interest/',InterestViewRelated.as_view(),name="Get_Interest"),
     path('update-interest/<int:pk>/',InterestUpdate.as_view(),name="Update_Interest"),
     path('cv/',GeneratePDF.as_view(),name="CV"),
+    path('sendcv/', GenerateAndSendPDF.as_view(), name='generate_send_pdf'),
 
 
 ]
