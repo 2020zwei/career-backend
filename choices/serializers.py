@@ -8,12 +8,22 @@ class StudentSerializer(serializers.ModelSerializer):
     fields=['first_name','last_name','address','eircode']
 
 
+class ColumnNamesSerializer(serializers.Serializer):
+    column_names = serializers.ListField(child=serializers.CharField())
+
 class Level6_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level6
-        fields=['code','point','college','title']
+        fields=['id','code','point','college','title','choice','order_number']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
+        student = self.context['request'].user.student
+        try:
+            choices = Choice.objects.get(user=student)
+        except Choice.DoesNotExist:
+            # If a Choice object does not exist for the user, create a new one.
+            choices = Choice.objects.create(user=student)
+        validated_data['choice'] = choices
         return super(Level6_Serializer, self).create(validated_data=validated_data)
 
 
@@ -21,9 +31,16 @@ class Level6_Serializer(serializers.ModelSerializer):
 class Level8_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level8
-        fields=['code','point','college','title']
+        fields=['id','code','point','college','title','choice','order_number']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
+        student = self.context['request'].user.student
+        try:
+            choices = Choice.objects.get(user=student)
+        except Choice.DoesNotExist:
+            # If a Choice object does not exist for the user, create a new one.
+            choices = Choice.objects.create(user=student)
+        validated_data['choice'] = choices
         return super(Level8_Serializer, self).create(validated_data=validated_data)
 
 
@@ -31,9 +48,17 @@ class Level8_Serializer(serializers.ModelSerializer):
 class Apprentice_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Apprentice
-        fields=['name','level','company']
+        fields=['id','name','level','company','choice','order_number']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
+        student = self.context['request'].user.student
+        try:
+            choices = Choice.objects.get(user=student)
+        except Choice.DoesNotExist:
+            # If a Choice object does not exist for the user, create a new one.
+            choices = Choice.objects.create(user=student)
+
+        validated_data['choice'] = choices
         return super(Apprentice_Serializer, self).create(validated_data=validated_data)
 
 
@@ -41,9 +66,17 @@ class Apprentice_Serializer(serializers.ModelSerializer):
 class Level5_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level5
-        fields=['code','college','title']
+        fields=['id','code','college','title','choice','order_number']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
+        student = self.context['request'].user.student
+        try:
+            choices = Choice.objects.get(user=student)
+        except Choice.DoesNotExist:
+            # If a Choice object does not exist for the user, create a new one.
+            choices = Choice.objects.create(user=student)
+
+        validated_data['choice'] = choices
         return super(Level5_Serializer, self).create(validated_data=validated_data)
 
 
@@ -51,12 +84,47 @@ class Level5_Serializer(serializers.ModelSerializer):
 class Other_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Other
-        fields=['idea']
+        fields=['id','idea','choice','order_number']
+        extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
+        student = self.context['request'].user.student
+        try:
+            choices = Choice.objects.get(user=student)
+        except Choice.DoesNotExist:
+            # If a Choice object does not exist for the user, create a new one.
+            choices = Choice.objects.create(user=student)
+
+        validated_data['choice'] = choices
         return super(Other_Serializer, self).create(validated_data=validated_data)
 
-
+class ChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Choice
+        fields=['id','level6','Level5','level8','apprentice','other']
+    
+    def validate(self, attrs):
+        user = self.context['request'].user.student
+        if Choice.objects.filter(user=user).exists():
+            pass # or you can simply allow updating by doing nothing
+        return attrs
+   
+    def create(self, validated_data):
+        user = self.context['request'].user.student
+        if Choice.objects.filter(user=user).exists():
+            instance = Choice.objects.get(user=user)
+            instance.level6 = validated_data.get('level6', instance.level6)
+            instance.Level5 = validated_data.get('Level5', instance.Level5)
+            instance.level8 = validated_data.get('level8', instance.level8)
+            instance.other = validated_data.get('other', instance.other)
+            instance.apprentice = validated_data.get('apprentice', instance.apprentice)
+            instance.save()
+            return instance
+        validated_data['user'] = self.context['request'].user.student
+        return super(ChoiceSerializer, self).create(validated_data=validated_data)
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return {key for key, value in data.items() if value is True}
 
 class ChoiceDetailSerializer(serializers.ModelSerializer):
 

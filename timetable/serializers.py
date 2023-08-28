@@ -8,7 +8,7 @@ class TimeSlotAddSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Slot
-        fields=['timeslot','endslot','day']
+        fields=['id','title','timeslot','endslot','day']
         
     def create(self, validated_data):
         validated_data["user"] = self.context["user"]
@@ -22,16 +22,26 @@ class TimeSlotRelatedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Slot
-        fields=['timeslot','day']
-    def update(self, instance, validated_data):
-        if Slot.objects.filter(timeslot=validated_data['timeslot'],user=self.context['user']):
-            raise ValidationError(" You have already regesterd this slot")
-        else:
-         instance.timeslot=validated_data['timeslot']
-         instance.day=validated_data['day']
-         instance.save()
-         return instance
+        fields=['id','title','timeslot','day','endslot']
     
+    def update(self, instance, validated_data):
+        timeslot = validated_data.get('timeslot')
+        endslot = validated_data.get('endslot')
+        day=validated_data.get('day')
 
+        if timeslot and endslot:
+            if Slot.objects.filter(day=day,timeslot=timeslot, user=self.context['user']).exclude(pk=instance.pk).exists():
+                raise ValidationError("You have already registered this slot")
+
+        instance.timeslot = timeslot
+        instance.endslot = endslot
+        instance.title = validated_data.get('title', instance.title)
+        instance.day = day
+        instance.save()
+        response_data = {
+        'success': True,
+        'instance': instance,
+        }
+        return instance
 
     

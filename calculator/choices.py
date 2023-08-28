@@ -5,7 +5,7 @@ from django.db import models
 class SUBJECT_LEVELS(models.TextChoices):
 
     HIGHER = "higher", _('Higher')
-    ORDINARY = "oridinary", _('Oridinary')
+    ORDINARY = "ordinary", _('Ordinary')
     FOUNDATION = "foundation", _('Foundation')
     
 

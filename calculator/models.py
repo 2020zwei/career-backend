@@ -1,5 +1,6 @@
 from django.db import models
 from .choices import SUBJECT_LEVELS
+from users.models import Student
 
 
 class Level(models.Model):
@@ -27,7 +28,7 @@ class Subject(models.Model):
 class SubjectGrade(models.Model):
     """Model to create Subject"""
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True,)
-    grade = models.CharField(max_length=5,unique=True)
+    grade = models.CharField(max_length=5)
     point=models.IntegerField()
     level = models.ForeignKey(Level,on_delete=models.CASCADE, related_name='subject_grade',blank=True)
 
@@ -37,3 +38,13 @@ class SubjectGrade(models.Model):
     
     class Meta:
         verbose_name_plural = "Grades"
+
+
+class UserPoints(models.Model):
+    user = models.ForeignKey(Student, on_delete=models.CASCADE)
+    grades = models.ManyToManyField(SubjectGrade, related_name='user_points')
+    total_points = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.full_name
+

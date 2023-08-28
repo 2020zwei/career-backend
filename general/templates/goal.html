@@ -1,36 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOAL</title>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    @page {
+    size: A3;
+    margin: 2cm; /* Adjust margins as needed */
+    }
+    @import url("https://fonts.googleapis.com/css?family=Open+Sans|Pinyon+Script|Rochester");
 
-<body>
-    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Open+Sans:300,400,500,700|Waiting+for+the+Sunrise|Shadows+Into+Light' rel='stylesheet' type='text/css'>
+    .cursive {
+      font-family: "Pinyon Script", cursive;
+    }
 
-<div class="body">
-  <div class="center">
+    .sans {
+      font-family: "Open Sans", sans-serif;
+    }
 
-    <div class="name-hero">
+    .bold {
+      font-weight: bold;
+    }
 
-      <div class="me-img"></div>
+    .block {
+      display: block;
+    }
 
-      <div class="name-text">
+    .underline {
+      border-bottom: 1px solid #777;
+      padding: 5px;
+      width: 50%;
 
-        <h1>What I want to become <em> {{goal_detail.proffession}}</em></h1>
-        <h1>Specific goal for the year <em> {{goal_detail.goal}}</em></h1>
-        <h1>What I want to become <em> {{goal_detail.proffession}}</em></h1>
-        <h1>5 actions to achieve goal <em> {{goal_detail.actions}}</em></h1>
-        <h1>Is it realistic or not <em> {{goal_detail.realistic}}</em></h1>
-        <h1>CountDown <em> {{goal_detail.countdown}}</em></h1>
+      margin: 0 auto 15px auto;
+    }
 
+    .margin-0 {
+      margin: 0;
+    }
+
+    .padding-0 {
+      padding: 0;
+    }
+
+    .pm-empty-space {
+      height: 40px;
+      width: 100%;
+    }
+
+    .body {
+      padding: 20px 0;
+      background: #ccc;
+    }
+    .text-center {
+      text-align: center;
+    }
+
+    .pm-certificate-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      background-color: #618597;
+      padding: 1px;
+      color: #333;
+      font-family: "Open Sans", sans-serif;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      /*background: -webkit-repeating-linear-gradient(
+      45deg,
+      #618597,
+      #618597 1px,
+      #b2cad6 1px,
+      #b2cad6 2px
+    );
+    .background: repeating-linear-gradient(
+      90deg,
+      #618597,
+      #618597 1px,
+      #b2cad6 1px,
+      #b2cad6 2px
+    );*/
+
+      .outer-border {
+        width: 794px;
+        height: 594px;
+        position: absolute;
+        left: 50%;
+        margin-left: -397px;
+        top: 50%;
+        margin-top: -297px;
+        border: 2px solid #fff;
+      }
+
+      .inner-border {
+        width: 730px;
+        height: 530px;
+        position: absolute;
+        left: 50%;
+        margin-left: -365px;
+        top: 50%;
+        margin-top: -265px;
+        border: 2px solid #fff;
+      }
+
+      .pm-certificate-border {
+        position: relative;
+        width: 720px;
+        height: 520px;
+        padding: 0;
+        border: 1px solid #e1e5f0;
+        background-color: rgba(255, 255, 255, 1);
+        background-image: none;
+        left: 50%;
+        margin-left: -360px;
+        top: 50%;
+        margin-top: -260px;
+
+        .pm-certificate-block {
+          width: 650px;
+          height: 200px;
+          position: relative;
+          left: 50%;
+          margin-left: -325px;
+          top: 70px;
+          margin-top: 0;
+        }
+
+        .pm-certificate-header {
+          margin-bottom: 10px;
+        }
+
+        .pm-certificate-title {
+          position: relative;
+          top: 40px;
+
+          h2 {
+            font-size: 34px !important;
+          }
+        }
+
+        .pm-certificate-body {
+          padding: 20px;
+
+          .pm-name-text {
+            font-size: 20px;
+          }
+        }
+
+        .pm-earned {
+          margin: 15px 0 20px;
+          .pm-earned-text {
+            font-size: 20px;
+          }
+          .pm-credits-text {
+            font-size: 15px;
+          }
+        }
+
+        .pm-course-title {
+          .pm-earned-text {
+            font-size: 20px;
+          }
+          .pm-credits-text {
+            font-size: 15px;
+          }
+        }
+
+        .pm-certified {
+          font-size: 12px;
+
+          .underline {
+            margin-bottom: 5px;
+          }
+        }
+
+        .pm-certificate-footer {
+          width: 650px;
+          height: 100px;
+          position: relative;
+          left: 50%;
+          margin-left: -325px;
+          bottom: -105px;
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+  </style>
+  <body>
+    <div class="container pm-certificate-container" 
+    style="position: relative;
+    width: 800px;
+    height: 600px;
+    background-color: #618597;
+    padding: 1px;
+    color: #333;
+    font-family: "Open Sans", sans-serif;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"
+    >
+      <div
+        class="outer-border"
+        style="
+          width: 794px;
+          height: 594px;
+          position: absolute;
+          left: 50%;
+          margin-left: -397px;
+          top: 50%;
+          margin-top: -297px;
+          border: 2px solid #fff;
+        "
+      ></div>
+      <div
+        class="inner-border"
+        style="
+          width: 728px;
+          height: 530px;
+          position: absolute;
+          left: 50%;
+          margin-left: -365px;
+          top: 50%;
+          margin-top: -265px;
+          border: 2px solid #fff;
+        "
+      ></div>
+
+      <div
+        class="pm-certificate-border col-xs-12"
+        style="
+          position: relative;
+          width: 720px;
+          height: 520px;
+          padding: 0;
+          border: 1px solid #e1e5f0;
+          background-color: rgba(255, 255, 255, 1);
+          background-image: none;
+          left: 50%;
+          margin-left: -360px;
+          top: 50%;
+          margin-top: -260px;
+        "
+      >
+        <div class="row pm-certificate-header">
+          <div class="pm-certificate-title cursive col-xs-12 text-center">
+            <h2>Certificate of Appreciation</h2>
+          </div>
+        </div>
+
+        <div class="row pm-certificate-body" 
+        style="padding: 20px"
+        >
+          <div
+            class="pm-certificate-block"
+            style="
+              width: 650px;
+              height: 200px;
+              position: relative;
+              left: 50%;
+              margin-left: -325px;
+              top: 70px;
+              margin-top: 0;
+            "
+          >
+            <div class="col-xs-12">
+              <div class="row">
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+                <div
+                  class="pm-certificate-name underline col-xs-8 text-center"
+                  style="
+                    border-bottom: 1px solid #777;
+                    padding: 5px;
+                    width: 50%;
+
+                    margin: 0 auto 15px auto;
+                    margin-bottom: 5px;
+                  "
+                >
+                  <span class="pm-name-text bold" 
+                  style="font-size: 20px"
+                    >{{student_detail.student.full_name}}</span
+                  >
+                </div>
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+              </div>
+            </div>
+
+            <div class="col-xs-12">
+              <div class="row">
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+                <div
+                  class="pm-earned col-xs-8 text-center"
+                  style="margin: 15px 0 20px"
+                >
+                  <span
+                    class="pm-earned-text padding-0 block cursive"
+                    style="font-size: 20px"
+                    >Goal is:</span
+                  >
+                  <span
+                    class="pm-credits-text block bold sans"
+                    style="font-size: 15px"
+                    >{{goal_detail.proffession}}</span
+                  >
+                </div>
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+                <div class="col-xs-12"></div>
+              </div>
+            </div>
+
+            <div class="col-xs-12">
+              <div class="row">
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+                <div class="pm-course-title col-xs-8 text-center">
+                  <span
+                    class="pm-earned-text block cursive"
+                    style="font-size: 20px"
+                    >{{goal_detail.goal}}</span
+                  >
+                </div>
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+              </div>
+            </div>
+
+            <div class="col-xs-12">
+              <div class="row">
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+                <div
+                  class="pm-course-title underline col-xs-8 text-center"
+                  {% comment %} style="
+                    border-bottom: 1px solid #777;
+                    padding: 5px;
+                    width: 50%;
+
+                    margin: 0 auto 15px auto;
+                    margin-bottom: 5px;
+                  " {% endcomment %}
+                >
+                  <span
+                    class="pm-credits-text block bold sans"
+                    style="font-size: 15px"
+                    >{{goal_detail.actions}}</span
+                  >
+                </div>
+                <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="pm-certificate-footer">
+                <div class="col-xs-4 pm-certified col-xs-4 text-center">
+                  <span
+                    class="pm-credits-text block sans"
+                    style="font-size: 15px"
+                    >School</span
+                  >
+                  <span
+                    class="pm-empty-space block underline"
+                    style="
+                    border-bottom: 1px solid #777;
+                    padding: 5px;
+                    width: 50%;
+
+                    margin: 0 auto 15px auto;
+                    margin-bottom: 5px;
+                  "
+                  ></span>
+                  <span class="bold block">signature</span>
+                </div>
+                <div class="col-xs-4">
+                  <!-- LEAVE EMPTY -->
+                </div>
+                <div class="col-xs-4 pm-certified col-xs-4 text-center">
+                  <span
+                    class="pm-credits-text block sans"
+                    style="font-size: 15px"
+                    >Date Completed</span
+                  >
+                  <span
+                    class="pm-empty-space block underline"
+                    style="
+                    border-bottom: 1px solid #777;
+                    padding: 5px;
+                    width: 50%;
+
+                    margin: 0 auto 15px auto;
+                    margin-bottom: 5px;
+                  "
+                  ></span>
+                  <span class="bold block">date </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
     </div>
-
-  </div>
-</div>
-</body>
+  {% comment %} </div> {% endcomment %}
+  </body>
 </html>

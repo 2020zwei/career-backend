@@ -112,3 +112,23 @@ class JOB_TITLE(models.TextChoices):
     WorkShadow = "2", _('WORK SHADOW')
     Other = "3", _('OTHER')
 
+class SKILLS(models.TextChoices):
+    SelfStarter= "1", _('SELF STARTER')
+    PeopleSkills= "2", _('People Skills')
+    CriticalThinkingSkills= "3", _('Critical Thinking Skills')
+    PracticalSkills= "4", _('Practical Skills')
+    CommunicationSkills= "5", _('Communication Skills')
+    TeamworkSkills= "6", _('Teamwork Skills')
+    InformationSkills= "7", _('Information Skills')
+    CreativeSkills= "8", _('Creative Skills')
+    CriticalProblemSolving= "9", _('Critical Problem Solving')
+
+class QUALITY(models.TextChoices):
+    Intuitive= "1", _('Intuitive')
+    Persistent= "2", _('Persistent')
+    Enthusiastic= "3", _('Enthusiastic')
+    Persuasive= "4", _('Persuasive')
+    Empathic= "5", _('Empathic')
+    Patient = "6", _('Patient')
+    A_Good_Listener= "7", _('A_Good_Listener')
+    Expressive= "8", _('Expressive')

@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Student, School
-from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, TokenCreateSerializer
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from djoser.compat import get_user_email_field_name
@@ -12,6 +11,12 @@ from drf_extra_fields.fields import Base64ImageField
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from django.contrib.auth.hashers import make_password
+import base64
+from django.core.files.base import ContentFile
+from datetime import date
+from django.conf import settings as setting
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 User = get_user_model()
@@ -21,8 +26,8 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
     password = serializers.CharField(required=False, style={"input_type": "password"})
 
     default_error_messages = {
-        "invalid_credentials": settings.CONSTANTS.messages.INVALID_CREDENTIALS_ERROR,
-        "inactive_account": settings.CONSTANTS.messages.INACTIVE_ACCOUNT_ERROR,
+        "invalid_password": "The password is not correct",
+        "inactive_account": "The given email is not registered",
     }
 
     def __init__(self, *args, **kwargs):
@@ -31,6 +36,10 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
 
         self.email_field = get_user_email_field_name(User)
         self.fields[self.email_field] = serializers.EmailField()
+    
+    @classmethod
+    def get_token(cls, user):
+        return RefreshToken.for_user(user)
 
     def validate(self, attrs):
         password = attrs.get("password")
@@ -41,10 +50,17 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
         if not self.user:
             self.user = User.objects.filter(email=email).first()
             if self.user and not self.user.check_password(password):
-                self.fail("invalid_credentials")
+                raise serializers.ValidationError(
+                {'error': 'Invalid password'})
         if self.user and self.user.is_active:
-            return attrs
-        self.fail("invalid_credentials")
+            data = super().validate(attrs)
+            refresh = self.get_token(self.user)
+
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            return data
+        raise serializers.ValidationError(
+                {'error': 'Invalid email'})
 
 
 class SignupUserSerializer(serializers.Serializer):
@@ -101,9 +117,21 @@ class SignupUserSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_image = Base64ImageField(required= False)
+    email = serializers.EmailField(source='user.email', read_only=True)
     class Meta:
         model=Student
-        fields=['first_name','last_name','school','dob']
+        fields=['full_name', 'school', 'dob', 'profile_image', 'email','address','city','country','current_step','cv_completed']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        profile_image = representation.get('profile_image')
+        if profile_image is None:
+            # representation['profile_image'] = 'https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg?AWSAccessKeyId=AKIA6OTH6666Q3UAKHF2&Signature=oIEmDWSVsNxSm5rpTRDJYvlw%2BLg%3D&Expires=1687348379'
+            representation['profile_image']='https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg'
+        return representation
+    
+
 
 class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,12 +140,25 @@ class SchoolSerializer(serializers.ModelSerializer):
 
 
 class StudentSignUpSerializer(serializers.ModelSerializer):
-    
-    profile_image = Base64ImageField()
+    profile_image = Base64ImageField(required= False, allow_null= True)
     class Meta:
         model=Student
         fields=('first_name','last_name','profile_image','school','user','full_name',"dob")
 
+    def validate_dob(self, value):
+        """
+        Validate that the 'dob' field is not greater than today's date.
+        """
+        if value > date.today():
+            raise serializers.ValidationError("Date of birth cannot be in the future.")
+        return value
+    
+    def to_internal_value(self, data):
+        if 'profile_image' not in data:
+            # Set the default value for 'profile_image' field
+            data['profile_image'] = setting.DEFAULT_PROFILE_IMAGE_PATH
+        return super().to_internal_value(data)
+    
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
