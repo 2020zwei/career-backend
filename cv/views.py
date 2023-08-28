@@ -507,7 +507,7 @@ class GeneratePDF(CreateAPIView):
           student =self.request.user
           user_obj=Student.objects.get(id=student.student.id)
           cv_obj =CV.objects.get(user=student.student)
-          education_obj=Education.objects.filter(user=student.student)
+          education_obj=Education.objects.get(user=student.student)
           junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
           leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
           exp_obj=Experience.objects.filter(user=student.student)
