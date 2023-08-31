@@ -9,3 +9,4 @@ media
 !.elasticbeanstalk/*.global.yml
 # random files
 requirements_tree.txt
+static

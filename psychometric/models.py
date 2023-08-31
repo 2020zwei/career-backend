@@ -4,12 +4,14 @@ from users.models import Student
 
 class TestType(models.Model):
     type=models.CharField(max_length=300)
+    description=models.TextField(max_length=300, null=True, blank=True)
 
     def __str__(self):
         return self.type
 
 class PsychometricTest(models.Model):
     name = models.CharField(max_length=300)
+    intro=models.TextField(max_length=300, null=True, blank=True)
     def __str__(self):
         return self.name
 
@@ -29,11 +31,11 @@ class Answer(models.Model):
         return self.answer
 
 class TestResult(models.Model):
-    user=models.OneToOneField(Student, blank=True, null=True,on_delete=models.CASCADE)
+    user=models.ForeignKey(Student, blank=True, null=True,on_delete=models.CASCADE)
     test=models.ForeignKey(PsychometricTest,blank=True, null=True, on_delete=models.CASCADE)
     score=models.IntegerField(null=True)
     def __str__(self):
-        return self.user.first_name
+        return self.user.full_name
     
 class TestResultDetail(models.Model):
     result=models.ForeignKey(TestResult, on_delete=models.CASCADE)

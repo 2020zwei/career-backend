@@ -1,15 +1,31 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView
+from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView,UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import User,Student, School
-from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer, StudentSignUpSerializer, UserSignUpSerializer
+from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer, StudentSignUpSerializer, UserSignUpSerializer, CustomTokenCreateSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from common.response_template import get_response_template
+from django.conf import settings
+from rest_framework_simplejwt.views import TokenViewBase
+
+class CustomTokenObtainPairView(TokenViewBase):
+    """
+    Takes a set of user credentials and returns an access and refresh JSON web
+    token pair to prove the authentication of those credentials.
+    """
+    serializer_class = CustomTokenCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class SignupUser(APIView):
@@ -20,8 +36,27 @@ class SignupUser(APIView):
             user_serializer_obj  = UserSignUpSerializer(data=request.data)
             user_serializer_obj.is_valid(raise_exception=True)
             user_obj = user_serializer_obj.save()
-            request.data["user"] = user_obj.pk
-            student_serializer_obj = StudentSignUpSerializer(data=request.data)
+            school_name = request.data.get('school')
+            # profile_image = request.data.get('profile_image') or settings.DEFAULT_PROFILE_IMAGE_PATH
+            try:
+                school_obj = School.objects.get(school=school_name)
+            except School.DoesNotExist:
+                # Create a new School object if it doesn't exist
+                school_data = {
+                    'school': school_name,
+                }
+            
+            # Create the Student object
+            student_data = {
+                'first_name': request.data.get('first_name'),
+                'last_name': request.data.get('last_name'),
+                'full_name': request.data.get('full_name'),
+                'school': request.data.get('school'),
+                'user': user_obj.pk,
+                'profile_image': request.data.get('profile_image'),
+                'dob': request.data.get('dob')
+            }
+            student_serializer_obj = StudentSignUpSerializer(data=student_data)
             student_serializer_obj.is_valid(raise_exception=True)
             student_serializer_obj.save()
             response_template = get_response_template()
@@ -38,7 +73,20 @@ class UserView(RetrieveAPIView):
             return queryset
         except Exception as e:
             raise ValidationError(e)
-
+    
+    def patch(self, request):
+        try:
+            user = self.get_object()
+            serializer = UserSerializer(user, data=request.data, partial=True) # set partial=True to update a data partially
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({'data':serializer.data, 'success':True})
+        except Exception as e:
+            raise ValidationError(e)
+class UserUpdate(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = Student.objects.all()
 
 class SchoolView(CreateAPIView):
     permission_classes=[]
@@ -47,7 +95,7 @@ class SchoolView(CreateAPIView):
     def get(self, request):
         """Fetch All Tests By User"""
         try:
-            schools=School.objects.all()
+            schools = School.objects.order_by('school')
             serializer = SchoolSerializer(schools, many=True)
             return Response({'data':serializer.data, 'success':True})
     
@@ -68,7 +116,7 @@ class SendPasswordResetOTPView(APIView):
             send_mail(
                 'Your Password Reset OTP',
                 f'Your password reset otp is {otp}',
-                'hassan.shahzad@zweidevs.com',
+                'taloot.khan@zweidevs.com',
                 [email])
         except:
             pass

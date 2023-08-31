@@ -6,7 +6,8 @@ from ckeditor.fields import RichTextField
 
 class Quiz(models.Model):
     name = models.CharField(max_length=300)
-    
+    description = models.CharField(max_length=700, null=True, default='')
+    youtube_link= models.CharField(max_length=700, null=True, blank=True, default='')
     def __str__(self):
         return self.name
     
@@ -38,7 +39,7 @@ class QuizResult(models.Model):
 
 
     def __str__(self):
-        return self.user.first_name
+        return self.user.full_name
 
 class QuizResultDetail(models.Model):
     result= models.ForeignKey(QuizResult, on_delete=models.CASCADE)
@@ -46,6 +47,6 @@ class QuizResultDetail(models.Model):
     answer= models.ForeignKey(Answer,related_name="result",on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.result.user.first_name
+        return self.result.user.full_name
 
    

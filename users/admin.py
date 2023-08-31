@@ -6,7 +6,7 @@ class StudentAdminDisplay(admin.ModelAdmin):
      return "%s %s" % (obj1.first_name, obj1.last_name)
     
    
-    list_display=['__str__','firstname_and_lastname','school','dob','profile_image']
+    list_display=['__str__','firstname_and_lastname','school','dob','profile_image','cv_completed']
     
 
     

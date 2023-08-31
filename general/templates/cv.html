@@ -1,288 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<html>
+  <head>
+    <title>CV Template</title>
     <style>
-        *, *:before, *:after {
-            -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
-           }
-          
-          html
-          {
-              font-size:100%;
-          }
-          
-          body
-          {
-              -webkit-font-smoothing:antialiased;
-              color:#333332;
-              font-family:Lora, serif;
-              font-size:18px;
-              font-weight:400;
-              line-height:1.4;
-              text-rendering:optimizeLegibility;
-          }
-          
-          .skill-set li:hover
-          {
-              background:#3498db;
-          }
-          
-          h1
-          {
-              color:rgba(0,0,0,.75);
-          }
-          
-          .wrapper
-          {
-              height:100%;
-          }
-          
-          .left
-          {
-              background-color:rgba(0,0,0,.025);
-              border-right:1px solid rgba(0,0,0,.05);
-              float:right;
-              height:100%;
-              margin-left:-1px;
-              min-width:256px;
-              position:fixed;
-              width:33.33%;
-            
-          }
-          
-          .right
-          {
-              float:right;
-              height:100%;
-              position:relative;
-              width:66.66%;
-          }
-          
-          
-          .name-hero
-          {
-              background:rgba(0,0,0,.001);
-              bottom:0;
-              height:290px;
-              left:0;
-              margin:auto;
-              position:absolute;
-              right:0;
-              top:0;
-              width:85%;
-          }
-          
-          .me-img
-          {
-              background:url(https://media-exp1.licdn.com/dms/image/C4E03AQGnLq_IB_mf8Q/profile-displayphoto-shrink_400_400/0/1631022739752?e=1648684800&v=beta&t=eICUjHeH_g9GQEItmEMK1j2gCADwqfjrlccSD_5za58) no-repeat center center ;
-              background-size:100%;
-            background-position:0px;
-              border-radius:100%;
-              height:150px;
-              margin:0 auto;
-              position:relative;
-              width:150px;
-          }
-          
-          .name-hero h1
-          {
-              font-family:Open Sans, sans-serif;
-              font-size:1.5em;
-              text-align:center;
-          }
-          
-          .name-hero h1 em
-          {
-              color:rgba(0,0,0,.3);
-              font-style:normal;
-              font-weight:700;
-          }
-          
-          .name-hero p
-          {
-              color:rgba(0,0,0,.75);
-              font-size:.75em;
-              line-height:1.5;
-              margin:0 8px 0 0;
-              text-align:center;
-          }
-          
-          .name-hero .name-text
-          {
-              margin:0 auto;
-              width:85%;
-          }
-          
-          .inner
-          {
-              margin:0 auto;
-              max-width:975px;
-              padding:3em;
-          }
-          
-          .inner h1
-          {
-              font-size:1.75em;
-          }
-          
-          .inner p
-          {
-              color:rgba(0,0,0,.5);
-          }
-          
-          .inner p em
-          {
-              color:rgba(0,0,0,1);
-              font-style:normal;
-          }
-          
-          .inner section
-          {
-              margin:100px auto;
-          }
-          
-          ul
-          {
-              list-style-type:none;
-              margin-top:-10px;
-              max-width:570px;
-              padding:0;
-          }
-          
-          .skill-set li
-          {
-              background:rgba(0,0,0,.75);
-              border-radius:5px;
-              color:#FFF;
-              display:inline-block;
-              list-style:none;
-              margin:15px 15px 0 0;
-              padding:10px;
-              text-align:justify;
-          }
-          
-          @media screen and (max-width: 48em) 
-              .right,.left
-              {
-                  float:none;
-              position:relative !important;
-                  width:100%;
-              min-height:500px;
-              }
-            .handmade {
-            text-align:center !important;
-            margin-top:0px !important;
-          }
-          
-          @media screen and (max-width: 75em) {
-              body
-          { font-size:16px;}
-          }
-          
-          @media screen and (max-width: 60em) {
-              body
-          { font-size:14px;}
-          }
-          .clearfix:after {
-             content: " "; /* Older browser do not support empty content */
-             visibility: hidden;
-             display: block;
-             height: 0;
-             clear: both;
-          }
-          .handmade {
-            text-align:right;
-            margin-top:100px;
-          }
-          .handmade em {
-            font-family: 'Shadows Into Light', cursive;
-            font-size: 1.25em;
-            margin-left:5px;
-          }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: none;
+      }
+      p {
+        color: #7c7c7c;
+        font-size: 1rem;
+      }
+      th {
+        color: #595959;
+      }
+      {% comment %} tr,
+      th,
+      table,
+      td {
+        border: 1px solid !important;
+      } {% endcomment %}
+      {% comment %} th,
+      td {
+        width: 800px;
+      } {% endcomment %}
+      li {
+        color: #7c7c7c;
+        font-size: 0.9rem;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        font-weight: 600;
+      }
+      ul {
+        padding: 0;
+      }
+      li::marker {
+        color: #298855;
+      }
+      li {
+        bottom: 10px;
+      }
+      {% comment %} table {
+        width: 20%;
+        border-collapse: collapse;
+      } {% endcomment %}
+      {% comment %} th, {% endcomment %}
+      {% comment %} td {
+        border: 1px solid #ddd;
+        padding: 4px;
+        text-align: left;
+      } {% endcomment %}
+      table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+      }
+      th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      }
+      th {
+      background-color: #fff;
+      }
+      .tables-main{
+        display: flex;
+      }
+      .table-container {
+        display: inline-block;
+        width: 48%; /* Adjust as needed to leave some spacing between tables */
+        margin-right: 2%; /* Add some right margin for spacing */
+        vertical-align: top; /* Align the tops of the containers */
+      }
     </style>
-</head>
+  </head>
+  <body>
+    <div style="text-align: center; padding: 20px 0; text-transform: uppercase">
+      <h1 style="font-size: 2.9rem; font-weight: 600">
+        <span style="color: #646464">{{student_detail.first_name}}</span>
+        <span>{{student_detail.last_name}}</span>
+      </h1>
+      <p style="color: #858585">{{cv_detail.email}} - {{cv_detail.address}}</p>
+    </div>
+    <hr style="height: 1px; background-color: #858585" />
+    <div style="max-width: 800px; margin: 0 auto; padding: 20px">
+      <div style="padding-top: 15px">
+        <h2>PERSONAL STATEMENT</h2>
+        <p>{{cv_detail.objective}}</p>
+      </div>
+      <div style="display: flex; align-items: center">
+        <h2>SKILLS AND QUALITIES</h2>
+        <p style="font-style: italic; font-weight: 600; margin-left: 5px">
+        </p>
+      </div>
+      <div>
+        <div style="display: flex">
+          <ul style="margin-right: 10rem">
+            <h3>Skills:</h3>
+            {% for skill in skill_detail %}
+            <li>{{skill.get_skill_dropdown_display}}</li>
+            {% endfor %}
+          </ul>
 
-<body>
-    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Open+Sans:300,400,500,700|Waiting+for+the+Sunrise|Shadows+Into+Light' rel='stylesheet' type='text/css'>
-
-<div class="wrapper clearfix">
-  <div class="left">
-
-    <div class="name-hero">
-
-      <div class="me-img"></div>
-
-      <div class="name-text">
-
-        <h1>{{student_detail.first_name}} <em> {{student_detail.last_name}}</em></h1>
-        <p>{{student_detail.city}}</p>
-        <p>{{student_detail.address}}</p>
-        <p>(956) 500-5558</p>
-
+          <ul style="margin-right: 1rem">
+            <h3>Qualities:</h3>
+            {% for quality in qualities_detail %}
+            <li>{{quality.get_quality_dropdown_display}}</li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
 
-    </div>
-
-  </div>
-  <div class="right">
-
-    <div class="inner">
-      <section>
-        <h1>Education</h1>
-        <p>{{education_detail.school}}<em>{{education_detail.year}}</em></p>
-      </section>
-      <section>
-        <h1>Experience</h1>
-        <p>{{Experience_detail.get_jobtitle_display}}<em>{{Experience_detail.company}}</em></p>
-      </section>      
-      <section>
-        <h1>Technical Skills</h1>
-        <ul class="skill-set">
-          <li>Mobile Development</li>
-          <li>Xamarin</li>
-          <li>CSS3</li>
-          <li>Adobe Photoshop</li>
-          <li>HTML5</li>
-          <li>CSS3</li>
-          <li>JQUERY</li>
-          <li>UI Design</li>
-          <li>Company Branding</li>
-          <li>Responsive Web Design</li>
-        </ul>
-      </section>
-      <section>
-        <h1>References</h1>
-        <p>William Grand | <em>Grand Interactive, llc. | CEO</em></p>
-        <p>(617) 448-0910 | wgrand@grandinteractive.com</p>
-        <p>Eric Chauvin | <em>PadMatcher Inc. | CEO</em></p>
-        <p>(617) 448-0910 | eric@padmatcher.com</p>
-        <p>Chris Heller <em>Penrose Realty LLC. | Broker</em></p>
-        <p>(617) 794-4554 | chris@penroserealty.com</p>
-      </section>
-      <section>
-        <h1>Personal Interests</h1>
-        <ul class="skill-set">
-          <li>Faith</li>
-          <li>Biblical Studies</li>
-          <li>Playing Guitar</li>
-          <li>Song Writing</li>
-          <li>Health  Nutrition</li>
-          <li>Reading</li>
-        </ul>
-      </section>
-      <section>
-        <div class="handmade">
-          <p>handmade by <em> Anthony Adamski</em></p>
+      <div class="education">
+        <div style="margin-top: 20px; margin-bottom: 20px">
+          <h2>EDUCATION</h2>
+          <p style="margin: 1px; font-style: italic; font-weight: 600">
+          </p>
+          <div
+            style="
+              display: flex;
+              justify-content: space-around;
+              border-left: dotted;
+              border-left-color: darkgray;
+              margin-top: 20px;
+              margin-bottom: 20px;
+            ">
+            <div>
+              <p style="color: #595959; font-weight: 600">
+                {{education_detail.year}}
+              </p>
+              <p>
+                <span style="color: #298855; font-weight: 600">
+                  JUNIOR CERT,
+                </span>
+                {{education_detail.school}}
+              </p>
+            </div>
+            <div>
+              <p style="color: #595959; font-weight: 600">
+                {{education_detail.year}}
+              </p>
+              <p>
+                <span style="color: #298855; font-weight: 600">
+                  LEAVING CERT,
+                </span>
+                {{education_detail.school}}
+              </p>
+            </div>
+          </div>
+          <div class="tables-main">
+            <div class="table-container">
+              <table>
+                <tr>
+                  <th>Subject</th>
+                  <th>Grade</th>
+                </tr>
+                {% for item in Junior_Cert_detail %}
+                <tr>
+                  <td>{{ item.subject }}</td>
+                  <td>{{ item.grade }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+            </div>
+            <div class="table-container">
+              <table>
+                <tr>
+                  <th>Subject</th>
+                  <th>Grade</th>
+                </tr>
+                {% for item in Leave_Cert_detail %}
+                <tr>
+                  <td>{{ item.subject }}</td>
+                  <td>{{ item.grade }}</td>
+                </tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
+
+      <div>
+        <div style="margin-bottom: 20px; margin-top: 20px">
+          <h2>WORK EXPERIENCE</h2>
+          {% for item in Experience_detail %}
+          <div
+            style="
+              border-left: dotted;
+              padding-inline: 3rem;
+              border-left-color: darkgray;
+              margin-top: 20px;
+              margin-bottom: 20px;
+            ">
+            <p style="color: #595959; font-weight: 600">
+              {{item.startdate}} - {{item.enddate}}
+            </p>
+            <p>
+              <span style="color: #298855; font-weight: 600"
+                >{{item.job_title}},</span
+              >
+              {{item.company}}, {{item.city}}.
+            </p>
+            <p>{{item.description}}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="achievements">
+        <h2>ACHIEVEMENTS</h2>
+        <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
+          Give information about specific achievements. These might be school
+          related, personal or sporting achievements
+        </p>
+      </div>
+
+      <div class="hobbies-interests">
+        <h2>HOBBIES AND INTERESTS</h2>
+        {% for item in Interest_detail %}
+        <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
+          {{item.interests}}, {{item.description}}
+        </p>
+        {% endfor %}
+      </div>
+
+      <div class="additional-info">
+        <h2>ADDITIONAL INFORMATION</h2>
+        <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
+          Any further information which might support an application such as
+          membership of an organisation or the ability to speak another
+          language.
+        </p>
+      </div>
+
+      <div class="referees">
+        <h2>REFEREES</h2>
+        {% for item in Reference_detail %}
+        <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
+          {{item.name}}, {{item.position}}
+        </p>
+        {% endfor %}
+      </div>
     </div>
-
-  </div>
-
-</div>
-</body>
+  </body>
 </html>

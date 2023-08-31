@@ -25,17 +25,21 @@ class Student(models.Model):
     first_name = models.CharField(max_length=100,blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     full_name = models.CharField(max_length=100)
-    school =  models.ForeignKey(School,on_delete=models.CASCADE,blank=True)
-    profile_image = models.ImageField(upload_to='profile_images',null=True,blank=True,validators=[validate_file_size])  
+    school =  models.CharField(max_length=50, blank=True,null=True)
+    profile_image = models.ImageField(upload_to='profile_images',null=True,blank=True,validators=[validate_file_size],max_length=255)
+
     dob = models.DateField(null=True,blank=True)
     user=models.OneToOneField(User,on_delete=models.CASCADE,related_name='student')
     city = models.CharField(max_length=50, blank=True,null=True)
     country = models.CharField(max_length=50, blank=True,null=True)
     address = models.TextField(blank=True,null=True)
+    address2 = models.TextField(blank=True,null=True)
     eircode=models.CharField(max_length=7,null=True,blank=True)
     otp = models.CharField(max_length=5,null=True, blank=True)
+    cv_completed=models.BooleanField(default=False)
     otp_verified = models.BooleanField(default=False)
-    
+    current_step = models.IntegerField(default=1)
+
     def __str__(self):
         """return name of Student"""
         return self.full_name

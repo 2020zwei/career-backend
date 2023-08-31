@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 class TimeSlotModelForm(ModelForm):
     class Meta:
         model = Slot
-        fields = ['timeslot','endslot','day', 'year','week','user']
+        fields = ['title','timeslot','endslot','day', 'year','week','user']
 
 
     def clean(self):
