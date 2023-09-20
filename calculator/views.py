@@ -61,7 +61,7 @@ class CalculatePointViewRelated(APIView):
             UserPoints.objects.filter(user=user).delete()  # Delete previous records
             points = 0
             bonus_points = 0
-            for obj in request.data:
+            for obj in request.data[:6]:
                 grade_id= obj.get('grade')
                 subject_grade_obj = SubjectGrade.objects.filter(pk=grade_id).first()
                 if subject_grade_obj is None:
@@ -71,7 +71,9 @@ class CalculatePointViewRelated(APIView):
                     raise ValidationError(f"No subject found for subject grade with id {subject_grade_obj.id}")
 
                 points += subject_grade_obj.point
-                if subject_grade_obj.subject.is_additional_marks_allowed and subject_grade_obj.level.subjectlevel == 'higher':
+                if (subject_grade_obj.subject.is_additional_marks_allowed
+                        and subject_grade_obj.level.subjectlevel == 'higher'
+                        and subject_grade_obj.grade in ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']):
                     bonus_points += subject_grade_obj.subject.additional_marks
 
                 # Add subject, grade, and level to user's UserPoints
