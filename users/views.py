@@ -60,6 +60,7 @@ class SignupUser(APIView):
                 'first_name': first_name ,
                 'last_name': last_name,
                 'full_name': request.data.get('full_name'),
+                'number': request.data.get('number'),
                 'school': request.data.get('school'),
                 'user': user_obj.pk,
                 'profile_image': request.data.get('profile_image'),
