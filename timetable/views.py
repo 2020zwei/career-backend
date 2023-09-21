@@ -78,6 +78,6 @@ class ResetWeekView(APIView):
     def delete(self, request):
         todays_date = date.today()
         year, week_num, day_of_week = todays_date.isocalendar()  # Using isocalendar() function   
-        obj = Slot.objects.filter(user=self.request.user.student,year=year,week=week_num)
-        obj.delete()
+        obj = Slot.objects.filter(user=self.request.user.student).delete()
+        # obj.delete()
         return Response(data={'success': True, 'message': 'Deleted Successfully'}, status=status.HTTP_200_OK)
