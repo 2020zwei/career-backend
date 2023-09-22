@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SubjectViewRelated,SubjectGradeViewRelated,CalculatePointViewRelated, UserPointsView
+from .views import SubjectViewRelated,SubjectGradeViewRelated,CalculatePointViewRelated, UserPointsView, UserPointsDeleteView, RemoveSubjectGradeFromUserPoints
 
 
 urlpatterns = [
@@ -7,5 +7,6 @@ urlpatterns = [
     path('check-level-grade/',SubjectGradeViewRelated.as_view(),name="CheckSubjectLevel"),
     path('calculate-coa-point/',CalculatePointViewRelated.as_view(),name="CheckSubjectLevel"),
     path('user-points/', UserPointsView.as_view(),name="UserPoints"),
-    path('user-points/<int:id>/', UserPointsView.as_view(),name="UserPointsDetail"),
+    path('user-points/delete/<int:pk>/', UserPointsDeleteView.as_view(), name='userpoints-delete'),
+    path('remove-subject-grade/', RemoveSubjectGradeFromUserPoints.as_view(), name='remove-subject-grade'),
 ]

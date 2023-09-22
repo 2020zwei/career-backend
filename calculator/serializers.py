@@ -49,7 +49,7 @@ class SubjectGradeSerializer(serializers.ModelSerializer):
 class SubjectGradesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubjectGrade
-        fields = ['grade', 'level','subject']
+        fields = ['id', 'grade', 'level','subject']
 
 class SubjectsSerializer(serializers.ModelSerializer):
     level = SubjectGradesSerializer(many=True, read_only=True)
