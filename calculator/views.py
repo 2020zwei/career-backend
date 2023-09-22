@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView
+from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from .serializers import SubjectSerializer,SubjectGradeSerializer, UserPointsSerializer
 from .models import Subject,Level,SubjectGrade, UserPoints
@@ -109,13 +109,39 @@ class UserPointsView(APIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, id):
+class UserPointsDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = UserPoints.objects.all()  # Define your queryset here
+    serializer_class = UserPointsSerializer  # Replace with your serializer class
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()  # Get the UserPoints instance to delete
+        instance.delete()  # Delete the instance
+
+        return Response({'message': 'User point deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class RemoveSubjectGradeFromUserPoints(APIView):
+    def post(self, request):
+        print("workingg==========")
         try:
-            try:
-                user_point = UserPoints.objects.get(id=id)
-                user_point.delete()
-                return Response({'message': 'User point deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-            except UserPoints.DoesNotExist:
-                return Response({'message': 'User point not found'}, status=status.HTTP_404_NOT_FOUND)
+            user_points_id = request.data.get('id')
+            subject_id = request.data.get('subjectId')
+            print(user_points_id, subject_id)
+
+            user_points = UserPoints.objects.get(id=user_points_id)
+            subject_grade = SubjectGrade.objects.get(id=subject_id)
+
+            user_points.grades.remove(subject_grade)
+
+
+            user_points.save()
+
+            serializer = UserPointsSerializer(user_points)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except UserPoints.DoesNotExist:
+            return Response({'message': 'UserPoints not found'}, status=status.HTTP_404_NOT_FOUND)
+        except SubjectGrade.DoesNotExist:
+            return Response({'message': 'SubjectGrade not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
