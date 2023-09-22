@@ -108,3 +108,14 @@ class UserPointsView(APIView):
             return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, id):
+        try:
+            try:
+                user_point = UserPoints.objects.get(id=id)
+                user_point.delete()
+                return Response({'message': 'User point deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            except UserPoints.DoesNotExist:
+                return Response({'message': 'User point not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
