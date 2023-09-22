@@ -3,12 +3,9 @@ from .views import SubjectViewRelated,SubjectGradeViewRelated,CalculatePointView
 
 
 urlpatterns = [
-    
-    
     path('subject-list/',SubjectViewRelated.as_view(),name="SubjectList"),
     path('check-level-grade/',SubjectGradeViewRelated.as_view(),name="CheckSubjectLevel"),
     path('calculate-coa-point/',CalculatePointViewRelated.as_view(),name="CheckSubjectLevel"),
-    path('user-points/',UserPointsView.as_view(),name="UserPoints"),
-
-    
+    path('user-points/', UserPointsView.as_view(),name="UserPoints"),
+    path('user-points/<int:id>/', UserPointsView.as_view(),name="UserPointsDetail"),
 ]

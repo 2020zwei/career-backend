@@ -81,10 +81,12 @@
   <body>
     <div style="text-align: center; padding: 20px 0; text-transform: uppercase">
       <h1 style="font-size: 2.9rem; font-weight: 600">
-        <span style="color: #646464">{{student_detail.first_name}}</span>
-        <span>{{student_detail.last_name}}</span>
+        <span style="color: #646464">{{ first_name }}</span>
+        <span>{{ last_name }} </span>
       </h1>
-      <p style="color: #858585">{{cv_detail.email}} - {{cv_detail.address}}</p>
+      <p style="color: #858585">
+        {{cv_detail.email}} - {{number}} - {{cv_detail.address}}
+      </p>
     </div>
     <hr style="height: 1px; background-color: #858585" />
     <div style="max-width: 800px; margin: 0 auto; padding: 20px">

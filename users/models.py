@@ -34,6 +34,7 @@ class Student(models.Model):
     country = models.CharField(max_length=50, blank=True,null=True)
     address = models.TextField(blank=True,null=True)
     address2 = models.TextField(blank=True,null=True)
+    number = models.DecimalField(decimal_places=0, max_digits=15, blank=True,null=True)
     eircode=models.CharField(max_length=7,null=True,blank=True)
     otp = models.CharField(max_length=5,null=True, blank=True)
     cv_completed=models.BooleanField(default=False)

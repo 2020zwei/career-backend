@@ -45,12 +45,22 @@ class SignupUser(APIView):
                 school_data = {
                     'school': school_name,
                 }
-            
+
             # Create the Student object
+            full_name = request.data.get('full_name')
+            if full_name:
+                words = full_name.split()
+                if len(words) == 2:
+                    first_name = words[0]
+                    last_name = words[1]
+                else:
+                    first_name = ""
+                    last_name = ""
             student_data = {
-                'first_name': request.data.get('first_name'),
-                'last_name': request.data.get('last_name'),
+                'first_name': first_name ,
+                'last_name': last_name,
                 'full_name': request.data.get('full_name'),
+                'number': request.data.get('number'),
                 'school': request.data.get('school'),
                 'user': user_obj.pk,
                 'profile_image': request.data.get('profile_image'),
