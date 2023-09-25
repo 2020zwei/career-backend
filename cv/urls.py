@@ -25,6 +25,7 @@ urlpatterns = [
     path('update-leaving/<int:pk>/',LeavingViewUpdate.as_view(),name="Update_Leaving"),
     path('add-experience/',ExperienceViewRelated.as_view(),name="Add_Experience"),
     path('get-experience/',ExperienceViewRelated.as_view(),name="Get_Experience"),
+    path('delete-experience/<int:pk>/',ExperienceViewRelated.as_view(),name="Get_Experience"),
     path('update-experience/<int:pk>/',ExperienceViewUpdate.as_view(),name="Update_Experience"),
     path('add-reference/',ReferenceViewRelated.as_view(),name="Add_Reference"),
     path('get-reference/',ReferenceViewRelated.as_view(),name="Get_Reference"),
