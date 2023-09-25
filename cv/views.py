@@ -219,6 +219,15 @@ class ExperienceViewRelated(CreateAPIView):
                 return Response(experience_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        """Delete Experience"""
+        try:
+            experience = Experience.objects.get(pk=pk)
+            experience.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ExperienceViewUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
