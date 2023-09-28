@@ -514,9 +514,12 @@ class GeneratePDF(CreateAPIView):
     def get(self, request):
         """Fetch All Notes By Officer"""
         try:
+            print("work")
             student =self.request.user
+            print(student)
             user_obj=Student.objects.get(id=student.student.id)
-            cv_obj =CV.objects.get(user=student.student)
+            print(user_obj)
+            cv_obj =CV.objects.filter(user=student.student).first()
             education_obj=Education.objects.filter(user=student.student).first()
             junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
             leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
@@ -541,7 +544,7 @@ class GeneratePDF(CreateAPIView):
                     first_name = words[0] + " " + words[1]
                     last_name = words[2]
                 if len(words) == 2:
-                    print(words)
+                    print(words, "working")
                     first_name = words[0]
                     last_name = words[1]
                 if len(words) == 1:
@@ -578,6 +581,7 @@ class GeneratePDF(CreateAPIView):
             os.remove("cv.pdf")
             return response
         except Exception as e:
+            print(e)
             return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
 
 class GenerateAndSendPDF(CreateAPIView):
