@@ -17,26 +17,24 @@ from datetime import date
 from django.conf import settings as setting
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
-
+import re
 
 User = get_user_model()
-
 
 class CustomTokenCreateSerializer(TokenCreateSerializer):
     password = serializers.CharField(required=False, style={"input_type": "password"})
 
     default_error_messages = {
-        "invalid_password": "The password is not correct",
-        "inactive_account": "The given email is not registered",
+        "invalid_password": "It looks like the password you entered for this email is incorrect. Please double-check your password and try again.",
+        "inactive_account": "We couldn't find an account associated with that email address. Please make sure you've entered the correct email or sign up for a new account.",
     }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = None
-
         self.email_field = get_user_email_field_name(User)
         self.fields[self.email_field] = serializers.EmailField()
-    
+
     @classmethod
     def get_token(cls, user):
         return RefreshToken.for_user(user)
@@ -50,8 +48,8 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
         if not self.user:
             self.user = User.objects.filter(email=email).first()
             if self.user and not self.user.check_password(password):
-                raise serializers.ValidationError(
-                {'error': 'Invalid password'})
+                custom_errors = {"password": [self.default_error_messages["invalid_password"]]}
+                raise serializers.ValidationError(custom_errors)
         if self.user and self.user.is_active:
             data = super().validate(attrs)
             refresh = self.get_token(self.user)
@@ -59,8 +57,16 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
             return data
-        raise serializers.ValidationError(
-                {'error': 'Invalid email'})
+        print("working")
+        custom_errors = {"email": [self.default_error_messages["inactive_account"]]}
+        raise serializers.ValidationError(custom_errors)
+
+    def to_representation(self, instance):
+        # Remove the "email" key from the error dictionary if it exists
+        if "email" in instance:
+            del instance["email"]
+        # Return the custom error message directly as the "message"
+        return {"message": instance[0] if instance else None}
 
 
 class SignupUserSerializer(serializers.Serializer):
@@ -163,6 +169,14 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=('email','username','password')
+    
+    def validate_email(self, value):
+        # Define a regular expression pattern for a valid email
+        email_pattern = r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
+
+        if not re.match(email_pattern, value):
+            raise serializers.ValidationError("Invalid email format. Only alphabets, numbers, (.), and + sign are allowed.")
+        return value
 
     def validate(self, data):
         data['password'] = make_password(data['password'])

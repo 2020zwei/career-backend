@@ -96,22 +96,25 @@
       </div>
       <div style="display: flex; align-items: center">
         <h2>SKILLS AND QUALITIES</h2>
-        <p style="font-style: italic; font-weight: 600; margin-left: 5px">
-        </p>
+        <p style="font-style: italic; font-weight: 600; margin-left: 5px"></p>
       </div>
       <div>
         <div style="display: flex">
           <ul style="margin-right: 10rem">
             <h3>Skills:</h3>
             {% for skill in skill_detail %}
-            <li>{{skill.get_skill_dropdown_display}}</li>
+            <li style="margin-left: 15px">
+              {{skill.get_skill_dropdown_display}}
+            </li>
             {% endfor %}
           </ul>
 
           <ul style="margin-right: 1rem">
             <h3>Qualities:</h3>
             {% for quality in qualities_detail %}
-            <li>{{quality.get_quality_dropdown_display}}</li>
+            <li style="margin-left: 15px">
+              {{quality.get_quality_dropdown_display}}
+            </li>
             {% endfor %}
           </ul>
         </div>
@@ -120,8 +123,7 @@
       <div class="education">
         <div style="margin-top: 20px; margin-bottom: 20px">
           <h2>EDUCATION</h2>
-          <p style="margin: 1px; font-style: italic; font-weight: 600">
-          </p>
+          <p style="margin: 1px; font-style: italic; font-weight: 600"></p>
           <div
             style="
               display: flex;
@@ -198,6 +200,7 @@
               border-left-color: darkgray;
               margin-top: 20px;
               margin-bottom: 20px;
+              margin-left: 30px;
             ">
             <p style="color: #595959; font-weight: 600">
               {{item.startdate}} - {{item.enddate}}

@@ -3,6 +3,7 @@ from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qu
 from rest_framework.exceptions import  ValidationError
 from datetime import datetime, date
 from users.models import Student
+import re
 
 class SlashDateField(serializers.Field):
     """
@@ -32,6 +33,15 @@ class EducationListSerializer(serializers.ListSerializer):
                 data['user']=self.context.user.student
                 ret.append(Education.objects.create(**data))
         return ret
+
+    def validate_enddate(self, value):
+        # Parse the enddate string into a datetime.date object
+        enddate_date = datetime.strptime(value, '%d-%m-%Y').date()
+        
+        if enddate_date > date.today():
+            raise serializers.ValidationError("Please enter a valid degree completion date. The date you provided appears to be in the future. Please enter a date that is on or before today's date.")
+        
+        return enddate_date
 
 class EducationDateField(serializers.Field):
     """
@@ -68,7 +78,7 @@ class  EducationSerializer(serializers.ModelSerializer):
         Validate that the 'dob' field is not greater than today's date.
         """
         if value > date.today():
-            raise serializers.ValidationError("End date cannot be in the future.")
+            raise serializers.ValidationError("Please enter a valid degree completion date. The date you provided appears to be in the future. Please enter a date that is on or before today's date.")
         return value  
         
 class JuniorListSerializer(serializers.ListSerializer):
@@ -138,6 +148,15 @@ class ExperienceListSerializer(serializers.ListSerializer):
                 data['user']=self.context.user.student
                 ret.append(Experience.objects.create(**data))
         return ret
+
+    def validate_enddate(self, value):
+        """
+        Validate that the 'dob' field is not greater than today's date.
+        """
+        if value > date.today():
+            raise serializers.ValidationError("Please enter a valid degree completion date. The date you provided appears to be in the future. Please enter a date that is on or before today's date.")
+        return value
+    
 class  ExperienceSerializer(serializers.ModelSerializer):
     startdate = ExperienceDateField(required=False, allow_null=True)
     enddate = ExperienceDateField(required=False, allow_null=True)
@@ -157,7 +176,7 @@ class  ExperienceSerializer(serializers.ModelSerializer):
         Validate that the 'dob' field is not greater than today's date.
         """
         if value > date.today():
-            raise serializers.ValidationError("End date cannot be in the future.")
+            raise serializers.ValidationError("Please enter a valid degree completion date. The date you provided appears to be in the future. Please enter a date that is on or before today's date.")
         return value  
     
     def validate_startdate(self, value):
@@ -216,6 +235,14 @@ class CVListSerializer(serializers.ListSerializer):
                 ret.append(CV.objects.create(**data))
         return ret
 
+    def validate_email(self, value):
+        # Define a regular expression pattern for a valid email
+        email_pattern = r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
+
+        if not re.match(email_pattern, value):
+            raise serializers.ValidationError("Invalid email format. Only alphabets, numbers, (.), and + sign are allowed.")
+        return value
+
 class CvSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -232,6 +259,14 @@ class CvSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user.student
         return super(CvSerializer, self).create(validated_data=validated_data)
+
+    def validate_email(self, value):
+        # Define a regular expression pattern for a valid email
+        email_pattern = r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
+
+        if not re.match(email_pattern, value):
+            raise serializers.ValidationError("Invalid email format. Only alphabets, numbers, (.), and + sign are allowed.")
+        return value
 
 class SkillListSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
