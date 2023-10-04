@@ -137,13 +137,13 @@ class GoalViewRelated2(CreateAPIView):
     #       return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
       
 custom_styles = {
-    'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=24, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
-    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=20, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
-    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=20, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
+    'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=20, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
+    'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=16, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
+    'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=16, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
     'centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=12,leading=20, textColor=(292, 453, 609)),
 }
 
-def create_pdf_with_content(content_data, student, goal_obj, action_obj):
+def create_pdf_with_content(student, goal_obj, action_obj):
     # Create a buffer to store the PDF content
     buffer = BytesIO()
     # Create a BaseDocTemplate with the buffer and specify A4 page size
@@ -153,10 +153,10 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     content = []
 
     # Calculate the center position to position the frame within the A4 page size
-    frame_width = 600  # Adjust this value to set the width of the frame
-    frame_height = 600  # Adjust this value to set the height of the frame
+    frame_width = 700  # Adjust this value to set the width of the frame
+    frame_height = 700  # Adjust this value to set the height of the frame
     x_offset = (A4[0] - frame_width) / 2
-    y_offset = (A4[1] - frame_height) / 2
+    y_offset = (A4[1] - frame_height) / 3
 
     # Add the data to the content list using custom layouts (Frames and Paragraphs)
     frame = Frame(x_offset, y_offset, frame_width, frame_height, showBoundary=0,
@@ -165,7 +165,7 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
                   rightPadding=0,
                   bottomPadding=0)
 
-    image = Image('general/templates/logo.png', width=280, height=50)  # Adjust the width and height as needed
+    image = Image('general/templates/logo.png', width=280, height=45)  # Adjust the width and height as needed
     content.append(image)
 
     # Add the Paragraphs to the frame
@@ -173,17 +173,20 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
     content.append(Paragraph(f"{student.student.full_name} Goal", custom_styles['italic_bold_centered']))
     content.append(Paragraph(f"{goal_obj.proffession}", custom_styles['italic_centered']))
     content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['italic_centered']))
-    content.append(Paragraph(f"{goal_obj.description}", custom_styles['italic_centered']))
 
+    # Preserve line breaks from the description field
+    description = goal_obj.description.replace('\n', '<br/>')
+    content.append(Paragraph(description, custom_styles['italic_centered']))
+    
     # Add the "By doing:" text followed by a line break and the action_obj
     # content.append(Paragraph(f"By doing:<br/>{action_obj}", custom_styles['italic_centered']))
     actions_text = "<br/>".join([str(action) for action in action_obj])
     # Now add the actions_text to the content list
-    content.append(Paragraph(f"By doing:<br/>{actions_text}", custom_styles['italic_centered']))
-
+    content.append(Paragraph("By doing<br/>", custom_styles['italic_bold_centered']))
+    content.append(Paragraph(f"{actions_text}", custom_styles['italic_centered']))
 
     if goal_obj.realistic is True:
-        content.append(Paragraph(f"I can do this {goal_obj.realistic}", custom_styles['italic_centered']))
+        content.append(Paragraph(f"I can do this", custom_styles['italic_centered']))
         content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
         content.append(Paragraph(f"{goal_obj.countdown.day}-{goal_obj.countdown.month}-{goal_obj.countdown.year}", custom_styles['italic_centered']))
 
@@ -196,39 +199,24 @@ def create_pdf_with_content(content_data, student, goal_obj, action_obj):
 
     return buffer
 
+
 class GoalPDF(CreateAPIView):
     # ... Your existing code ...
 
     def get(self, request):
         try:
-            student =self.request.user
-            print(student)
-            goal_obj =Goal.objects.filter(user=student.student).last()
-            action_obj=Action.objects.filter(goal=goal_obj)
-            print(goal_obj)
+            student = self.request.user
+            goal_obj = Goal.objects.filter(user=student.student).last()
+            action_obj = Action.objects.filter(goal=goal_obj)
 
-            # Get the additional data that you want to add to the PDF
-            additional_data = f"""
-                Logo
-
-                {student.student.first_name} Goal
-
-                {goal_obj.proffession}
-
-                Specific Goals for {goal_obj.goal}
-
-                {goal_obj.proffession}
-
-                By doing:
-
-                I can do this {goal_obj.realistic}
-
-                Deadline
-                {goal_obj.countdown}
-                """
+            # Preserve line breaks from the description field
+            description = goal_obj.description.replace('\n', '<br/>')
+            print(description)
+            # Convert True/False to Yes/No based on user's selection
+            can_do = True if goal_obj.realistic else 'No'
 
             # Convert the additional data to a PDF page using reportlab
-            additional_data_page = create_pdf_with_content(additional_data,student, goal_obj,action_obj)
+            additional_data_page = create_pdf_with_content(student, goal_obj,action_obj)
 
             # Load the existing PDF
             existing_pdf_path = 'general/templates/frame.pdf'
@@ -255,6 +243,8 @@ class GoalPDF(CreateAPIView):
             for page_num in range(1, len(pdf.pages)):
                 page = pdf.pages[page_num]
                 output_pdf.add_page(page)
+            
+            print(output_pdf)
 
             # Create a buffer to store the updated PDF content
             buffer = BytesIO()
@@ -262,7 +252,7 @@ class GoalPDF(CreateAPIView):
 
             # Move the buffer's file pointer to the beginning
             buffer.seek(0)
-
+            # print(buffer.getvalue())
             # Provide the updated PDF as a response for download
             response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = f'attachment; filename="{student.student.full_name}.pdf"'

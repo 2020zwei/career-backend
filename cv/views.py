@@ -41,6 +41,12 @@ class CvViewRelated(CreateAPIView):
     def post(self, request, *args, **kwargs):
         try:
             cv_serializer_obj=CvSerializer(instance='',data=request.data,many=True, context=request)
+            try:
+                email = request.data[0].get('email')
+                cv_serializer_obj.validate_email(email)
+            except ValidationError as e:
+                error_message = str(e.detail[0]) if isinstance(e.detail, list) else str(e.detail)
+                return Response({"message": error_message}, status=400)
 
             if cv_serializer_obj.is_valid(raise_exception=True):
                     cv_serializer_obj.save()
@@ -52,7 +58,8 @@ class CvViewRelated(CreateAPIView):
             else:
                 return Response(cv_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            error_message = str(e.detail[0]) if isinstance(e.detail, list) else str(e.detail)
+            return Response({"message": error_message}, status=400)
 
 class CVUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -78,7 +85,7 @@ class EducationViewRelated(CreateAPIView):
             "junior_data": serializer2.data,
         }
             return Response(data)
-    
+
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -86,6 +93,13 @@ class EducationViewRelated(CreateAPIView):
         try:
             education_serializer_obj=EducationSerializer(instance='',data=request.data.get('education_data'),many=True, context=request)
             junior_serializer_obj=JuniorCertTestSerializer(instance='',data=request.data.get('junior_data'),many=True, context=request)
+
+            try:
+                enddate = request.data.get('education_data')[0].get('enddate')
+                education_serializer_obj.validate_enddate(enddate)
+            except ValidationError as e:
+                error_message = str(e.detail[0]) if isinstance(e.detail, list) else str(e.detail)
+                return Response({"message": error_message}, status=400)
 
             if education_serializer_obj.is_valid(raise_exception=True):
                 if junior_serializer_obj.is_valid(raise_exception=True):
@@ -103,7 +117,8 @@ class EducationViewRelated(CreateAPIView):
             else:
                 return Response(education_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            error_message = str(e.detail[0]) if isinstance(e.detail, list) else str(e.detail)
+            return Response({"message": error_message}, status=400)
     
     def delete(self, request, pk):
         """Delete Education"""

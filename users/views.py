@@ -23,7 +23,11 @@ class CustomTokenObtainPairView(TokenViewBase):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
 
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            error_message = next(iter(e.detail.values()))[0] if isinstance(e.detail, dict) else str(e.detail[0])
+            return Response({"message": error_message}, status=400)
 
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
@@ -34,7 +38,21 @@ class SignupUser(APIView):
     def post(self, request, *args, **kwargs):
         with transaction.atomic():
             user_serializer_obj  = UserSignUpSerializer(data=request.data)
-            user_serializer_obj.is_valid(raise_exception=True)
+            
+            try:
+                email = request.data.get('email')
+                user_serializer_obj.validate_email(email)
+            except ValidationError as e:
+                error_message = str(e.detail[0]) if isinstance(e.detail, list) else str(e.detail)
+                return Response({"message": error_message}, status=400)
+            
+            try:
+                user_serializer_obj.is_valid(raise_exception=True)
+            except ValidationError as e:
+                # Check if the error message contains "user with this email already exists."
+                if "user with this email already exists" in str(e):
+                    return Response({"message": "The email address provided is already registered. Please use a different email address or log in with your existing account."}, status=400)
+
             user_obj = user_serializer_obj.save()
             school_name = request.data.get('school')
             # profile_image = request.data.get('profile_image') or settings.DEFAULT_PROFILE_IMAGE_PATH
@@ -134,16 +152,22 @@ class SendPasswordResetOTPView(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if email is None:
-            raise ValidationError("No email is there")
+            error_message = "No email provided."
+            return Response({"message": error_message}, status=400)
+
         student_obj = Student.objects.filter(user__email=email).first()
-        if not (student_obj is None):
-            student_obj.otp = str(random.randint(1000,9999))
-            student_obj.otp_verified = False
-            student_obj.save()
-            self.send_otp_email(student_obj.otp,email)
-        respone_template = get_response_template()
-        respone_template['data'] = "An Email has been sent to your account."
-        return Response(respone_template)
+        if student_obj is None:
+            error_message = "he email address you provided is not associated with any registered account. Please ensure you have entered the correct email address."
+            return Response({"message": error_message}, status=400)
+
+        student_obj.otp = str(random.randint(1000, 9999))
+        student_obj.otp_verified = False
+        student_obj.save()
+        self.send_otp_email(student_obj.otp, email)
+
+        response_template = get_response_template()
+        response_template['data'] = "An email has been sent to your account."
+        return Response(response_template)
 
 
 class OTPConfirmationAPIView(APIView):

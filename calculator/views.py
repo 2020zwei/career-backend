@@ -96,7 +96,9 @@ class CalculatePointViewRelated(APIView):
                     bonus_points += subject_grade_obj.subject.additional_marks
 
             # Update total points in UserPoints
+            print(points)
             total_points = bonus_points + points
+            print(total_points)
             user_points.total_points = total_points
             user_points.save()
 

@@ -3,8 +3,6 @@ from .views import SignupUser,UserView,SchoolView, SendPasswordResetOTPView, OTP
 
 
 urlpatterns = [
-    
-    
     path('signup/',SignupUser.as_view(),name="user-signup"),
     path('me/',UserView.as_view(),name="current-user"),
     path('me/<int:pk>/',UserUpdate.as_view(),name="update-user"),
