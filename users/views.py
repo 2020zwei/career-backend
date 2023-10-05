@@ -85,8 +85,18 @@ class SignupUser(APIView):
                 'dob': request.data.get('dob')
             }
             student_serializer_obj = StudentSignUpSerializer(data=student_data)
-            student_serializer_obj.is_valid(raise_exception=True)
-            student_serializer_obj.save()
+            if student_serializer_obj.is_valid():
+                student_serializer_obj.save()
+                print("workinggg")
+            else:
+                e = student_serializer_obj.errors
+                print(e)
+                # Handle the case when data is not valid, similar to how you handled it for user_serializer_obj
+                if "Ensure that there are no more than 15 digits in total." in str(e):
+                    return Response({"message": "Ensure that there are no more than 15 digits in total."}, status=400)
+                else:
+                    return Response({"message": str(e)}, status=400)
+            print("doneeeee")
             response_template = get_response_template()
             response_template['data'] = student_serializer_obj.data
             return Response(data=response_template)
