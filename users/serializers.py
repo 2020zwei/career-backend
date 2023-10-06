@@ -175,7 +175,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         email_pattern = r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
 
         if not re.match(email_pattern, value):
-            raise serializers.ValidationError("Invalid email format. Only alphabets, numbers, (.), and + sign are allowed.")
+            raise serializers.ValidationError("Please enter a vlaid email address.")
         return value
 
     def validate(self, data):
