@@ -39,13 +39,37 @@ class QuestionSerializer(serializers.ModelSerializer):
         model=Question
         fields=['question_id', 'type', 'question', 'answers']
 
+
 class PsychometricTestSerializer(serializers.ModelSerializer):
-    questions= QuestionSerializer(many=True, source='question')
+    questions = serializers.SerializerMethodField()
     test_id = serializers.IntegerField(source='id', read_only=True)
 
     class Meta:
-        model=PsychometricTest
-        fields=['test_id', 'name','intro','questions']
+        model = PsychometricTest
+        fields = ['test_id', 'name', 'intro', 'questions']
+
+    def get_questions(self, obj):
+        print("work")
+        def sort_answers(answer):
+            return -answer.weightage
+
+        sorted_questions = []
+        for question in obj.question.all():
+            answers = question.answer.all()  # Use 'answer' instead of 'answers'
+            sorted_answers = sorted(answers, key=sort_answers)
+
+            # Serialize the answers using AnswerSerializer
+            serialized_answers = AnswerSerializer(sorted_answers, many=True).data
+
+            sorted_question = {
+                'question_id': question.id,
+                'type': question.type.id,
+                'question': question.question,
+                'answers': serialized_answers,  # Use serialized answers
+            }
+            sorted_questions.append(sorted_question)
+
+        return sorted_questions
 
 
 class PsychometricResultDetailSerializer(serializers.ModelSerializer):

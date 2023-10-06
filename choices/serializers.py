@@ -36,7 +36,7 @@ class Level8_Serializer(serializers.ModelSerializer):
     def create(self, validated_data):
         student = self.context['request'].user.student
         try:
-            choices = Choice.objects.get(user=student)
+            choices = Choice.objects.filter(user=student).first()
         except Choice.DoesNotExist:
             # If a Choice object does not exist for the user, create a new one.
             choices = Choice.objects.create(user=student)

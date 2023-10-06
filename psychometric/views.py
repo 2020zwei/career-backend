@@ -70,8 +70,11 @@ class PsychometricDetails(CreateAPIView):
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, id):
+        print("workkk")
         test = self.get_test(id)
+        print(test)
         serializer = PsychometricTestSerializer(test)
+        # print(serializer.data)
         return Response(serializer.data, status.HTTP_200_OK)
 
     def delete(self, request, id):
