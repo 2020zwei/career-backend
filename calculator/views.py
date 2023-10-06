@@ -70,7 +70,6 @@ class CalculatePointViewRelated(APIView):
                 if subject is None:
                     raise ValidationError(f"No subject found for subject grade with id {subject_grade_obj.id}")
 
-                points += subject_grade_obj.point
                 if (subject_grade_obj.subject.is_additional_marks_allowed
                         and subject_grade_obj.level.subjectlevel == 'higher'
                         and subject_grade_obj.grade in ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']):
