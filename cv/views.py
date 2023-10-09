@@ -558,16 +558,17 @@ class GeneratePDF(CreateAPIView):
                     print(words)
                     first_name = words[0] + " " + words[1]
                     last_name = words[2]
-                if len(words) == 2:
+                elif len(words) == 2:
                     print(words, "working")
                     first_name = words[0]
                     last_name = words[1]
-                if len(words) == 1:
+                elif len(words) == 1:
                     first_name = words[0]
                     last_name = ""
                 else:
                     first_name = ""
                     last_name = ""
+            print(first_name, last_name)
             context = {
                 'first_name': first_name,
                 'number': number,

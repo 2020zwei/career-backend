@@ -75,7 +75,7 @@ class SignupUser(APIView):
                     first_name = ""
                     last_name = ""
             student_data = {
-                'first_name': first_name ,
+                'first_name': first_name,
                 'last_name': last_name,
                 'full_name': request.data.get('full_name'),
                 'number': request.data.get('number'),

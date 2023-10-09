@@ -43,6 +43,19 @@ class Level8_Serializer(serializers.ModelSerializer):
         validated_data['choice'] = choices
         return super(Level8_Serializer, self).create(validated_data=validated_data)
 
+    def create(self, validated_data):
+        student = self.context['request'].user.student
+        print(f"student: {student}")
+        choices = Choice.objects.filter(user=student).first()
+        if choices is None:
+            choices = Choice.objects.create(user=student)
+            print(f"created new choices: {choices}")
+        
+        validated_data['choice'] = choices
+        print(f"validated_data: {validated_data}")
+
+        return super(Level8_Serializer, self).create(validated_data=validated_data)
+
 
 
 class Apprentice_Serializer(serializers.ModelSerializer):
