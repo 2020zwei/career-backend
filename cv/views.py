@@ -217,7 +217,8 @@ class ExperienceViewRelated(CreateAPIView):
             serializer = ExperienceSerializer(edu, many=True)
             return Response(serializer.data)
         except Exception as e:
-           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+           error_message = next(iter(e.detail.values()))[0] if isinstance(e.detail, dict) else str(e.detail[0])
+           return Response({'message': str(error_message)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         try:
@@ -233,7 +234,8 @@ class ExperienceViewRelated(CreateAPIView):
             else:
                 return Response(experience_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+           error_message = next(iter(e.detail.values()))[0] if isinstance(e.detail, dict) else str(e.detail[0])
+           return Response({'message': str(error_message)}, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk):
         """Delete Experience"""

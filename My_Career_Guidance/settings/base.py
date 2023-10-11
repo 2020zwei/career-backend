@@ -53,10 +53,8 @@ INSTALLED_APPS = [
     'education',
     'choices',
     'corsheaders',
-
-    
-    
 ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',

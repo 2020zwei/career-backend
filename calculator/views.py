@@ -61,8 +61,10 @@ class CalculatePointViewRelated(APIView):
             UserPoints.objects.filter(user=user).delete()  # Delete previous records
             points = 0
             bonus_points = 0
+            print(request.data)
             for obj in request.data:
-                grade_id= obj.get('grade')
+                if obj is not None:
+                    grade_id= obj.get('grade')
                 subject_grade_obj = SubjectGrade.objects.filter(pk=grade_id).first()
                 if subject_grade_obj is None:
                     raise ValidationError(f"No subject grade object found with following ids grade={grade_id}")
@@ -74,20 +76,49 @@ class CalculatePointViewRelated(APIView):
                 user_points, _ = UserPoints.objects.get_or_create(user=user)
                 user_points.grades.add(subject_grade_obj)
 
-            for obj in request.data[:6]:
-                grade_id= obj.get('grade')
-                subject_grade_obj = SubjectGrade.objects.filter(pk=grade_id).first()
-                if subject_grade_obj is None:
-                    raise ValidationError(f"No subject grade object found with following ids grade={grade_id}")
-                subject = subject_grade_obj.subject
-                if subject is None:
-                    raise ValidationError(f"No subject found for subject grade with id {subject_grade_obj.id}")
+            # for obj in request.data[:6]:
+            #     if obj is not None:
+            #         grade_id= obj.get('grade')
+            #     subject_grade_obj = SubjectGrade.objects.filter(pk=grade_id).first()
+            #     if subject_grade_obj is None:
+            #         raise ValidationError(f"No subject grade object found with following ids grade={grade_id}")
+            #     subject = subject_grade_obj.subject
+            #     if subject is None:
+            #         raise ValidationError(f"No subject found for subject grade with id {subject_grade_obj.id}")
 
-                points += subject_grade_obj.point
+            #     points += subject_grade_obj.point
+            #     if (subject_grade_obj.subject.is_additional_marks_allowed
+            #             and subject_grade_obj.level.subjectlevel == 'higher'
+            #             and subject_grade_obj.grade in ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']):
+            #         bonus_points += subject_grade_obj.subject.additional_marks
+            
+            points_list = []
+
+            for obj in request.data:
+                if obj is not None:
+                    grade_id = obj.get('grade')
+                    subject_grade_obj = SubjectGrade.objects.filter(pk=grade_id).first()
+
+                    if subject_grade_obj is not None:
+                        subject = subject_grade_obj.subject
+                        if subject is not None:
+                            points_list.append(subject_grade_obj)
+
+            # Sort the points_list based on points in descending order
+            print(points_list)
+            points_list.sort(key=lambda obj: obj.point, reverse=True)
+            print(points_list)
+            # Add bonus points to the first 6 subjects with the highest points that meet the conditions
+            for i in range(min(6, len(points_list))):
+                subject_grade_obj = points_list[i]
                 if (subject_grade_obj.subject.is_additional_marks_allowed
                         and subject_grade_obj.level.subjectlevel == 'higher'
                         and subject_grade_obj.grade in ['H1', 'H2', 'H3', 'H4', 'H5', 'H6']):
                     bonus_points += subject_grade_obj.subject.additional_marks
+
+            # Add the points of the first 6 subjects to the 'points' variable
+            for i in range(min(6, len(points_list))):
+                points += points_list[i].point
 
             # Update total points in UserPoints
             print(points)

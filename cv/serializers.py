@@ -240,7 +240,7 @@ class CVListSerializer(serializers.ListSerializer):
         email_pattern = r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
 
         if not re.match(email_pattern, value):
-            raise serializers.ValidationError("Invalid email format. Only alphabets, numbers, (.), and + sign are allowed.")
+            raise serializers.ValidationError("Please enter a valid email address'")
         return value
 
 class CvSerializer(serializers.ModelSerializer):
@@ -265,7 +265,7 @@ class CvSerializer(serializers.ModelSerializer):
         email_pattern = r'^[a-zA-Z0-9.+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$'
 
         if not re.match(email_pattern, value):
-            raise serializers.ValidationError("Invalid email format. Only alphabets, numbers, (.), and + sign are allowed.")
+            raise serializers.ValidationError("Please enter a valid email address'")
         return value
 
 class SkillListSerializer(serializers.ListSerializer):
