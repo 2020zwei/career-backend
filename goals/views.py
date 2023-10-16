@@ -186,8 +186,7 @@ def create_pdf_with_content(student, goal_obj, action_obj):
     content.append(Paragraph(f"{actions_text}", custom_styles['italic_centered']))
 
     if goal_obj.realistic is True:
-        content.append(Paragraph(f"I can do this", custom_styles['italic_centered']))
-        content.append(Paragraph(f"Deadline", custom_styles['italic_bold_centered']))
+        content.append(Paragraph(f"My Deadline is", custom_styles['italic_bold_centered']))
         content.append(Paragraph(f"{goal_obj.countdown.day}-{goal_obj.countdown.month}-{goal_obj.countdown.year}", custom_styles['italic_centered']))
 
     # Build the content and save it to the buffer
