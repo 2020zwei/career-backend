@@ -247,7 +247,7 @@ class CvSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=CV
-        fields=['id','objective','full_name','address','address2','eircode','city','town','email']
+        fields=['id','objective','full_name','number','address','address2','eircode','city','town','email']
         list_serializer_class = CVListSerializer
         extra_kwargs = {
             'id': {'read_only': False, 'allow_null': True},

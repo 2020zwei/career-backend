@@ -8,6 +8,7 @@ class CV(models.Model):
     objective=models.TextField(max_length=300,null=True, blank=True)
     is_juniorcert_test=models.BooleanField(default=False)
     skills=ArrayField(models.CharField(max_length=200), blank=True,null=True)
+    number = models.DecimalField(decimal_places=0, max_digits=15, blank=True,null=True)
     HobbiesandInterests=models.TextField(max_length=300,null=True)
     full_name = models.CharField(max_length=100, null=True)
     school =  models.CharField(max_length=100,null=True)

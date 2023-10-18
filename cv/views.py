@@ -549,10 +549,10 @@ class GeneratePDF(CreateAPIView):
             print(user_obj.full_name)
             cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
             full_name = user_obj.full_name
-            if user_obj.number == "" or user_obj.number is None:
+            if cv_obj.number == "" or cv_obj.number is None:
                 number = "Phone No."
             else:
-                number = user_obj.number
+                number = cv_obj.number
             if full_name:
                 words = full_name.split()
                 print(len(words))
