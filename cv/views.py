@@ -284,7 +284,7 @@ class ReferenceViewRelated(CreateAPIView):
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class ReferenceViewUpdate(UpdateAPIView):
+class ReferenceViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ReferenceSerializer
     queryset = Reference.objects.all()

@@ -8,6 +8,7 @@ class Quiz(models.Model):
     name = models.CharField(max_length=300)
     description = models.CharField(max_length=700, null=True, default='')
     image = models.ImageField(upload_to='Quiz_images',null=True,blank=True)
+    youtube_title = models.CharField(max_length=300,null=True,blank=True)
     youtube_link= models.CharField(max_length=700, null=True, blank=True, default='')
     def __str__(self):
         return self.name
