@@ -61,7 +61,7 @@ class CvViewRelated(CreateAPIView):
             error_message = str(e.detail[0]) if isinstance(e.detail, list) else str(e.detail)
             return Response({"message": error_message}, status=400)
 
-class CVUpdate(UpdateAPIView):
+class CVUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CvSerializer
     queryset = CV.objects.all()
@@ -129,7 +129,7 @@ class EducationViewRelated(CreateAPIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class EducationViewUpdate(UpdateAPIView):
+class EducationViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = EducationSerializer
     queryset = Education.objects.all()
@@ -169,7 +169,7 @@ class JuniorCertTestViewRelated(CreateAPIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class JuniorViewUpdate(UpdateAPIView):
+class JuniorViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = JuniorCertTestSerializer
     queryset = JuniorCertTest.objects.all()
@@ -200,7 +200,7 @@ class LeavingCertTestViewRelated(CreateAPIView):
         except Exception as e:
             raise e
 
-class LeavingViewUpdate(UpdateAPIView):
+class LeavingViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = LeavingCertTestSerializer
     queryset = LeavingCertTest.objects.all()
@@ -246,7 +246,7 @@ class ExperienceViewRelated(CreateAPIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class ExperienceViewUpdate(UpdateAPIView):
+class ExperienceViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExperienceSerializer
     queryset = Experience.objects.all()
@@ -334,7 +334,7 @@ class SkillsViewRelated(CreateAPIView):
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class SkillsUpdate(UpdateAPIView):
+class SkillsUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SkillSerializer
     queryset = Skills.objects.all()
@@ -367,7 +367,7 @@ class QualityViewRelated(CreateAPIView):
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class QualityUpdate(UpdateAPIView):
+class QualityUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = QualitiesSerializer
     queryset = Qualities.objects.all()
@@ -399,7 +399,7 @@ class InterestViewRelated(CreateAPIView):
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class InterestUpdate(UpdateAPIView):
+class InterestUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = InterestSerializer
     queryset = Interests.objects.all()

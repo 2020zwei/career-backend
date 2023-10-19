@@ -140,6 +140,16 @@ custom_styles = {
     'bold_centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=20, leading=30, alignment=1, textColor=(0.2, 0.2, 0.2)),
     'italic_centered': ParagraphStyle('ItalicCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Italic', fontSize=16, leading=30, alignment=1, textColor=(0.099, 0.111, 0.222)),
     'italic_bold_centered': ParagraphStyle('ItalicBoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-BoldItalic', fontSize=16, leading=30, alignment=1, textColor=(0.29296875, 0.453125, 0.609375)),
+    'Underline_bold_centered': ParagraphStyle(
+        'BoldUnderlineCentered', 
+        parent=getSampleStyleSheet()['Normal'],
+        fontName='Times-Bold',
+        fontSize=16,
+        leading=30,
+        alignment=1,
+        textColor=(0.29296875, 0.453125, 0.609375),
+        textTransform='underline',  # Add this line to make it underlined
+    ),
     'centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=12,leading=20, textColor=(292, 453, 609)),
 }
 
@@ -170,9 +180,9 @@ def create_pdf_with_content(student, goal_obj, action_obj):
 
     # Add the Paragraphs to the frame
     content.append(Paragraph(" hello ", custom_styles['centered']))
-    content.append(Paragraph(f"{student.student.full_name} Goal", custom_styles['italic_bold_centered']))
+    content.append(Paragraph(f"{student.student.full_name}'s Goal", custom_styles['italic_bold_centered']))
     content.append(Paragraph(f"{goal_obj.proffession}", custom_styles['italic_centered']))
-    content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['italic_centered']))
+    content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['Underline_bold_centered']))
 
     # Preserve line breaks from the description field
     description = goal_obj.description.replace('\n', '<br/>')
