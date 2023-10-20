@@ -148,7 +148,7 @@ custom_styles = {
         leading=30,
         alignment=1,
         textColor=(0.29296875, 0.453125, 0.609375),
-        textTransform='underline',  # Add this line to make it underlined
+        textDecoration='underline',  # Add this line to make it underlined
     ),
     'centered': ParagraphStyle('BoldCentered', parent=getSampleStyleSheet()['Normal'], fontName='Times-Bold', fontSize=12,leading=20, textColor=(292, 453, 609)),
 }

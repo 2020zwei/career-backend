@@ -312,22 +312,28 @@ class SkillsViewRelated(CreateAPIView):
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
+        student =self.request.user
+        Skills.objects.filter(user=student.student).delete()
+        Qualities.objects.filter(user=student.student).delete()
         try:
             skill_serializer_obj=SkillSerializer(instance='',data=request.data.get('skill_data'),many=True, context=request)
             quality_serializer_obj=QualitiesSerializer(instance='',data=request.data.get('quality_data'),many=True, context=request)
-
+            print("workinngggg")
             if skill_serializer_obj.is_valid(raise_exception=True):
-                    if quality_serializer_obj.is_valid(raise_exception=True):
-                        skill_serializer_obj.save()
-                        quality_serializer_obj.save()
+                print("worror")
+                skill_serializer_obj.save()
+                if quality_serializer_obj.is_valid(raise_exception=True):
+                    print("worror222")
+                    quality_serializer_obj.save()
                     data={
                         "skill_data": skill_serializer_obj.data,
                         "quality_data":quality_serializer_obj.data
                     }
                     student = self.request.user.student
                     if student.cv_completed is not True:
+                        print("workroor44")
                         student.current_step = 4
-                        student.save()                 
+                        student.save()     
                     return Response(data, status=status.HTTP_201_CREATED)
             else:
                 return Response(skill_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)

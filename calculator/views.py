@@ -58,7 +58,7 @@ class CalculatePointViewRelated(APIView):
     def post(self, request):
         try:
             user = request.user.student
-            UserPoints.objects.filter(user=user).delete()  # Delete previous records
+            user_points = UserPoints.objects.filter(user=user).delete()  # Delete previous records
             points = 0
             bonus_points = 0
             print(request.data)

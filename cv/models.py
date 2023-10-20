@@ -100,4 +100,4 @@ class Interests(models.Model):
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural="skills"
+        verbose_name_plural="Interests"
