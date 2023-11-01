@@ -99,21 +99,24 @@
         <p style="font-style: italic; font-weight: 600; margin-left: 5px"></p>
       </div>
       <div>
-        <div style="display: flex">
-          <ul style="margin-right: 10rem">
+        <div >
+          <ul>
             <h3>Skills:</h3>
             {% for skill in skill_detail %}
             <li style="margin-left: 15px">
               {{skill.get_skill_dropdown_display}}
+              <p style="margin: 0 0 0 10px; font-size: 13px;">{{skill.description}}</p>
             </li>
             {% endfor %}
           </ul>
-
+        </div>
+        <div>
           <ul style="margin-right: 1rem">
             <h3>Qualities:</h3>
             {% for quality in qualities_detail %}
             <li style="margin-left: 15px">
               {{quality.get_quality_dropdown_display}}
+              <p style="margin: 0 0 0 10px; font-size: 13px;">{{quality.description}}</p>
             </li>
             {% endfor %}
           </ul>
@@ -161,12 +164,14 @@
               <table>
                 <tr>
                   <th>Subject</th>
-                  <th>Grade</th>
+                  <th>Level</th>
+                  <th>Result</th>
                 </tr>
                 {% for item in Junior_Cert_detail %}
                 <tr>
                   <td>{{ item.subject }}</td>
-                  <td>{{ item.grade }}</td>
+                  <td>{{ item.level }}</td>
+                  <td>{{ item.result }}</td>
                 </tr>
                 {% endfor %}
               </table>
@@ -175,12 +180,14 @@
               <table>
                 <tr>
                   <th>Subject</th>
-                  <th>Grade</th>
+                  <th>Level</th>
+                  <th>Result</th>
                 </tr>
                 {% for item in Leave_Cert_detail %}
                 <tr>
                   <td>{{ item.subject }}</td>
-                  <td>{{ item.grade }}</td>
+                  <td>{{ item.level }}</td>
+                  <td>{{ item.result }}</td>
                 </tr>
                 {% endfor %}
               </table>

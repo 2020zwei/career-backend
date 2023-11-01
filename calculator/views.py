@@ -25,7 +25,11 @@ class SubjectGradeViewRelated(ListAPIView):
     def get_queryset(self):
         level = self.request.query_params.get('level')
         subject = self.request.query_params.get('subject')
+        print(subject)
+        subjectData = Subject.objects.get(name=subject)
+        print(subject, subjectData)
         queryset = SubjectGrade.objects.filter(level__subjectlevel=level, subject__name=subject).order_by('grade')
+        print(queryset)
         return queryset
     
 
