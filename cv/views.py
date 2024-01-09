@@ -552,7 +552,7 @@ class GeneratePDF(CreateAPIView):
             interest_obj=Interests.objects.filter(user=student.student)
             refer_obj=Reference.objects.filter(user=student.student)
             temp_name = "general/templates/"
-            print(user_obj.full_name)
+            print(skill_obj)
             cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
             full_name = user_obj.full_name
             if cv_obj.number == "" or cv_obj.number is None:

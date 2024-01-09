@@ -125,9 +125,10 @@ class SignupUserSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     profile_image = Base64ImageField(required= False)
     email = serializers.EmailField(source='user.email', read_only=True)
+    new_password = serializers.CharField(write_only=True, required=False)  # New password field
     class Meta:
         model=Student
-        fields=['full_name', 'school', 'dob', 'profile_image', 'email','number','address','city','country','current_step','cv_completed']
+        fields=['full_name', 'school', 'dob', 'profile_image', 'email','number','address','city','country','current_step','cv_completed', 'new_password']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -136,6 +137,14 @@ class UserSerializer(serializers.ModelSerializer):
             # representation['profile_image'] = 'https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg?AWSAccessKeyId=AKIA6OTH6666Q3UAKHF2&Signature=oIEmDWSVsNxSm5rpTRDJYvlw%2BLg%3D&Expires=1687348379'
             representation['profile_image']='https://cgb-staging-bucket.s3.amazonaws.com/profile_images/01437e4e-bfc5-44db-ba05-f5feed152c12.jpg'
         return representation
+    
+    def update(self, instance, validated_data):
+        new_password = validated_data.pop('new_password', None)
+        if new_password is not None:
+            user = instance.user
+            user.set_password(new_password)
+            user.save()
+        return super().update(instance, validated_data)
 
 
 class SchoolSerializer(serializers.ModelSerializer):
