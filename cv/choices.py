@@ -14,7 +14,7 @@ class JUNIOR_CERT_TEST_RESULT(models.TextChoices):
     MERIT = "2", _('MERIT')
     ACHIEVED = "3", _('ACHIEVED')
     PARTIALLYACHIEVED = "4", _('PARTIALLY ACHIEVED')
-    NOTGRADED= "5", _('NOT GRADED')
+    NOTGRADED = "5", _('NOT GRADED')
 
 class LEAVING_CERT_TEST_RESULT(models.TextChoices):
 
@@ -112,6 +112,7 @@ class JOB_TITLE(models.TextChoices):
     WorkShadow = "2", _('WORK SHADOW')
     Other = "3", _('OTHER')
 
+
 class SKILLS(models.TextChoices):
     SelfStarter= "1", _('SELF STARTER')
     PeopleSkills= "2", _('People Skills')
@@ -123,6 +124,20 @@ class SKILLS(models.TextChoices):
     CreativeSkills= "8", _('Creative Skills')
     CriticalProblemSolving= "9", _('Critical Problem Solving')
 
+
+SKILLS_DESCRIPTIONS = {
+    SKILLS.SelfStarter: "I take initiative and take on projects independently, I can work without supervision",
+    SKILLS.PeopleSkills: "I am liked by others. I can interact, influence and communicate well with other people",
+    SKILLS.CriticalThinkingSkills: "I can look at a situation, find the cause of the problem and then come up with a solution.",
+    SKILLS.PracticalSkills: "I enjoy being physically involved in a project or task",
+    SKILLS.CommunicationSkills:  "I can absorb, share and understand ideas or information. I can communicate well through written or spoken words",
+    SKILLS.TeamworkSkills: "I enjoy working in a group of people to achieve a common aim",
+    SKILLS.InformationSkills: "I use technology daily for sending messages, video calls, searching the internet, filing, cloud storage and social media on any device",
+    SKILLS.CreativeSkills: "I can think about problems differently and can find interesting ways to approach tasks. I see things from a unique perspective",
+    SKILLS.CriticalProblemSolving: "I have the ability to use knowledge, facts and data to effectively solve problems. I can think on my feet, assess problems and find solutions",
+}
+
+
 class QUALITY(models.TextChoices):
     Intuitive= "1", _('Intuitive')
     Persistent= "2", _('Persistent')
@@ -132,3 +147,15 @@ class QUALITY(models.TextChoices):
     Patient = "6", _('Patient')
     A_Good_Listener= "7", _('A_Good_Listener')
     Expressive= "8", _('Expressive')
+
+
+QUALITY_DESCRIPTIONS = {
+    QUALITY.Intuitive: "I have the ability to understand or know something by instinct.",
+    QUALITY.Persistent: "I am determined to see projects through to the end. I don't give up easily.",
+    QUALITY.Enthusiastic: "I have an active and motivated attitude. I get satisfaction from getting things done and pursuing my goals.",
+    QUALITY.Persuasive: "I have the ability to persuade and help others see and agree with my point of view.",
+    QUALITY.Empathic: "I have the ability to feel and understand what others need.",
+    QUALITY.Patient: "I am able to behave calmly in the face of frustration or annoyance.",
+    QUALITY.A_Good_Listener: "I can make others feel supported and can create a safe environment in which issues can be discussed.",
+    QUALITY.Expressive: "I am positive, social, and generous. I enjoy being included."
+}

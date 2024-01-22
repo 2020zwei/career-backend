@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='student',
             name='profile_image',
-            field=models.ImageField(blank=True, default='/home/taloot/web_taloot/CareerGuidance/My-Career-Guidance/My_Career_Guidance/default_images/default_profile_image.jpg', null=True, upload_to='profile_images', validators=[users.validators.validate_file_size]),
+            field=models.ImageField(blank=True, default='/career-backend/My_Career_Guidance/default_images/default_profile_image.jpg', null=True, upload_to='profile_images', validators=[users.validators.validate_file_size]),
         ),
     ]

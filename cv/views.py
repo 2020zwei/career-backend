@@ -5,8 +5,8 @@ from django.core.mail import EmailMessage
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
-from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer, InterestSerializer
-from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest, Interests
+from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer, InterestSerializer, AdditionalInfoSerializer
+from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest, Interests, AdditionalInfo
 from users.models import Student
 from django.template.loader import render_to_string
 from weasyprint import HTML
@@ -19,6 +19,48 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Frame
 from reportlab.platypus import Table, TableStyle
+
+class AdditionalInfoViewRelated(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = AdditionalInfoSerializer
+    queryset = AdditionalInfo.objects.all()
+
+    def get(self, request):
+        """Fetch All Chocies"""
+        try:
+            student =self.request.user
+            add_info=AdditionalInfo.objects.filter(user=student.student)
+            serializer = AdditionalInfoSerializer(add_info,many=True)
+            return Response(serializer.data)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            add_info_serializer_obj=AdditionalInfoSerializer(instance='',data=request.data,many=True, context=request)
+
+            if add_info_serializer_obj.is_valid(raise_exception=True):
+                    add_info_serializer_obj.save()
+                    return Response(add_info_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(add_info_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, pk):
+        try:
+            add_info = AdditionalInfo.objects.get(pk=pk)
+            add_info.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdditionalInfoUpdate(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = AdditionalInfoSerializer
+    queryset = AdditionalInfo.objects.all()
+
 
 
 class CvViewRelated(CreateAPIView):
@@ -539,9 +581,7 @@ class GeneratePDF(CreateAPIView):
         try:
             print("work")
             student =self.request.user
-            print(student)
             user_obj=Student.objects.get(id=student.student.id)
-            print(user_obj)
             cv_obj =CV.objects.filter(user=student.student).first()
             education_obj=Education.objects.filter(user=student.student).first()
             junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
@@ -550,9 +590,10 @@ class GeneratePDF(CreateAPIView):
             skill_obj=Skills.objects.filter(user=student.student)
             quality_obj=Qualities.objects.filter(user=student.student)
             interest_obj=Interests.objects.filter(user=student.student)
+            additional_info = AdditionalInfo.objects.filter(user=student.student)
+            add_info = [i.additional_info for i in additional_info][0]
             refer_obj=Reference.objects.filter(user=student.student)
             temp_name = "general/templates/"
-            print(skill_obj)
             cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
             full_name = user_obj.full_name
             if cv_obj.number == "" or cv_obj.number is None:
@@ -590,6 +631,7 @@ class GeneratePDF(CreateAPIView):
                 'qualities_detail': quality_obj,
                 'Experience_detail': exp_obj,
                 'Interest_detail':interest_obj,
+                'additional_info': add_info,
                 'Reference_detail': refer_obj,
                 }
             #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
@@ -623,6 +665,8 @@ class GenerateAndSendPDF(CreateAPIView):
         skill_obj=Skills.objects.filter(user=student.student)
         quality_obj=Qualities.objects.filter(user=student.student)
         interest_obj=Interests.objects.filter(user=student.student)
+        additional_info = AdditionalInfo.objects.filter(user=student.student)
+        add_info = [i.additional_info for i in additional_info][0]
         refer_obj=Reference.objects.filter(user=student.student)
 
         temp_name = "general/templates/"
@@ -638,6 +682,7 @@ class GenerateAndSendPDF(CreateAPIView):
             'qualities_detail': quality_obj,
             'Experience_detail': exp_obj,
             'Interest_detail':interest_obj,
+            'additional_info': add_info,
             'Reference_detail': refer_obj,
         }
 

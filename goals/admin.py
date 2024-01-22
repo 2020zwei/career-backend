@@ -3,7 +3,7 @@ from .models import Goal, Action
 # Register your models here.
 
 class GoalAdminSite(admin.ModelAdmin):
-    list_display=['user','goal','description','realistic','countdown']
+    list_display=['id','user','goal','description','realistic','countdown']
 
 admin.site.register(Goal,GoalAdminSite)
 admin.site.register(Action)

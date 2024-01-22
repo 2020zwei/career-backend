@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qualities,LeavingCertTest, Interests
+from .models import CV,Education,JuniorCertTest,Experience,Reference, Skills, Qualities,LeavingCertTest, Interests, AdditionalInfo
 from rest_framework.exceptions import  ValidationError
 from datetime import datetime, date
 from users.models import Student
@@ -286,7 +286,7 @@ class SkillSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=Skills
-        fields=['id','skill_dropdown']
+        fields=['id', 'skill_dropdown']
         list_serializer_class = SkillListSerializer
         extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
 
@@ -338,4 +338,27 @@ class InterestSerializer(serializers.ModelSerializer):
         model=Interests
         fields=['id','interests']
         list_serializer_class = InterestListSerializer
+        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
+
+
+class AdditionalInfoListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                AdditionalInfo.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(AdditionalInfo.objects.create(**data))
+        return ret 
+
+class AdditionalInfoSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model=AdditionalInfo
+        fields=['id','additional_info']
+        list_serializer_class = AdditionalInfoListSerializer
         extra_kwargs = {'id':{'read_only': False,'allow_null': True}}

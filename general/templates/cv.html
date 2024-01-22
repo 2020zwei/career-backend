@@ -85,7 +85,7 @@
         <span>{{ last_name }} </span>
       </h1>
       <p style="color: #858585">
-        {{cv_detail.email}} - {{number}} - {{cv_detail.address}}
+        {{cv_detail.email}} - {{number}} - {{cv_detail.address}} - {{cv_detail.eircode}}
       </p>
     </div>
     <hr style="height: 1px; background-color: #858585" />
@@ -130,6 +130,7 @@
           <div
             style="
               display: flex;
+              flex-direction: column;
               justify-content: space-around;
               border-left: dotted;
               border-left-color: darkgray;
@@ -147,7 +148,23 @@
                 {{education_detail.school}}
               </p>
             </div>
-            <div>
+            <div class="table-container">
+              <table>
+                <tr>
+                  <th colspan="2">Subject</th>
+                  <th>Level</th>
+                  <th>Result</th>
+                </tr>
+                {% for item in Junior_Cert_detail %}
+                <tr>
+                  <td colspan="2">{{ item.subject }}</td>
+                  <td>{{ item.level }}</td>
+                  <td>{{ item.result }}</td>
+                </tr> 
+                {% endfor %}
+              </table>
+            </div>
+            <div style="margin-top: 50px;">
               <p style="color: #595959; font-weight: 600">
                 {{education_detail.year}}
               </p>
@@ -158,40 +175,26 @@
                 {{education_detail.school}}
               </p>
             </div>
-          </div>
-          <div class="tables-main">
             <div class="table-container">
               <table>
                 <tr>
-                  <th>Subject</th>
-                  <th>Level</th>
-                  <th>Result</th>
-                </tr>
-                {% for item in Junior_Cert_detail %}
-                <tr>
-                  <td>{{ item.subject }}</td>
-                  <td>{{ item.level }}</td>
-                  <td>{{ item.result }}</td>
-                </tr>
-                {% endfor %}
-              </table>
-            </div>
-            <div class="table-container">
-              <table>
-                <tr>
-                  <th>Subject</th>
+                  <th colspan="2">Subject</th>
                   <th>Level</th>
                   <th>Result</th>
                 </tr>
                 {% for item in Leave_Cert_detail %}
                 <tr>
-                  <td>{{ item.subject }}</td>
+                  <td colspan="2">{{ item.subject }}</td>
                   <td>{{ item.level }}</td>
                   <td>{{ item.result }}</td>
                 </tr>
                 {% endfor %}
               </table>
             </div>
+          </div>
+          <div class="tables-main">
+            
+          
           </div>
         </div>
       </div>
@@ -245,9 +248,7 @@
       <div class="additional-info">
         <h2>ADDITIONAL INFORMATION</h2>
         <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
-          Any further information which might support an application such as
-          membership of an organisation or the ability to speak another
-          language.
+          {{ additional_info }}
         </p>
       </div>
 

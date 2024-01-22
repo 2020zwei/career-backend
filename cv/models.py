@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import Student
-from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT, SKILLS, QUALITY
+from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT, SKILLS, QUALITY, SKILLS_DESCRIPTIONS, QUALITY_DESCRIPTIONS
 from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
@@ -10,13 +10,13 @@ class CV(models.Model):
     skills=ArrayField(models.CharField(max_length=200), blank=True,null=True)
     number = models.DecimalField(decimal_places=0, max_digits=15, blank=True,null=True)
     HobbiesandInterests=models.TextField(max_length=300,null=True)
-    full_name = models.CharField(max_length=100, null=True)
+    full_name = models.CharField(max_length     =100, null=True)
     school =  models.CharField(max_length=100,null=True)
     city = models.CharField(max_length=50, blank=True,null=True)
     town = models.CharField(max_length=50, blank=True,null=True)
     address = models.TextField(blank=True,null=True)
     address2 = models.TextField(blank=True,null=True)
-    eircode=models.CharField(max_length=7,null=True,blank=True)
+    eircode=models.CharField(max_length=10,null=True,blank=True)
     email = models.EmailField(null=True,blank=True)
 
 
@@ -60,8 +60,16 @@ class Experience(models.Model):
 class Skills(models.Model):
     skill=models.CharField(max_length=50, null=True)
     skill_dropdown=models.CharField(choices=SKILLS.choices,max_length=2,null=True, blank=True)
-    description=models.TextField(max_length=300)
+    description=models.TextField(max_length=300, blank=True)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
+
+    @property
+    def skill_dropdown_description(self):
+        return SKILLS_DESCRIPTIONS.get(self.skill_dropdown, "")
+    
+    def save(self, *args, **kwargs):
+        self.description = self.skill_dropdown_description
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural="skills"
@@ -70,8 +78,16 @@ class Qualities(models.Model):
     quality=models.CharField(max_length=50, null=True)
     interest=models.TextField(max_length=300,null=True, blank=True)
     quality_dropdown=models.CharField(choices=QUALITY.choices,max_length=2,null=True, blank=True)
-    description=models.TextField(max_length=300)
+    description=models.TextField(max_length=300, blank=True)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
+
+    @property
+    def quality_dropdown_description(self):
+        return QUALITY_DESCRIPTIONS.get(self.quality_dropdown, "")
+    
+    def save(self, *args, **kwargs):
+        self.description = self.quality_dropdown_description
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural="qualities"
@@ -101,3 +117,13 @@ class Interests(models.Model):
 
     class Meta:
         verbose_name_plural="Interests"
+
+
+class AdditionalInfo(models.Model):
+    user = models.ForeignKey(Student, on_delete=models.CASCADE)
+    additional_info = models.TextField(max_length=300, default="""Any further information which might support an application such as
+          membership of an organisation or the ability to speak another
+          language.""")
+
+    class Meta:
+        verbose_name_plural="additional_info"
