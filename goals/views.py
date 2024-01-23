@@ -171,11 +171,11 @@ def create_pdf_with_content(student, goal_obj, action_obj):
     # Add the data to the content list using custom layouts (Frames and Paragraphs)
     frame = Frame(x_offset, y_offset, frame_width, frame_height, showBoundary=0,
                   leftPadding=220,
-                  topPadding=230,  # Adjust this value to add space between logo and first line
+                  topPadding=280,  # Adjust this value to add space between logo and first line
                   rightPadding=0,
                   bottomPadding=0)
 
-    image = Image('general/templates/logo.png', width=280, height=45)  # Adjust the width and height as needed
+    image = Image('general/templates/logo.png', width=280, height=60)  # Adjust the width and height as needed
     content.append(image)
 
     # Add the Paragraphs to the frame
@@ -197,7 +197,7 @@ def create_pdf_with_content(student, goal_obj, action_obj):
 
     if goal_obj.realistic is True:
         content.append(Paragraph(f"My Deadline is", custom_styles['italic_bold_centered']))
-        content.append(Paragraph(f"{goal_obj.countdown.day}-{goal_obj.countdown.month}-{goal_obj.countdown.year}", custom_styles['italic_centered']))
+        content.append(Paragraph(goal_obj.countdown.strftime("%d %b %Y"), custom_styles['italic_centered']))
 
     # Build the content and save it to the buffer
     doc.addPageTemplates([PageTemplate(frames=[frame])])
@@ -220,7 +220,6 @@ class GoalPDF(CreateAPIView):
 
             # Preserve line breaks from the description field
             description = goal_obj.description.replace('\n', '<br/>')
-            print(description)
             # Convert True/False to Yes/No based on user's selection
             can_do = True if goal_obj.realistic else 'No'
 
@@ -253,7 +252,6 @@ class GoalPDF(CreateAPIView):
                 page = pdf.pages[page_num]
                 output_pdf.add_page(page)
             
-            print(output_pdf)
 
             # Create a buffer to store the updated PDF content
             buffer = BytesIO()
