@@ -94,9 +94,10 @@ class JuniorListSerializer(serializers.ListSerializer):
                 data['user']=self.context.user.student
                 ret.append(JuniorCertTest.objects.create(**data))
         return ret
-class  JuniorCertTestSerializer(serializers.ModelSerializer):
     
 
+class  JuniorCertTestSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model=JuniorCertTest
         fields=['id','subject','level','result']
@@ -108,15 +109,28 @@ class  JuniorCertTestSerializer(serializers.ModelSerializer):
             }
         }
 
-class  LeavingCertTestSerializer(serializers.ModelSerializer):
-    
 
+class LeavingListSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        # Perform creations and updates.
+        ret = []
+
+        for data in validated_data:
+            if "id" in data and data['id'] not in ['', None]:
+                LeavingCertTest.objects.filter(id=data['id']).update(**data)
+                ret.append(data)
+            else:
+                data['user']=self.context.user.student
+                ret.append(LeavingCertTest.objects.create(**data))
+        return ret 
+
+class LeavingCertTestSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model=LeavingCertTest
-        fields=['subject','level','result']
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user.student
-        return super(JuniorCertTestSerializer, self).create(validated_data=validated_data)
+        fields=['id', 'subject', 'level', 'result']
+        list_serializer_class = LeavingListSerializer
+        extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
 
 class ExperienceDateField(serializers.Field):
     """

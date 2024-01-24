@@ -34,14 +34,14 @@ class Education(models.Model):
 
 class JuniorCertTest(models.Model):
     subject = models.CharField(max_length=50, null=True)
-    level=models.CharField(choices=JUNIOR_CERT_TEST_LEVEL.choices,max_length=2,null=True, blank=True)
-    result=models.CharField(choices=JUNIOR_CERT_TEST_RESULT.choices,max_length=2,null=True, blank=True)
+    level=models.CharField(choices=JUNIOR_CERT_TEST_LEVEL.choices,max_length=255,null=True, blank=True)
+    result=models.CharField(choices=JUNIOR_CERT_TEST_RESULT.choices,max_length=255,null=True, blank=True)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class LeavingCertTest(models.Model):
     subject = models.CharField(max_length=50, null=True)
-    level=models.CharField(choices=LEAVING_CERT_TEST_LEVEL.choices,max_length=2)
-    result=models.CharField(choices=LEAVING_CERT_TEST_RESULT.choices,max_length=2)
+    level=models.CharField(choices=LEAVING_CERT_TEST_LEVEL.choices,max_length=255)
+    result=models.CharField(choices=LEAVING_CERT_TEST_RESULT.choices,max_length=255)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
 class Experience(models.Model):
@@ -120,7 +120,7 @@ class Interests(models.Model):
 
 
 class AdditionalInfo(models.Model):
-    user = models.ForeignKey(Student, on_delete=models.CASCADE)
+    user = models.OneToOneField(Student, on_delete=models.CASCADE)
     additional_info = models.TextField(max_length=300, default="""Any further information which might support an application such as
           membership of an organisation or the ability to speak another
           language.""")

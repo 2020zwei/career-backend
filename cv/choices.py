@@ -4,41 +4,41 @@ from django.db import models
 
 class JUNIOR_CERT_TEST_LEVEL(models.TextChoices):
 
-    Common = "1", _('Common')
-    Higher = "2", _('Higher')
-    Ordinary = "3", _('Ordinary')
+    Common = ('Common')
+    Higher = ('Higher')
+    Ordinary = ('Ordinary')
 
 class JUNIOR_CERT_TEST_RESULT(models.TextChoices):
 
-    HIGHERMERIT = "1", _('HIGHER MERIT')
-    MERIT = "2", _('MERIT')
-    ACHIEVED = "3", _('ACHIEVED')
-    PARTIALLYACHIEVED = "4", _('PARTIALLY ACHIEVED')
-    NOTGRADED = "5", _('NOT GRADED')
+    HIGHERMERIT = ('HIGHER MERIT')
+    MERIT = ('MERIT')
+    ACHIEVED = ('ACHIEVED')
+    PARTIALLYACHIEVED = ('PARTIALLY ACHIEVED')
+    NOTGRADED = ('NOT GRADED')
 
 class LEAVING_CERT_TEST_RESULT(models.TextChoices):
 
-    Pending = "1", ('PENDING')
-    H1 = "2", _('H1')
-    H2 = "3", _('H2')
-    H3 = "4", _('H3')
-    H4 = "5", _('H4')
-    H5 = "6", _('H5')
-    H6 = "7", _('H6')
-    H7 = "8", _('H7')
-    O1 = "9", _('O1')
-    O2 = "10", _('O2')
-    O3 = "11", _('O3')
-    O4 = "12", _('O4')
-    O5 = "13", _('O5')
-    O6 = "14", _('O6')
-    O7 = "15", _('O7')
+    Pending = ('PENDING')
+    H1 = ('H1')
+    H2 = ('H2')
+    H3 = ('H3')
+    H4 = ('H4')
+    H5 = ('H5')
+    H6 = ('H6')
+    H7 = ('H7')
+    O1 = ('O1')
+    O2 = ('O2')
+    O3 = ('O3')
+    O4 = ('O4')
+    O5 = ('O5')
+    O6 = ('O6')
+    O7 = ('O7')
 
 class LEAVING_CERT_TEST_LEVEL(models.TextChoices):
 
-    HIGHER = "1", _('HIGHER')
-    ORDINARY = "2", _('ORDINARY')
-    COMMON = "3", _('COMMON')
+    Common = ('Common')
+    Higher = ('Higher')
+    Ordinary = ('Ordinary')
 
 class SUBJECTS(models.TextChoices):
 

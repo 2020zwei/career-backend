@@ -24,6 +24,7 @@ urlpatterns = [
     path('add-leaving-cert/',LeavingCertTestViewRelated.as_view(),name="Add_Leaving_Cert"),
     path('get-leaving-cert/',LeavingCertTestViewRelated.as_view(),name="Get_Leaving_Cert"),
     path('update-leaving/<int:pk>/',LeavingViewUpdate.as_view(),name="Update_Leaving"),
+    path('delete-leaving-cert/<int:pk>/', LeavingCertTestViewRelated.as_view(), name="delete_leaving_cert"),
     path('add-experience/',ExperienceViewRelated.as_view(),name="Add_Experience"),
     path('get-experience/',ExperienceViewRelated.as_view(),name="Get_Experience"),
     path('delete-experience/<int:pk>/',ExperienceViewRelated.as_view(),name="Get_Experience"),

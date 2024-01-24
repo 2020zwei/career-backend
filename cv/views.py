@@ -211,10 +211,12 @@ class JuniorCertTestViewRelated(CreateAPIView):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class JuniorViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = JuniorCertTestSerializer
     queryset = JuniorCertTest.objects.all()
+
 
 class LeavingCertTestViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -225,22 +227,31 @@ class LeavingCertTestViewRelated(CreateAPIView):
         """Fetch All Chocies"""
         try:
             student =self.request.user
-            edu=LeavingCertTest.objects.filter(user=student.student).last()
-            serializer = LeavingCertTestSerializer(edu)
+            leaving_data=LeavingCertTest.objects.filter(user=student.student)
+            serializer = LeavingCertTestSerializer(leaving_data,many=True)
             return Response(serializer.data)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def create(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         try:
-            many = isinstance(request.data, list)
-            serializer = self.get_serializer(data=request.data, many=many)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, headers=headers)
+            leaving_data_serializer_obj=LeavingCertTestSerializer(instance='',data=request.data,many=True, context=request)
+
+            if leaving_data_serializer_obj.is_valid(raise_exception=True):
+                    leaving_data_serializer_obj.save()
+                    return Response(leaving_data_serializer_obj.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(leaving_data_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            raise e
+           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, pk):
+        try:
+            leaving_data = LeavingCertTest.objects.get(pk=pk)
+            leaving_data.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LeavingViewUpdate(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
