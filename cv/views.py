@@ -120,11 +120,14 @@ class EducationViewRelated(CreateAPIView):
             student =self.request.user
             edu=Education.objects.filter(user=student.student)
             junior=JuniorCertTest.objects.filter(user=student.student)
+            leaving = LeavingCertTest.objects.filter(user=student.student)
             serializer = EducationSerializer(edu, many=True)
             serializer2 = JuniorCertTestSerializer(junior, many=True)
+            serializer3 = LeavingCertTestSerializer(leaving, many=True)
             data = {
             "education_data": serializer.data,
             "junior_data": serializer2.data,
+            "leaving_data": serializer3.data,
         }
             return Response(data)
 
@@ -135,6 +138,7 @@ class EducationViewRelated(CreateAPIView):
         try:
             education_serializer_obj=EducationSerializer(instance='',data=request.data.get('education_data'),many=True, context=request)
             junior_serializer_obj=JuniorCertTestSerializer(instance='',data=request.data.get('junior_data'),many=True, context=request)
+            leaving_serializer_obj=LeavingCertTestSerializer(instance='',data=request.data.get('leaving_data'),many=True, context=request)
 
             try:
                 enddate = request.data.get('education_data')[0].get('enddate')
@@ -145,17 +149,20 @@ class EducationViewRelated(CreateAPIView):
 
             if education_serializer_obj.is_valid(raise_exception=True):
                 if junior_serializer_obj.is_valid(raise_exception=True):
-                    education_serializer_obj.save()
-                    junior_serializer_obj.save()
-                    data={
-                        "education_data": education_serializer_obj.data,
-                        "junior_data":junior_serializer_obj.data
-                    }
-                    student = self.request.user.student
-                    if student.cv_completed is not True:
-                        student.current_step = 2
-                        student.save()
-                    return Response(data, status=status.HTTP_201_CREATED)
+                    if leaving_serializer_obj.is_valid(raise_exception=True):
+                        education_serializer_obj.save()
+                        junior_serializer_obj.save()
+                        leaving_serializer_obj.save()
+                        data={
+                            "education_data": education_serializer_obj.data,
+                            "junior_data":junior_serializer_obj.data,
+                            "leaving_data":leaving_serializer_obj.data
+                        }
+                        student = self.request.user.student
+                        if student.cv_completed is not True:
+                            student.current_step = 2
+                            student.save()
+                        return Response(data, status=status.HTTP_201_CREATED)
             else:
                 return Response(education_serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
