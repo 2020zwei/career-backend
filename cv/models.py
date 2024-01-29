@@ -121,9 +121,7 @@ class Interests(models.Model):
 
 class AdditionalInfo(models.Model):
     user = models.OneToOneField(Student, on_delete=models.CASCADE)
-    additional_info = models.TextField(max_length=300, default="""Any further information which might support an application such as
-          membership of an organisation or the ability to speak another
-          language.""")
+    additional_info = models.TextField(max_length=300)
 
     class Meta:
         verbose_name_plural="additional_info"
