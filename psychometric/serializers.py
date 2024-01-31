@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PsychometricTest, TestType, Question, Answer, TestResult, TestResultDetail
+from .models import PsychometricTest, TestType, Question, Answer, TestResult, TestResultDetail, CareerIdea, ChoiceIdea, StudyTips
 from django.db.models import Sum
 from users.models import Student
 
@@ -173,3 +173,24 @@ class TestResultDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestResultDetail
         fields = ['test_name', 'question_type', 'score', 'description']
+
+
+class CareerIdeaSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CareerIdea
+        fields = ['id', 'type', 'idea']
+
+
+class ChoiceIdeaSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = ChoiceIdea
+        fields = ['id', 'type', 'idea']
+
+
+class StudyTipsSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = StudyTips
+        fields = ['id', 'type', 'title', 'description']

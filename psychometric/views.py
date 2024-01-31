@@ -3,11 +3,12 @@ from django.db.models import Sum
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
-from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer,TypeSerializer, TestResultDetailSerializer
-from .models import PsychometricTest,Answer,Question,TestType,TestResult,TestResultDetail
+from .serializers import PsychometricTestSerializer, PsychometricStatusSerializer, PsychometricResultDetailSerializer,TypeSerializer, TestResultDetailSerializer, CareerIdeaSerializer, ChoiceIdeaSerializer, StudyTipsSerializer
+from .models import PsychometricTest,Answer,Question,TestType,TestResult,TestResultDetail, CareerIdea, ChoiceIdea, StudyTips
 from users.models import Student
 from rest_framework import status
 from rest_framework.response import Response
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 
@@ -258,3 +259,53 @@ class ResultDetailAPIView(RetrieveAPIView):
             return Response(serialized_data)
         except TestResultDetail.DoesNotExist:
             return Response({'message': 'Test result not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class CareerIdeaView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CareerIdeaSerializer
+
+    def get(self, request, type_id):
+        try:
+            career_idea = CareerIdea.objects.get(type=type_id)
+            serialized_data = self.serializer_class(career_idea).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
+        
+        except ObjectDoesNotExist:
+            return Response({'message': 'type ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+class ChoiceIdeaView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChoiceIdeaSerializer
+
+    def get(self, request, type_id):
+        try:
+            career_idea = ChoiceIdea.objects.get(type=type_id)
+            serialized_data = self.serializer_class(career_idea).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
+        
+        except ObjectDoesNotExist:
+            return Response({'message': 'type ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudyTipsView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudyTipsSerializer
+
+    def get(self, request, type_id):
+        try:
+            study_tips = StudyTips.objects.filter(type=type_id).order_by('id')[:5]
+
+            if not study_tips.exists():
+                return Response({'message': 'type ID not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+            serialized_data = self.serializer_class(study_tips, many=True).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({'message': str(e), 'status': False}, status=status.HTTP_400_BAD_REQUEST)

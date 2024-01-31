@@ -42,3 +42,18 @@ class TestResultDetail(models.Model):
     question=models.ForeignKey(Question,related_name="result", on_delete=models.CASCADE)
     answer=models.ForeignKey(Answer,related_name="result", on_delete=models.CASCADE)
    
+
+class CareerIdea(models.Model):
+    type = models.OneToOneField(TestType, on_delete=models.CASCADE)
+    idea = models.TextField(max_length=1400, null=True, blank=True)
+
+
+class ChoiceIdea(models.Model):
+    type = models.OneToOneField(TestType, on_delete=models.CASCADE)
+    idea = models.TextField(max_length=1400, null=True, blank=True)
+
+
+class StudyTips(models.Model):
+    type = models.ForeignKey(TestType, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(max_length=1400)
