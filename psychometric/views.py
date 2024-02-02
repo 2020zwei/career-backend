@@ -215,8 +215,10 @@ class TestResultDetailAPIView(RetrieveAPIView):
                     # Get the description and test name from the related models
                     description = result_details.filter(question__type__type=question_type).first().question.type.description
                     test_name = test_result.test.name
+                    test_type_id = result_details.filter(question__type__type=question_type).first().question.type.pk
                     
                     data = {
+                        'id': test_type_id,
                         'test_name': test_name,
                         'question_type': question_type,
                         'score': total_score,
