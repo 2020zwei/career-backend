@@ -153,10 +153,10 @@
                 {{education_detail.year}}
               </p>
               <p>
-                <span style="color: #298855; font-weight: 600">
+                <span style="color: #298855; font-weight: 600; margin-bottom: 5px;">
                   JUNIOR CERT,
                 </span>
-                <!-- {{education_detail.school}} -->
+                {{education_detail.school}}
               </p>
             </div>
             <div class="table-container">
@@ -176,14 +176,14 @@
               </table>
             </div>
             <div style="margin-top: 50px;">
-              <p style="color: #595959; font-weight: 600">
+              <!-- <p style="color: #595959; font-weight: 600">
                 {{education_detail.year}}
-              </p>
+              </p> -->
               <p>
-                <span style="color: #298855; font-weight: 600">
-                  LEAVING CERT,
+                <span style="color: #298855; font-weight: 600; margin-bottom: 5px;">
+                  LEAVING CERT
                 </span>
-                {{education_detail.school}}
+                <!-- {{education_detail.school}} -->
               </p>
             </div>
             <div class="table-container">
@@ -268,7 +268,8 @@
         <h2>REFEREES</h2>
         {% for item in Reference_detail %}
         <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
-          {{item.name}}, {{item.position}},
+          {{item.name}}, {{item.position}}
+        </br>
           {{ item.contact_number }}, {{ item.email }}
         </p>
         {% endfor %}
