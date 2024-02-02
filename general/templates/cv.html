@@ -147,7 +147,7 @@
               margin-left: 30px;
               padding-left: 40px;
             ">
-            
+            {% if Junior_Cert_detail != 0 %}
             <div>
               <p style="color: #595959; font-weight: 600">
                 {{education_detail.year}}
@@ -166,6 +166,7 @@
                   <th>Level</th>
                   <th>Result</th>
                 </tr>
+
                 {% for item in Junior_Cert_detail %}
                 <tr>
                   <td colspan="2">{{ item.subject }}</td>
@@ -175,6 +176,8 @@
                 {% endfor %}
               </table>
             </div>
+            {% endif %}
+            {% if Leave_Cert_detail.length != 0 %}
             <div style="margin-top: 50px;">
               <!-- <p style="color: #595959; font-weight: 600">
                 {{education_detail.year}}
@@ -202,6 +205,7 @@
                 {% endfor %}
               </table>
             </div>
+            {% endif %}
           </div>
           <div class="tables-main">
             
