@@ -129,14 +129,25 @@
           <p style="margin: 1px; font-style: italic; font-weight: 600"></p>
           <div
             style="
-              display: flex;
+              /* display: flex;
               flex-direction: column;
               justify-content: space-around;
               border-left: dotted;
               border-left-color: darkgray;
               margin-top: 20px;
+              margin-bottom: 20px; */
+              display: flex;
+              flex-direction: column;
+              justify-content: space-around;
+              border-left: dotted;
+              padding-inline: 3rem;
+              border-left-color: darkgray;
+              margin-top: 20px;
               margin-bottom: 20px;
+              margin-left: 30px;
+              padding-left: 40px;
             ">
+            
             <div>
               <p style="color: #595959; font-weight: 600">
                 {{education_detail.year}}
@@ -145,7 +156,7 @@
                 <span style="color: #298855; font-weight: 600">
                   JUNIOR CERT,
                 </span>
-                {{education_detail.school}}
+                <!-- {{education_detail.school}} -->
               </p>
             </div>
             <div class="table-container">
@@ -228,11 +239,18 @@
         </div>
       </div>
 
-      <div class="achievements">
+      <!-- <div class="achievements">
         <h2>ACHIEVEMENTS</h2>
         <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
           Give information about specific achievements. These might be school
           related, personal or sporting achievements
+        </p>
+      </div> -->
+
+      <div class="additional-info">
+        <h2>ACHIEVEMENTS</h2>
+        <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
+          {{ additional_info }}
         </p>
       </div>
 
@@ -245,18 +263,13 @@
         {% endfor %}
       </div>
 
-      <div class="additional-info">
-        <h2>ADDITIONAL INFORMATION</h2>
-        <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
-          {{ additional_info }}
-        </p>
-      </div>
 
       <div class="referees">
         <h2>REFEREES</h2>
         {% for item in Reference_detail %}
         <p style="color: #7c7c7c; margin-top: 20px; margin-bottom: 20px">
-          {{item.name}}, {{item.position}}
+          {{item.name}}, {{item.position}},
+          {{ item.contact_number }}, {{ item.email }}
         </p>
         {% endfor %}
       </div>
