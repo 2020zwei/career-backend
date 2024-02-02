@@ -135,6 +135,8 @@ class EducationViewRelated(CreateAPIView):
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
+        JuniorCertTest.objects.filter(user=request.user).delete()
+        LeavingCertTest.objects.filter(user=request.user).delete()
         try:
             education_serializer_obj=EducationSerializer(instance='',data=request.data.get('education_data'),many=True, context=request)
             junior_serializer_obj=JuniorCertTestSerializer(instance='',data=request.data.get('junior_data'),many=True, context=request)
