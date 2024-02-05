@@ -4,7 +4,7 @@ from .views import (CvViewRelated,EducationViewRelated,JuniorCertTestViewRelated
                     QualityViewRelated,GeneratePDF,EducationViewUpdate, GenerateAndSendPDF,
                     JuniorViewUpdate, LeavingViewUpdate,ExperienceViewUpdate,ReferenceViewUpdate,
                     SkillsUpdate,QualityUpdate, LeavingCertTestViewRelated,CVUpdate, InterestViewRelated, InterestUpdate,
-                    AdditionalInfoViewRelated, AdditionalInfoUpdate)
+                    AdditionalInfoViewRelated, AdditionalInfoUpdate, GenerateDOC)
 
 
 urlpatterns = [
@@ -39,6 +39,7 @@ urlpatterns = [
     path('get-interest/',InterestViewRelated.as_view(),name="Get_Interest"),
     path('update-interest/<int:pk>/',InterestUpdate.as_view(),name="Update_Interest"),
     path('cv/',GeneratePDF.as_view(),name="CV"),
+    path('doc-cv/', GenerateDOC.as_view(), name='doc_cv'),
     path('sendcv/', GenerateAndSendPDF.as_view(), name='generate_send_pdf'),
     path('add-additional-info/', AdditionalInfoViewRelated.as_view(), name='add_addtional_info'),
     path('get-additional-info/', AdditionalInfoViewRelated.as_view(), name='get_additional_info'),
