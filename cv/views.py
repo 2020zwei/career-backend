@@ -675,64 +675,64 @@ class GeneratePDF(CreateAPIView):
 class GenerateAndSendPDF(CreateAPIView):
     def get(self, request):
         """Generate PDF, Send Email with Attachment, and Delete Files"""
-        # try:
-        student = self.request.user
-        user_obj = Student.objects.get(id=student.student.id)
-        print(user_obj.user.email)
-        cv_obj =CV.objects.get(user=student.student)
-        education_obj=Education.objects.filter(user=student.student).first()
-        junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
-        leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
-        exp_obj=Experience.objects.filter(user=student.student)
-        skill_obj=Skills.objects.filter(user=student.student)
-        quality_obj=Qualities.objects.filter(user=student.student)
-        interest_obj=Interests.objects.filter(user=student.student)
-        additional_info = AdditionalInfo.objects.filter(user=student.student)
-        add_info = [i.additional_info for i in additional_info][0]
-        refer_obj=Reference.objects.filter(user=student.student)
+        try:
+            student = self.request.user
+            user_obj = Student.objects.get(id=student.student.id)
+            print(user_obj.user.email)
+            cv_obj =CV.objects.get(user=student.student)
+            education_obj=Education.objects.filter(user=student.student).first()
+            junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+            leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+            exp_obj=Experience.objects.filter(user=student.student)
+            skill_obj=Skills.objects.filter(user=student.student)
+            quality_obj=Qualities.objects.filter(user=student.student)
+            interest_obj=Interests.objects.filter(user=student.student)
+            additional_info = AdditionalInfo.objects.filter(user=student.student)
+            add_info = [i.additional_info for i in additional_info][0]
+            refer_obj=Reference.objects.filter(user=student.student)
 
-        temp_name = "general/templates/"
-        cv_template = str(user_obj.first_name) + "-" + str(user_obj.last_name) + "-" + "cv" + ".html"
-        pdf_filename = str(user_obj.first_name) + ".pdf"
-        context = {
-            'student_detail': user_obj,
-            'cv_detail': cv_obj,
-            'education_detail': education_obj,
-            'Junior_Cert_detail': junior_cert_obj,
-            'Leave_Cert_detail': leave_cert_obj,
-            'skill_detail': skill_obj,
-            'qualities_detail': quality_obj,
-            'Experience_detail': exp_obj,
-            'Interest_detail':interest_obj,
-            'additional_info': add_info,
-            'Reference_detail': refer_obj,
-        }
+            temp_name = "general/templates/"
+            cv_template = str(user_obj.first_name) + "-" + str(user_obj.last_name) + "-" + "cv" + ".html"
+            pdf_filename = str(user_obj.first_name) + ".pdf"
+            context = {
+                'student_detail': user_obj,
+                'cv_detail': cv_obj,
+                'education_detail': education_obj,
+                'Junior_Cert_detail': junior_cert_obj,
+                'Leave_Cert_detail': leave_cert_obj,
+                'skill_detail': skill_obj,
+                'qualities_detail': quality_obj,
+                'Experience_detail': exp_obj,
+                'Interest_detail':interest_obj,
+                'additional_info': add_info,
+                'Reference_detail': refer_obj,
+            }
 
-        rendered_template = render_to_string('cv.html', context)
-        open(temp_name + cv_template, "w").write(rendered_template)
-        HTML(temp_name + cv_template).write_pdf(pdf_filename)
+            rendered_template = render_to_string('cv.html', context)
+            open(temp_name + cv_template, "w").write(rendered_template)
+            HTML(temp_name + cv_template).write_pdf(pdf_filename)
 
-        with open(pdf_filename, 'rb') as f:
-            file_data = f.read()
+            with open(pdf_filename, 'rb') as f:
+                file_data = f.read()
 
-        email = EmailMessage(
-            'Your CV PDF',
-            'Please find your CV PDF attached.',
-            'taloot.khan@zweidevs.com',  # Replace with your email address
-            [user_obj.user.email],  # List of recipient email addresses
-        )
-        email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
+            email = EmailMessage(
+                'Your CV PDF',
+                'Please find your CV PDF attached.',
+                f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
+                [user_obj.user.email],  # List of recipient email addresses
+            )
+            email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
 
-        email.send()
+            email.send()
 
-        # Delete the generated files
-        os.remove(temp_name + cv_template)
-        os.remove(pdf_filename)
+            # Delete the generated files
+            os.remove(temp_name + cv_template)
+            os.remove(pdf_filename)
 
-        return Response({'message': "CV PDF sent successfully"}, status=status.HTTP_200_OK)
+            return Response({'message': "CV PDF sent successfully"}, status=status.HTTP_200_OK)
 
-        # except Exception as e:
-        #     return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
 class GenerateDOC(CreateAPIView):
@@ -797,14 +797,14 @@ class GenerateDOC(CreateAPIView):
             #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
             rendered_template = render_to_string('cv.html', context)
             open(temp_name + cv_template, "w").write(rendered_template)
-            HTML(temp_name + cv_template).write_pdf(str("cv")+'.docx')
-            file_location = f'{"cv"}.docx'
+            HTML(temp_name + cv_template).write_pdf(str("cv")+'.pdf')
+            file_location = f'{"cv"}.pdf'
             with open(file_location, 'rb') as f:
                 file_data = f.read()
-            response = HttpResponse(file_data, content_type='application/docx')
-            response['Content-Disposition'] = 'attachment; filename="'+ "cv" +'".docx'
+            response = HttpResponse(file_data, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="'+ "cv" +'".pdf'
             os.remove(temp_name + cv_template)
-            os.remove("cv.docx")
+            os.remove("cv.pdf")
             return response
         except Exception as e:
             print(e)
