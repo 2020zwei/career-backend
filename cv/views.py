@@ -735,77 +735,77 @@ class GenerateAndSendPDF(CreateAPIView):
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
-class GenerateDOC(CreateAPIView):
-    def get(self, request):
-        """Fetch All Notes By Officer"""
-        try:
-            print("work")
-            student =self.request.user
-            user_obj=Student.objects.get(id=student.student.id)
-            cv_obj =CV.objects.filter(user=student.student).first()
-            education_obj=Education.objects.filter(user=student.student).first()
-            junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
-            leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
-            exp_obj=Experience.objects.filter(user=student.student)
-            skill_obj=Skills.objects.filter(user=student.student)
-            quality_obj=Qualities.objects.filter(user=student.student)
-            interest_obj=Interests.objects.filter(user=student.student)
-            additional_info = AdditionalInfo.objects.filter(user=student.student)
-            add_info = [i.additional_info for i in additional_info][0]
-            refer_obj=Reference.objects.filter(user=student.student)
-            temp_name = "general/templates/"
-            cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
-            full_name = user_obj.full_name
-            if cv_obj.number == "" or cv_obj.number is None:
-                number = "Phone No."
-            else:
-                number = cv_obj.number
-            if full_name:
-                words = full_name.split()
-                print(len(words))
-                if len(words) == 3:
-                    print(words)
-                    first_name = words[0] + " " + words[1]
-                    last_name = words[2]
-                elif len(words) == 2:
-                    print(words, "working")
-                    first_name = words[0]
-                    last_name = words[1]
-                elif len(words) == 1:
-                    first_name = words[0]
-                    last_name = ""
-                else:
-                    first_name = ""
-                    last_name = ""
-            print(first_name, last_name)
-            context = {
-                'first_name': first_name,
-                'number': number,
-                'last_name': last_name,
-                'student_detail': user_obj,
-                'cv_detail': cv_obj,
-                'education_detail': education_obj,
-                'Junior_Cert_detail': junior_cert_obj,
-                'Leave_Cert_detail': leave_cert_obj,
-                'skill_detail': skill_obj,
-                'qualities_detail': quality_obj,
-                'Experience_detail': exp_obj,
-                'Interest_detail':interest_obj,
-                'additional_info': add_info,
-                'Reference_detail': refer_obj,
-                }
-            #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
-            rendered_template = render_to_string('cv.html', context)
-            open(temp_name + cv_template, "w").write(rendered_template)
-            HTML(temp_name + cv_template).write_pdf(str("cv")+'.pdf')
-            file_location = f'{"cv"}.pdf'
-            with open(file_location, 'rb') as f:
-                file_data = f.read()
-            response = HttpResponse(file_data, content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="'+ "cv" +'".pdf'
-            os.remove(temp_name + cv_template)
-            os.remove("cv.pdf")
-            return response
-        except Exception as e:
-            print(e)
-            return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
+# class GenerateDOC(CreateAPIView):
+#     def get(self, request):
+#         """Fetch All Notes By Officer"""
+#         try:
+#             print("work")
+#             student =self.request.user
+#             user_obj=Student.objects.get(id=student.student.id)
+#             cv_obj =CV.objects.filter(user=student.student).first()
+#             education_obj=Education.objects.filter(user=student.student).first()
+#             junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+#             leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+#             exp_obj=Experience.objects.filter(user=student.student)
+#             skill_obj=Skills.objects.filter(user=student.student)
+#             quality_obj=Qualities.objects.filter(user=student.student)
+#             interest_obj=Interests.objects.filter(user=student.student)
+#             additional_info = AdditionalInfo.objects.filter(user=student.student)
+#             add_info = [i.additional_info for i in additional_info][0]
+#             refer_obj=Reference.objects.filter(user=student.student)
+#             temp_name = "general/templates/"
+#             cv_template = str(user_obj.first_name) +"-"+str(user_obj.last_name) +"-"+"cv" + ".html"
+#             full_name = user_obj.full_name
+#             if cv_obj.number == "" or cv_obj.number is None:
+#                 number = "Phone No."
+#             else:
+#                 number = cv_obj.number
+#             if full_name:
+#                 words = full_name.split()
+#                 print(len(words))
+#                 if len(words) == 3:
+#                     print(words)
+#                     first_name = words[0] + " " + words[1]
+#                     last_name = words[2]
+#                 elif len(words) == 2:
+#                     print(words, "working")
+#                     first_name = words[0]
+#                     last_name = words[1]
+#                 elif len(words) == 1:
+#                     first_name = words[0]
+#                     last_name = ""
+#                 else:
+#                     first_name = ""
+#                     last_name = ""
+#             print(first_name, last_name)
+#             context = {
+#                 'first_name': first_name,
+#                 'number': number,
+#                 'last_name': last_name,
+#                 'student_detail': user_obj,
+#                 'cv_detail': cv_obj,
+#                 'education_detail': education_obj,
+#                 'Junior_Cert_detail': junior_cert_obj,
+#                 'Leave_Cert_detail': leave_cert_obj,
+#                 'skill_detail': skill_obj,
+#                 'qualities_detail': quality_obj,
+#                 'Experience_detail': exp_obj,
+#                 'Interest_detail':interest_obj,
+#                 'additional_info': add_info,
+#                 'Reference_detail': refer_obj,
+#                 }
+#             #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
+#             rendered_template = render_to_string('cv.html', context)
+#             open(temp_name + cv_template, "w").write(rendered_template)
+#             HTML(temp_name + cv_template).write_pdf(str("cv")+'.pdf')
+#             file_location = f'{"cv"}.pdf'
+#             with open(file_location, 'rb') as f:
+#                 file_data = f.read()
+#             response = HttpResponse(file_data, content_type='application/pdf')
+#             response['Content-Disposition'] = 'attachment; filename="'+ "cv" +'".pdf'
+#             os.remove(temp_name + cv_template)
+#             os.remove("cv.pdf")
+#             return response
+#         except Exception as e:
+#             print(e)
+#             return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
