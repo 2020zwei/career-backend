@@ -148,14 +148,34 @@
               padding-left: 40px;
             ">
             <div>
-              <p style="color: #595959; font-weight: 600">
-                {{education_detail.year}}
-              </p>
+              {% for edu_detail in education_detail %}
+                <div>
+                  <div style="display: flex; flex-wrap: nowrap;">
+                    <p style="color: #595959; font-weight: 600;">
+                      {{edu_detail.year}} - 
+                    </p>
+                      {% if edu_detail.enddate == None %}
+                      <p style="color: #595959; font-weight: 600">
+                      I'm still studying here
+                      </p>
+                      {% else %}
+                      <p style="color: #595959; font-weight: 600">
+                        {{ edu_detail.enddate }}
+                      </p>
+                      {% endif %}
+                  </div>
+                    <div>
+                      <p style="color: #595959; font-weight: 600; margin: 0;">
+                        {{ edu_detail.school }} , {{ edu_detail.examtaken }}
+                      </p>
+                    </div>
+                </div>
+              {% endfor %}
+              {% if Junior_Cert_detail|length != 0 %}
               <p>
                 <span style="color: #298855; font-weight: 600; margin-bottom: 5px;">
-                  JUNIOR CERT,
+                  JUNIOR CERT
                 </span>
-                {{education_detail.school}}
               </p>
             </div>
             <div class="table-container">
@@ -175,7 +195,8 @@
                 {% endfor %}
               </table>
             </div>
-            {% if Leave_Cert_detail.length != 0 %}
+            {% endif %}
+            {% if Leave_Cert_detail|length != 0 %}
             <div style="margin-top: 50px;">
               <!-- <p style="color: #595959; font-weight: 600">
                 {{education_detail.year}}
