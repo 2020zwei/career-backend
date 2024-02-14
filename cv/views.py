@@ -718,7 +718,7 @@ class GenerateAndSendPDF(CreateAPIView):
         email = EmailMessage(
             'Your CV PDF',
             'Please find your CV PDF attached.',
-            'myguidance@classroomguidance.ie',  # Replace with your email address
+            f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
             [user_obj.user.email],  # List of recipient email addresses
         )
         email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
