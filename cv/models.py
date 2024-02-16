@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import Student
-from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT, SKILLS, QUALITY, SKILLS_DESCRIPTIONS, QUALITY_DESCRIPTIONS
+from .choices import JUNIOR_CERT_TEST_LEVEL,JUNIOR_CERT_TEST_RESULT, JOB_TITLE,USER_TITLE,SUBJECTS,LEAVING_CERT_TEST_LEVEL,LEAVING_CERT_TEST_RESULT, SKILLS, QUALITY, SKILLS_DESCRIPTIONS, QUALITY_DESCRIPTIONS, SKILLS_VALUED, QUALITY_VALUED
 from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
@@ -67,6 +67,10 @@ class Skills(models.Model):
     def skill_dropdown_description(self):
         return SKILLS_DESCRIPTIONS.get(self.skill_dropdown, "")
     
+    @property
+    def skill_dropdown_value(self):
+        return SKILLS_VALUED.get(self.skill_dropdown, "")
+    
     def save(self, *args, **kwargs):
         self.description = self.skill_dropdown_description
         super().save(*args, **kwargs)
@@ -84,6 +88,10 @@ class Qualities(models.Model):
     @property
     def quality_dropdown_description(self):
         return QUALITY_DESCRIPTIONS.get(self.quality_dropdown, "")
+    
+    @property
+    def quality_dropdown_value(self):
+        return QUALITY_VALUED.get(self.quality_dropdown, "")
     
     def save(self, *args, **kwargs):
         self.description = self.quality_dropdown_description

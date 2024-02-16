@@ -4,7 +4,7 @@ from .views import (CvViewRelated,EducationViewRelated,JuniorCertTestViewRelated
                     QualityViewRelated,GeneratePDF,EducationViewUpdate, GenerateAndSendPDF,
                     JuniorViewUpdate, LeavingViewUpdate,ExperienceViewUpdate,ReferenceViewUpdate,
                     SkillsUpdate,QualityUpdate, LeavingCertTestViewRelated,CVUpdate, InterestViewRelated, InterestUpdate,
-                    AdditionalInfoViewRelated, AdditionalInfoUpdate)
+                    AdditionalInfoViewRelated, AdditionalInfoUpdate, GenerateDOCX)
 
 
 urlpatterns = [
@@ -43,6 +43,7 @@ urlpatterns = [
     path('add-additional-info/', AdditionalInfoViewRelated.as_view(), name='add_addtional_info'),
     path('get-additional-info/', AdditionalInfoViewRelated.as_view(), name='get_additional_info'),
     path('delete-additional-info/<int:pk>/', AdditionalInfoViewRelated.as_view(), name='delete_additional_info'),
-    path('update-additional-info/<int:pk>/', AdditionalInfoUpdate.as_view(), name='update_additional_info')
+    path('update-additional-info/<int:pk>/', AdditionalInfoUpdate.as_view(), name='update_additional_info'),
+    path('doc-cv/', GenerateDOCX.as_view(), name='download-doc-cv'),
 
 ]

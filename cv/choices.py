@@ -137,6 +137,18 @@ SKILLS_DESCRIPTIONS = {
     SKILLS.CriticalProblemSolving: "I have the ability to use knowledge, facts and data to effectively solve problems. I can think on my feet, assess problems and find solutions",
 }
 
+SKILLS_VALUED = {
+    SKILLS.SelfStarter: "SELF STARTER",
+    SKILLS.PeopleSkills: "People Skills",
+    SKILLS.CriticalThinkingSkills: "Critical Thinking Skills",
+    SKILLS.PracticalSkills: "Practical Skills",
+    SKILLS.CommunicationSkills:  "Communication Skills",
+    SKILLS.TeamworkSkills: "Teamwork Skills",
+    SKILLS.InformationSkills: "Information Skills",
+    SKILLS.CreativeSkills: "CreativeSkills",
+    SKILLS.CriticalProblemSolving: "Critical Problem Solving",
+}
+
 
 class QUALITY(models.TextChoices):
     Intuitive= "1", _('Intuitive')
@@ -158,4 +170,15 @@ QUALITY_DESCRIPTIONS = {
     QUALITY.Patient: "I am able to behave calmly in the face of frustration or annoyance.",
     QUALITY.A_Good_Listener: "I can make others feel supported and can create a safe environment in which issues can be discussed.",
     QUALITY.Expressive: "I am positive, social, and generous. I enjoy being included."
+}
+
+QUALITY_VALUED = {
+    QUALITY.Intuitive: 'Intuitive',
+    QUALITY.Persistent: 'Persistent',
+    QUALITY.Enthusiastic: 'Enthusiastic',
+    QUALITY.Persuasive: 'Persuasive',
+    QUALITY.Empathic: 'Empathic',
+    QUALITY.Patient: 'Patient',
+    QUALITY.A_Good_Listener: 'A_Good_Listener',
+    QUALITY.Expressive:'Expressive',
 }

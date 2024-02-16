@@ -19,6 +19,9 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Frame
 from reportlab.platypus import Table, TableStyle
+from docx import Document
+from docx.shared import Pt
+
 
 class AdditionalInfoViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -672,64 +675,238 @@ class GeneratePDF(CreateAPIView):
             print(e)
             return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class GenerateAndSendPDF(CreateAPIView):
     def get(self, request):
         """Generate PDF, Send Email with Attachment, and Delete Files"""
-        # try:
-        student = self.request.user
-        user_obj = Student.objects.get(id=student.student.id)
-        print(user_obj.user.email)
-        cv_obj =CV.objects.get(user=student.student)
-        education_obj=Education.objects.filter(user=student.student)
-        junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
-        leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
-        exp_obj=Experience.objects.filter(user=student.student)
-        skill_obj=Skills.objects.filter(user=student.student)
-        quality_obj=Qualities.objects.filter(user=student.student)
-        interest_obj=Interests.objects.filter(user=student.student)
-        additional_info = AdditionalInfo.objects.filter(user=student.student)
-        add_info = [i.additional_info for i in additional_info][0]
-        refer_obj=Reference.objects.filter(user=student.student)
+        try:
+            student = self.request.user
+            user_obj = Student.objects.get(id=student.student.id)
+            cv_obj =CV.objects.filter(user=student.student).first()
+            education_obj=Education.objects.filter(user=student.student)
+            junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+            leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+            exp_obj=Experience.objects.filter(user=student.student)
+            skill_obj=Skills.objects.filter(user=student.student)
+            quality_obj=Qualities.objects.filter(user=student.student)
+            interest_obj=Interests.objects.filter(user=student.student)
+            additional_info = AdditionalInfo.objects.filter(user=student.student)
+            add_info = [i.additional_info for i in additional_info][0]
+            refer_obj=Reference.objects.filter(user=student.student)
 
-        temp_name = "general/templates/"
-        cv_template = str(user_obj.first_name) + "-" + str(user_obj.last_name) + "-" + "cv" + ".html"
-        pdf_filename = str(user_obj.first_name) + ".pdf"
-        context = {
-            'student_detail': user_obj,
-            'cv_detail': cv_obj,
-            'education_detail': education_obj,
-            'Junior_Cert_detail': junior_cert_obj,
-            'Leave_Cert_detail': leave_cert_obj,
-            'skill_detail': skill_obj,
-            'qualities_detail': quality_obj,
-            'Experience_detail': exp_obj,
-            'Interest_detail':interest_obj,
-            'additional_info': add_info,
-            'Reference_detail': refer_obj,
-        }
+            temp_name = "general/templates/"
+            cv_template = str(user_obj.first_name) + "-" + str(user_obj.last_name) + "-" + "cv" + ".html"
+            pdf_filename = str(user_obj.first_name) + ".pdf"
+            full_name = user_obj.full_name
+            if cv_obj.number == "" or cv_obj.number is None:
+                number = "Phone No."
+            else:
+                number = cv_obj.number
+            if full_name:
+                words = full_name.split()
+                print(len(words))
+                if len(words) == 3:
+                    print(words)
+                    first_name = words[0] + " " + words[1]
+                    last_name = words[2]
+                elif len(words) == 2:
+                    print(words, "working")
+                    first_name = words[0]
+                    last_name = words[1]
+                elif len(words) == 1:
+                    first_name = words[0]
+                    last_name = ""
+                else:
+                    first_name = ""
+                    last_name = ""
+            print(first_name, last_name)
+            context = {
+                'first_name': first_name,
+                'number': number,
+                'last_name': last_name,
+                'student_detail': user_obj,
+                'cv_detail': cv_obj,
+                'education_detail': education_obj,
+                'Junior_Cert_detail': junior_cert_obj,
+                'Leave_Cert_detail': leave_cert_obj,
+                'skill_detail': skill_obj,
+                'qualities_detail': quality_obj,
+                'Experience_detail': exp_obj,
+                'Interest_detail':interest_obj,
+                'additional_info': add_info,
+                'Reference_detail': refer_obj,
+            }
 
-        rendered_template = render_to_string('cv.html', context)
-        open(temp_name + cv_template, "w").write(rendered_template)
-        HTML(temp_name + cv_template).write_pdf(pdf_filename)
+            rendered_template = render_to_string('cv.html', context)
+            open(temp_name + cv_template, "w").write(rendered_template)
+            HTML(temp_name + cv_template).write_pdf(pdf_filename)
 
-        with open(pdf_filename, 'rb') as f:
-            file_data = f.read()
+            with open(pdf_filename, 'rb') as f:
+                file_data = f.read()
 
-        email = EmailMessage(
-            'Your CV PDF',
-            'Please find your CV PDF attached.',
-            f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
-            [user_obj.user.email],  # List of recipient email addresses
-        )
-        email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
+            email = EmailMessage(
+                'Your CV PDF',
+                'Please find your CV PDF attached.',
+                f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
+                [user_obj.user.email],  # List of recipient email addresses
+            )
+            email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
 
-        email.send()
+            email.send()
 
-        # Delete the generated files
-        os.remove(temp_name + cv_template)
-        os.remove(pdf_filename)
+            # Delete the generated files
+            os.remove(temp_name + cv_template)
+            os.remove(pdf_filename)
 
-        return Response({'message': "CV PDF sent successfully"}, status=status.HTTP_200_OK)
+            return Response({'message': "CV PDF sent successfully"}, status=status.HTTP_200_OK)
 
-        # except Exception as e:
-        #     return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GenerateDOCX(CreateAPIView):
+    def get(self, request):
+        """Fetch All Notes By Officer"""
+        try:
+            # print("work")
+            student =self.request.user
+            user_obj=Student.objects.get(id=student.student.id)
+            cv_obj =CV.objects.filter(user=student.student).first()
+            education_obj=Education.objects.filter(user=student.student)
+            junior_cert_obj=JuniorCertTest.objects.filter(user=student.student)
+            leave_cert_obj=LeavingCertTest.objects.filter(user=student.student)
+            exp_obj=Experience.objects.filter(user=student.student)
+            skill_obj=Skills.objects.filter(user=student.student)
+            quality_obj=Qualities.objects.filter(user=student.student)
+            interest_obj=Interests.objects.filter(user=student.student)
+            additional_info = AdditionalInfo.objects.filter(user=student.student)
+            add_info = [i.additional_info for i in additional_info][0]
+            refer_obj=Reference.objects.filter(user=student.student)
+            full_name = user_obj.full_name
+            if cv_obj.number == "" or cv_obj.number is None:
+                number = "Phone No."
+            else:
+                number = cv_obj.number
+            if full_name:
+                words = full_name.split()
+                if len(words) == 3:
+                    first_name = words[0] + " " + words[1]
+                    last_name = words[2]
+                elif len(words) == 2:
+                    first_name = words[0]
+                    last_name = words[1]
+                elif len(words) == 1:
+                    first_name = words[0]
+                    last_name = ""
+                else:
+                    first_name = ""
+                    last_name = ""
+
+            doc = Document()
+            
+            name = doc.add_heading(f'{first_name} {last_name}')
+            name.alignment = 1
+            name.runs[0].font.size = Pt(32)
+            doc.add_paragraph(f'{cv_obj.email} - {number} - {cv_obj.address} - {cv_obj.eircode}')
+
+            doc.add_heading('PERSONAL STATEMENT')
+            doc.add_paragraph(f'{cv_obj.objective}')
+
+            doc.add_heading('SKILLS AND QUALITIES', level=1)
+            doc.add_heading('Skills:', level=2)
+
+            #Skills data
+            skills_data = doc.add_paragraph()
+            for skill in skill_obj:
+                run = skills_data.add_run(f'{skill.skill_dropdown_value}\n')
+                run.bold = True
+                skills_data.add_run(f'{skill.description}\n')
+
+            #Qualities data                
+            doc.add_heading('Qualities:', level=2)
+            qualities_data = doc.add_paragraph()
+            for quality in quality_obj:
+                run = qualities_data.add_run(f'{quality.quality_dropdown_value}\n')
+                run.bold = True
+                qualities_data.add_run(f'{quality.description}\n')
+
+            #Education data
+            doc.add_heading('EDUCATION', level=1)
+            for edu in education_obj:
+                doc.add_paragraph(f"""{edu.year} - {'I am still studying here' if not edu.enddate else str(edu.enddate)}""")
+                doc.add_paragraph(f"{edu.school} - {edu.examtaken}")
+
+            #Junior Cert
+            if len(junior_cert_obj) != 0:
+                doc.add_heading('Junior Cert', level=2)
+
+                # Add a table
+                table = doc.add_table(rows=len(junior_cert_obj) + 1, cols=3)
+
+                # Add headings
+                table.cell(0, 0).text = 'subject'
+                table.cell(0, 1).text = 'Level'
+                table.cell(0, 2).text = 'Result'
+
+                # Add data in table
+                for row_num, cert_data in enumerate(junior_cert_obj, start=1):
+                    table.cell(row_num, 0).text = cert_data.subject
+                    table.cell(row_num, 1).text = cert_data.level
+                    table.cell(row_num, 2).text = cert_data.result
+
+            #Leaving Cert
+            if len(leave_cert_obj) != 0:
+                doc.add_heading('Leaving Cert', level=2)
+
+                # Add a table
+                table = doc.add_table(rows=len(leave_cert_obj) + 1, cols=3)
+
+                # Add headings
+                table.cell(0, 0).text = 'subject'
+                table.cell(0, 1).text = 'Level'
+                table.cell(0, 2).text = 'Result'
+
+                # Add data in table
+                for row_num, cert_data in enumerate(leave_cert_obj, start=1):
+                    table.cell(row_num, 0).text = cert_data.subject
+                    table.cell(row_num, 1).text = cert_data.level
+                    table.cell(row_num, 2).text = cert_data.result      
+
+            #Work Experience
+            doc.add_heading('WORK EXPERIENCE', level=1)
+            for exp in exp_obj:
+                doc.add_paragraph(f'{exp.startdate} - {exp.enddate}')
+                doc.add_heading(exp.job_title, level=3)
+                doc.add_paragraph().add_run(f'{exp.company}, {exp.city}.')
+                doc.add_paragraph(exp.description)
+
+            #ACHIEVEMENTS
+            doc.add_heading('ACHIEVEMENTS', level=1)
+            doc.add_paragraph(add_info)
+
+            #HOBBIES AND INTERESTS
+            doc.add_heading('HOBBIES AND INTERESTS', level=1)
+            for interest in interest_obj:
+                doc.add_paragraph(f'{interest.interests}, {interest.description}')
+
+            #REFEREES
+            doc.add_heading('REFEREES', level=1)
+            for ref in refer_obj:
+                doc.add_paragraph(f'{ref.name}, {ref.position}, {ref.email}, {ref.organization_address}, {ref.area_code}')
+
+            doc_io = BytesIO()
+            doc.save(doc_io)
+
+            doc_io.seek(0)
+
+            response = HttpResponse(
+                doc_io.getvalue(), 
+                content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            )
+
+            response['Content-Disposition'] = 'attachment; filename=sample.docx'
+
+            return response
+        
+        except Exception as e:
+            return Response({'message': str(e) + " All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
