@@ -20,7 +20,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Frame
 from reportlab.platypus import Table, TableStyle
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, RGBColor
 
 
 class AdditionalInfoViewRelated(CreateAPIView):
@@ -807,13 +807,16 @@ class GenerateDOCX(CreateAPIView):
             name = doc.add_heading(f'{first_name} {last_name}')
             name.alignment = 1
             name.runs[0].font.size = Pt(32)
+            name.runs[0].font.color.rgb = RGBColor(0, 0, 0)
             doc.add_paragraph(f'{cv_obj.email} - {number} - {cv_obj.address} - {cv_obj.eircode}')
+            doc.add_paragraph('_' * 100)
 
-            doc.add_heading('PERSONAL STATEMENT')
+            doc.add_heading('PERSONAL STATEMENT').runs[0].font.color.rgb = RGBColor(0, 0, 0)
             doc.add_paragraph(f'{cv_obj.objective}')
 
-            doc.add_heading('SKILLS AND QUALITIES', level=1)
-            doc.add_heading('Skills:', level=2)
+            skill_and_quality = doc.add_heading('SKILLS AND QUALITIES', level=1)
+            skill_and_quality.runs[0].font.color.rgb = RGBColor(0, 0, 0)
+            doc.add_heading('Skills:', level=2).runs[0].font.color.rgb = RGBColor(0, 0, 0)
 
             #Skills data
             skills_data = doc.add_paragraph()
@@ -823,7 +826,7 @@ class GenerateDOCX(CreateAPIView):
                 skills_data.add_run(f'{skill.description}\n')
 
             #Qualities data                
-            doc.add_heading('Qualities:', level=2)
+            doc.add_heading('Qualities:', level=2).runs[0].font.color.rgb = RGBColor(0, 0, 0)
             qualities_data = doc.add_paragraph()
             for quality in quality_obj:
                 run = qualities_data.add_run(f'{quality.quality_dropdown_value}\n')
@@ -831,14 +834,16 @@ class GenerateDOCX(CreateAPIView):
                 qualities_data.add_run(f'{quality.description}\n')
 
             #Education data
-            doc.add_heading('EDUCATION', level=1)
+            education = doc.add_heading('EDUCATION', level=1)
+            education.runs[0].font.color.rgb = RGBColor(0, 0, 0)
             for edu in education_obj:
-                doc.add_paragraph(f"""{edu.year} - {'I am still studying here' if not edu.enddate else str(edu.enddate)}""")
-                doc.add_paragraph(f"{edu.school} - {edu.examtaken}")
+                edu_duration = doc.add_paragraph().add_run(f"""{edu.year} - {'I am still studying here' if edu.present else str(edu.enddate)}""")
+                edu_duration.bold = True
+                edu_data = doc.add_paragraph().add_run(f"{edu.school}, {edu.examtaken}")
 
             #Junior Cert
             if len(junior_cert_obj) != 0:
-                doc.add_heading('Junior Cert', level=2)
+                doc.add_heading('Junior Cert', level=2).runs[0].font.color.rgb = RGBColor(41, 136, 85)
 
                 # Add a table
                 table = doc.add_table(rows=len(junior_cert_obj) + 1, cols=3)
@@ -856,7 +861,7 @@ class GenerateDOCX(CreateAPIView):
 
             #Leaving Cert
             if len(leave_cert_obj) != 0:
-                doc.add_heading('Leaving Cert', level=2)
+                doc.add_heading('Leaving Cert', level=2).runs[0].font.color.rgb = RGBColor(41, 136, 85)
 
                 # Add a table
                 table = doc.add_table(rows=len(leave_cert_obj) + 1, cols=3)
@@ -873,24 +878,28 @@ class GenerateDOCX(CreateAPIView):
                     table.cell(row_num, 2).text = cert_data.result      
 
             #Work Experience
-            doc.add_heading('WORK EXPERIENCE', level=1)
+            doc.add_heading('WORK EXPERIENCE', level=1).runs[0].font.color.rgb = RGBColor(0, 0, 0)
             for exp in exp_obj:
-                doc.add_paragraph(f'{exp.startdate} - {exp.enddate}')
-                doc.add_heading(exp.job_title, level=3)
-                doc.add_paragraph().add_run(f'{exp.company}, {exp.city}.')
+                exp_duration = doc.add_paragraph().add_run(f"""{exp.startdate} - {'I am currently working here' if exp.is_current_work else str(exp.enddate)}""")
+                exp_duration.bold = True
+                heading_paragraph = doc.add_paragraph()
+                job_title_run = heading_paragraph.add_run(exp.job_title)
+                job_title_run.bold = True
+                job_title_run.font.color.rgb = RGBColor(41, 136, 85)
+                heading_paragraph.add_run(f', {exp.company}, {exp.city}.')
                 doc.add_paragraph(exp.description)
 
             #ACHIEVEMENTS
-            doc.add_heading('ACHIEVEMENTS', level=1)
+            doc.add_heading('ACHIEVEMENTS', level=1).runs[0].font.color.rgb = RGBColor(0, 0, 0)
             doc.add_paragraph(add_info)
 
             #HOBBIES AND INTERESTS
-            doc.add_heading('HOBBIES AND INTERESTS', level=1)
+            doc.add_heading('HOBBIES AND INTERESTS', level=1).runs[0].font.color.rgb = RGBColor(0, 0, 0)
             for interest in interest_obj:
                 doc.add_paragraph(f'{interest.interests}, {interest.description}')
 
             #REFEREES
-            doc.add_heading('REFEREES', level=1)
+            doc.add_heading('REFEREES', level=1).runs[0].font.color.rgb = RGBColor(0, 0, 0)
             for ref in refer_obj:
                 doc.add_paragraph(f'{ref.name}, {ref.position}, {ref.email}, {ref.organization_address}, {ref.area_code}')
 
@@ -904,7 +913,7 @@ class GenerateDOCX(CreateAPIView):
                 content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             )
 
-            response['Content-Disposition'] = 'attachment; filename=sample.docx'
+            response['Content-Disposition'] = f'attachment; filename={first_name}.docx'
 
             return response
         
