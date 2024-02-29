@@ -115,6 +115,16 @@ REST_FRAMEWORK = {
    
 }
 
+# uncomment this code if you want to test in chrome
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (),
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.TokenAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ),
+#     'EXCEPTION_HANDLER': 'common.exception_handler.c_exception_handler',
+# }
 
 
 WSGI_APPLICATION = 'My_Career_Guidance.wsgi.application'

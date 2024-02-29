@@ -8,7 +8,7 @@ class TimeSlotAddSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Slot
-        fields=['id','title','timeslot','endslot','day']
+        fields=['id','title', 'color', 'timeslot','endslot','day']
         
     def create(self, validated_data):
         validated_data["user"] = self.context["user"]
@@ -22,7 +22,7 @@ class TimeSlotRelatedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Slot
-        fields=['id','title','timeslot','day','endslot']
+        fields=['id','title','color', 'timeslot','day','endslot']
     
     def update(self, instance, validated_data):
         timeslot = validated_data.get('timeslot')
@@ -36,6 +36,7 @@ class TimeSlotRelatedSerializer(serializers.ModelSerializer):
         instance.timeslot = timeslot
         instance.endslot = endslot
         instance.title = validated_data.get('title', instance.title)
+        instance.color = validated_data.get('color', instance.color)
         instance.day = day
         instance.save()
         response_data = {

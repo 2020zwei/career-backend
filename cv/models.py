@@ -5,11 +5,11 @@ from django.contrib.postgres.fields import ArrayField
 
 class CV(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
-    objective=models.TextField(max_length=300,null=True, blank=True)
+    objective=models.TextField(max_length=1000,null=True, blank=True)
     is_juniorcert_test=models.BooleanField(default=False)
     skills=ArrayField(models.CharField(max_length=200), blank=True,null=True)
     number = models.CharField(max_length=15, blank=True,null=True)
-    HobbiesandInterests=models.TextField(max_length=300,null=True)
+    HobbiesandInterests=models.TextField(max_length=1000,null=True)
     full_name = models.CharField(max_length     =100, null=True)
     school =  models.CharField(max_length=100,null=True)
     city = models.CharField(max_length=50, blank=True,null=True)
@@ -52,7 +52,7 @@ class Experience(models.Model):
     company=models.CharField(max_length=50, null=True)
     city=models.CharField(max_length=50, null=True)
     country=models.CharField(max_length=50, null=True)
-    description=models.TextField(max_length=300, null=True)
+    description=models.TextField(max_length=1000, null=True)
     is_current_work=models.BooleanField(default=False)
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
 
@@ -60,7 +60,7 @@ class Experience(models.Model):
 class Skills(models.Model):
     skill=models.CharField(max_length=50, null=True)
     skill_dropdown=models.CharField(choices=SKILLS.choices,max_length=2,null=True, blank=True)
-    description=models.TextField(max_length=300, blank=True)
+    description=models.TextField(max_length=1000, blank=True)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 
     @property
@@ -80,9 +80,9 @@ class Skills(models.Model):
 
 class Qualities(models.Model):
     quality=models.CharField(max_length=50, null=True)
-    interest=models.TextField(max_length=300,null=True, blank=True)
+    interest=models.TextField(max_length=1000,null=True, blank=True)
     quality_dropdown=models.CharField(choices=QUALITY.choices,max_length=2,null=True, blank=True)
-    description=models.TextField(max_length=300, blank=True)
+    description=models.TextField(max_length=1000, blank=True)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 
     @property
@@ -120,7 +120,7 @@ class Reference(models.Model):
 
 class Interests(models.Model):
     interests=models.CharField(max_length=50, null=True)
-    description=models.TextField(max_length=300)
+    description=models.TextField(max_length=1000)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 
     class Meta:
@@ -129,7 +129,7 @@ class Interests(models.Model):
 
 class AdditionalInfo(models.Model):
     user = models.OneToOneField(Student, on_delete=models.CASCADE)
-    additional_info = models.TextField(max_length=300)
+    additional_info = models.TextField(max_length=1000)
 
     class Meta:
         verbose_name_plural="additional_info"
