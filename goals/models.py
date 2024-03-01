@@ -7,7 +7,7 @@ class Goal(models.Model):
     user=models.ForeignKey(Student, on_delete=models.CASCADE)
     proffession=models.CharField(max_length=50)
     goal=models.CharField(max_length=50)
-    description=models.TextField(max_length=300, null=True, blank=True)
+    description=models.TextField(max_length=1000, null=True, blank=True)
     realistic=models.BooleanField(default=False)
     countdown=models.DateTimeField(auto_now_add=False, blank=True, null=True)
 

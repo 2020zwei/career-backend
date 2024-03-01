@@ -34,6 +34,7 @@ urlpatterns = [
     path('goals/', include("goals.urls")),
     path('education/', include("education.urls")),
     path('choices/', include("choices.urls")),
+    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # uncomment this line if you want to test in chrome
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = "My Career Guidance"

@@ -152,9 +152,9 @@
                 <div>
                   <div style="display: flex; flex-wrap: nowrap;">
                     <p style="color: #595959; font-weight: 600;">
-                      {{edu_detail.year}} - 
+                      {{edu_detail.year}} -&nbsp;
                     </p>
-                      {% if edu_detail.enddate == None %}
+                      {% if edu_detail.present %}
                       <p style="color: #595959; font-weight: 600">
                       I'm still studying here
                       </p>
@@ -247,10 +247,21 @@
               margin-left: 30px;
               padding-left: 40px;
             ">
-            <p style="color: #595959; font-weight: 600">
-              {{item.startdate}} - {{item.enddate}}
-            </p>
-            <p>
+            <div style="display: flex; flex-wrap: nowrap;">
+              <p style="color: #595959; font-weight: 600;">
+                {{item.startdate}} -&nbsp;
+              </p>
+                {% if item.is_current_work %}
+                <p style="color: #595959; font-weight: 600">
+                I'm currently working here
+                </p>
+                {% else %}
+                <p style="color: #595959; font-weight: 600">
+                  {{ item.enddate }}
+                </p>
+                {% endif %}
+              <p>
+            </div>
               <span style="color: #298855; font-weight: 600"
                 >{{item.job_title}},</span
               >
@@ -294,8 +305,6 @@
           {{item.name}}, {{item.position}}
         </br>
           {{ item.contact_number }}, {{ item.email }}
-        </br>
-        {{ item.address }}, {{ item.area_code }}
         </p>
         {% endfor %}
       </div>

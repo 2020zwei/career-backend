@@ -4,14 +4,14 @@ from users.models import Student
 
 class TestType(models.Model):
     type=models.CharField(max_length=300)
-    description=models.TextField(max_length=300, null=True, blank=True)
+    description=models.TextField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return self.type
 
 class PsychometricTest(models.Model):
     name = models.CharField(max_length=300)
-    intro=models.TextField(max_length=300, null=True, blank=True)
+    intro=models.TextField(max_length=1000, null=True, blank=True)
     def __str__(self):
         return self.name
 
