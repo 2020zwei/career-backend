@@ -12,6 +12,7 @@ from django.db import transaction
 from common.response_template import get_response_template
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenViewBase
+import os
 
 class CustomTokenObtainPairView(TokenViewBase):
     """
@@ -154,10 +155,10 @@ class SendPasswordResetOTPView(APIView):
             send_mail(
                 'Your Password Reset OTP',
                 f'Your password reset otp is {otp}',
-                'taloot.khan@zweidevs.com',
+                f"{os.environ['EMAIL_HOST_USER']}",
                 [email])
-        except:
-            pass
+        except Exception as e:
+            return Response({"message": f"Error sending email: {e}"})
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
@@ -167,7 +168,7 @@ class SendPasswordResetOTPView(APIView):
 
         student_obj = Student.objects.filter(user__email=email).first()
         if student_obj is None:
-            error_message = "he email address you provided is not associated with any registered account. Please ensure you have entered the correct email address."
+            error_message = "The email address you provided is not associated with any registered account. Please ensure you have entered the correct email address."
             return Response({"message": error_message}, status=400)
 
         student_obj.otp = str(random.randint(1000, 9999))
@@ -176,7 +177,7 @@ class SendPasswordResetOTPView(APIView):
         self.send_otp_email(student_obj.otp, email)
 
         response_template = get_response_template()
-        response_template['data'] = "An email has been sent to your account."
+        response_template['data'] = "An OTP has been sent to your account."
         return Response(response_template)
 
 

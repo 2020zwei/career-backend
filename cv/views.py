@@ -744,15 +744,18 @@ class GenerateAndSendPDF(CreateAPIView):
             with open(pdf_filename, 'rb') as f:
                 file_data = f.read()
 
-            email = EmailMessage(
-                'Your CV PDF',
-                'Please find your CV PDF attached.',
-                f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
-                [user_obj.user.email],  # List of recipient email addresses
-            )
-            email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
+            try:
+                email = EmailMessage(
+                    'Your CV PDF',
+                    'Please find your CV PDF attached.',
+                    f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
+                    [user_obj.user.email],  # List of recipient email addresses
+                )
+                email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
 
-            email.send()
+                email.send()
+            except Exception as e:
+                return Response({"message": f"Error sending email: {e}"})
 
             # Delete the generated files
             os.remove(temp_name + cv_template)
