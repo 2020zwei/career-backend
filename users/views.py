@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
+from django.core.mail import EmailMessage
 from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView,UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import User,Student, School
@@ -150,16 +151,6 @@ import random
 class SendPasswordResetOTPView(APIView):
     permission_classes = []
 
-    def send_otp_email(self,otp,email):
-        try:
-            send_mail(
-                'Your Password Reset OTP',
-                f'Your password reset otp is {otp}',
-                f"{os.environ['EMAIL_HOST_USER']}",
-                [email])
-        except Exception as e:
-            return Response({"message": f"Error sending email: {e}"})
-
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if email is None:
@@ -174,7 +165,17 @@ class SendPasswordResetOTPView(APIView):
         student_obj.otp = str(random.randint(1000, 9999))
         student_obj.otp_verified = False
         student_obj.save()
-        self.send_otp_email(student_obj.otp, email)
+        try:
+            email = EmailMessage(
+            'Your Password Reset OTP',
+            f'Your password reset otp is {student_obj.otp}',
+            f"{os.environ['EMAIL_HOST_USER']}",  #sender email
+            [email],  # List of recipient email addresses
+            )
+            email.send()
+        except Exception as e:
+            return Response({"message": f"Error sending email: {e}"})
+    
 
         response_template = get_response_template()
         response_template['data'] = "An OTP has been sent to your account."
