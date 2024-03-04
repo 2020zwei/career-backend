@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
+from django.core.mail import EmailMessage
 from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView,UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import User,Student, School
@@ -12,6 +13,7 @@ from django.db import transaction
 from common.response_template import get_response_template
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenViewBase
+import os
 
 class CustomTokenObtainPairView(TokenViewBase):
     """
@@ -82,7 +84,6 @@ class SignupUser(APIView):
                 'school': request.data.get('school'),
                 'user': user_obj.pk,
                 'profile_image': request.data.get('profile_image'),
-                'dob': request.data.get('dob')
             }
             student_serializer_obj = StudentSignUpSerializer(data=student_data)
             if student_serializer_obj.is_valid():
@@ -149,16 +150,6 @@ import random
 class SendPasswordResetOTPView(APIView):
     permission_classes = []
 
-    def send_otp_email(self,otp,email):
-        try:
-            send_mail(
-                'Your Password Reset OTP',
-                f'Your password reset otp is {otp}',
-                'taloot.khan@zweidevs.com',
-                [email])
-        except:
-            pass
-
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         if email is None:
@@ -167,16 +158,26 @@ class SendPasswordResetOTPView(APIView):
 
         student_obj = Student.objects.filter(user__email=email).first()
         if student_obj is None:
-            error_message = "he email address you provided is not associated with any registered account. Please ensure you have entered the correct email address."
+            error_message = "The email address you provided is not associated with any registered account. Please ensure you have entered the correct email address."
             return Response({"message": error_message}, status=400)
 
         student_obj.otp = str(random.randint(1000, 9999))
         student_obj.otp_verified = False
         student_obj.save()
-        self.send_otp_email(student_obj.otp, email)
+        try:
+            email = EmailMessage(
+            'Your Password Reset OTP',
+            f'Your password reset otp is {student_obj.otp}',
+            f"{os.environ['EMAIL_HOST_USER']}",  #sender email
+            [email],  # List of recipient email addresses
+            )
+            email.send()
+        except Exception as e:
+            return Response({"message": f"Error sending email: {e}"})
+    
 
         response_template = get_response_template()
-        response_template['data'] = "An email has been sent to your account."
+        response_template['data'] = "An OTP has been sent to your account."
         return Response(response_template)
 
 

@@ -112,7 +112,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-   
 }
 
 # uncomment this code if you want to test in chrome
