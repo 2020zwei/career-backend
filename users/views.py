@@ -84,7 +84,6 @@ class SignupUser(APIView):
                 'school': request.data.get('school'),
                 'user': user_obj.pk,
                 'profile_image': request.data.get('profile_image'),
-                'dob': request.data.get('dob')
             }
             student_serializer_obj = StudentSignUpSerializer(data=student_data)
             if student_serializer_obj.is_valid():
