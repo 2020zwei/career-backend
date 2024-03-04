@@ -904,7 +904,8 @@ class GenerateDOCX(CreateAPIView):
             #REFEREES
             doc.add_heading('REFEREES', level=1).runs[0].font.color.rgb = RGBColor(0, 0, 0)
             for ref in refer_obj:
-                doc.add_paragraph(f'{ref.name}, {ref.position}, {ref.email}, {ref.organization_address}, {ref.area_code}')
+                doc.add_paragraph(f'{ref.name}, {ref.position}')
+                doc.add_paragraph(f'{ref.contact_number}, {ref.email}')
 
             doc_io = BytesIO()
             doc.save(doc_io)
@@ -916,7 +917,7 @@ class GenerateDOCX(CreateAPIView):
                 content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             )
 
-            response['Content-Disposition'] = f'attachment; filename={first_name}.docx'
+            response['Content-Disposition'] = f'attachment; filename={full_name}.docx'
 
             return response
         
