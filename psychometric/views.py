@@ -250,7 +250,9 @@ class ResultDetailAPIView(RetrieveAPIView):
             # Create a list of serialized data for each question type, including the test name, question type, score, and description
             serialized_data = []
             for question_type, result in result_data.items():
+                question_type_id = TestType.objects.filter(type=question_type).first().pk
                 data = {
+                    'id': question_type_id,
                     'test_name': result['result__test__name'],
                     'question_type': question_type,
                     'score': result['total_score'],
