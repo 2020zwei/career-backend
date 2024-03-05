@@ -251,6 +251,7 @@ class ResultDetailAPIView(RetrieveAPIView):
             serialized_data = []
             for question_type, result in result_data.items():
                 data = {
+                    'id': result['id'],
                     'test_name': result['result__test__name'],
                     'question_type': question_type,
                     'score': result['total_score'],
