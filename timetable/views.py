@@ -64,14 +64,24 @@ class TimeSlotRelatedView(RetrieveUpdateDestroyAPIView):
             prefetch_related_objects([instance], *queryset._prefetch_related_lookups)
         return Response(response_template)
 
+
+# class TimeSlotListView(ListAPIView):
+#     permission_classes = [IsAuthenticated]
+#     def get_queryset(self):
+#         todays_date = date.today()
+#         year, week_num, day_of_week = todays_date.isocalendar()  # Using isocalendar() function   
+#         user = Slot.objects.filter(user=self.request.user.student,year=year,week=week_num)
+#         return user
+#     serializer_class = TimeSlotRelatedSerializer
+    
+
 class TimeSlotListView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    def get_queryset(self):
-        todays_date = date.today()
-        year, week_num, day_of_week = todays_date.isocalendar()  # Using isocalendar() function   
-        user = Slot.objects.filter(user=self.request.user.student,year=year,week=week_num)
-        return user
     serializer_class = TimeSlotRelatedSerializer
+    def get_queryset(self):
+        user = Slot.objects.filter(user=self.request.user.student)
+        return user
+
 
 class ResetWeekView(APIView):
     permission_classes = [IsAuthenticated]
