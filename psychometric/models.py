@@ -18,14 +18,14 @@ class PsychometricTest(models.Model):
 
 class Question(models.Model):
     test = models.ForeignKey(PsychometricTest, related_name="question",on_delete=models.CASCADE)
-    question = models.CharField(max_length=300)
+    question = models.CharField(max_length=1000)
     type=models.ForeignKey(TestType,on_delete=models.CASCADE)
     def __str__(self):
         return self.question
 
 class Answer(models.Model):
     question= models.ForeignKey(Question,related_name="answer",on_delete=models.CASCADE)
-    answer=models.CharField(max_length=300)
+    answer=models.CharField(max_length=1000)
     weightage=models.IntegerField()
     def __str__(self):
         return self.answer
@@ -55,5 +55,5 @@ class ChoiceIdea(models.Model):
 
 class StudyTips(models.Model):
     type = models.ForeignKey(TestType, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    # title = models.CharField(max_length=255)
     description = models.TextField(max_length=1400)

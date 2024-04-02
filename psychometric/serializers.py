@@ -193,4 +193,4 @@ class StudyTipsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = StudyTips
-        fields = ['id', 'type', 'title', 'description']
+        fields = ['id', 'type', 'description']

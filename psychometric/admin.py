@@ -15,7 +15,7 @@ class ChoiceIdeaAdmin(admin.ModelAdmin):
 
 @admin.register(StudyTips)
 class StudyTipsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'type', 'title', 'description']
+    list_display = ['id', 'type', 'description']
     
 
 class TestTypeAdminSite(admin.ModelAdmin):

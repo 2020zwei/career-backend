@@ -5,7 +5,12 @@ class SubjectDisplay(admin.ModelAdmin):
     filter_horizontal = ('level',)
 
 
+class SubjectGradeAdmin(admin.ModelAdmin):
+    list_display = ['subject', 'grade', 'point', 'level']
+
+
+
 admin.site.register(Subject,SubjectDisplay)
 admin.site.register(Level)
-admin.site.register(SubjectGrade)
+admin.site.register(SubjectGrade, SubjectGradeAdmin)
 admin.site.register(UserPoints)
