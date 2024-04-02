@@ -119,7 +119,7 @@ class Reference(models.Model):
     user=models.ForeignKey(Student,on_delete=models.CASCADE,null=True,blank=True)
 
 class Interests(models.Model):
-    interests=models.CharField(max_length=50, null=True)
+    interests=models.CharField(max_length=1000, null=True)
     description=models.TextField(max_length=1000)
     user=models.ForeignKey(Student,on_delete=models.CASCADE)
 
