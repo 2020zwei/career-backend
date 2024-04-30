@@ -182,11 +182,11 @@ def create_pdf_with_content(student, goal_obj, action_obj):
     content.append(Paragraph(" hello ", custom_styles['centered']))
     content.append(Paragraph(f"{student.student.full_name}'s Goal", custom_styles['italic_bold_centered']))
     content.append(Paragraph(f"{goal_obj.proffession}", custom_styles['italic_centered']))
-    content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['Underline_bold_centered']))
+    # content.append(Paragraph(f"Specific Goals for {goal_obj.goal}", custom_styles['Underline_bold_centered']))
 
     # Preserve line breaks from the description field
-    description = goal_obj.description.replace('\n', '<br/>')
-    content.append(Paragraph(description, custom_styles['italic_centered']))
+    # description = goal_obj.description.replace('\n', '<br/>')
+    # content.append(Paragraph(description, custom_styles['italic_centered']))
     
     # Add the "By doing:" text followed by a line break and the action_obj
     # content.append(Paragraph(f"By doing:<br/>{action_obj}", custom_styles['italic_centered']))
