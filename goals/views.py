@@ -57,10 +57,10 @@ class GoalViewRelated(CreateAPIView):
           countdown_str = request.data.get('date')
           countdown = datetime.strptime(countdown_str, '%Y-%m-%dT%H:%M:%S.%fZ')
           print(countdown)
-          goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, goal=goal,realistic=realistic, countdown=countdown)
+          goal_obj=Goal.objects.create(user_id=user_obj.id,proffession=proffession, realistic=realistic, countdown=countdown)
           goal_obj.save()
 
-          return Response(data={'success': True, 'Goals': goal_obj.goal, 'Date': countdown}, status=status.HTTP_200_OK)
+          return Response(data={'success': True, 'Date': countdown}, status=status.HTTP_200_OK)
         except Exception as e:
           return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -87,7 +87,7 @@ class GoalViewRelated2(CreateAPIView):
           user_obj=self.request.user
           print(user_obj.student)
           proffession=request.data.get('proffession')
-          goal=request.data.get('goal')
+        #   goal=request.data.get('goal')
           description=request.data.get('description')
           realistic=request.data.get('realistic')
           countdown_str = request.data.get('date')
@@ -99,12 +99,12 @@ class GoalViewRelated2(CreateAPIView):
               action_list.append(value)
           countdown = datetime.strptime(countdown_str, '%d-%m-%Y')
           print(countdown)
-          goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession, goal=goal,description=description,realistic=realistic, countdown=countdown)
+          goal_obj=Goal.objects.create(user=user_obj.student,proffession=proffession,description=description,realistic=realistic, countdown=countdown)
           goal_obj.save()
           for action_text in action_list:
             Action.objects.create(goal=goal_obj, action=action_text)
 
-          return Response(data={'success': True, 'Goals': goal_obj.goal}, status=status.HTTP_200_OK)
+          return Response(data={'success': True}, status=status.HTTP_200_OK)
         
         except DataError as e:
             error_message = "Value too long for field 'proffession'. Maximum length is 50 characters."
