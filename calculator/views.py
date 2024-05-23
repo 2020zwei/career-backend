@@ -109,9 +109,9 @@ class CalculatePointViewRelated(APIView):
                             points_list.append(subject_grade_obj)
 
             # Sort the points_list based on points in descending order
-            print(points_list)
-            points_list.sort(key=lambda obj: obj.point, reverse=True)
-            print(points_list)
+            # print("before PTS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", points_list)
+            points_list.sort(key=lambda obj: obj.point + obj.subject.additional_marks if obj.subject.additional_marks is not None else 0, reverse=True)
+            # print("after PTS>>>>>>>>>>>>>>>>>>>>>", points_list)
             # Add bonus points to the first 6 subjects with the highest points that meet the conditions
             for i in range(min(6, len(points_list))):
                 subject_grade_obj = points_list[i]
@@ -127,7 +127,9 @@ class CalculatePointViewRelated(APIView):
             # Update total points in UserPoints
             print(points)
             total_points = bonus_points + points
-            print(total_points)
+            # print("total points>>>>>>>>>>>>>>>>>>>>>>>>", total_points)
+            # print("points list>>>>>>>>>>>>>>>>>>>>>>>>>", points_list)
+            # print("bonus points>>>>>>>>>>>>>>>>>>>>>>>>", bonus_points)
             user_points.total_points = total_points
             user_points.save()
 
