@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AddTimeSlot,TimeSlotRelatedView,TimeSlotListView,ResetWeekView
+from .views import AddTimeSlot,TimeSlotRelatedView,TimeSlotListView,ResetWeekView, RecentColors
 
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('update-timeslot/<int:pk>',TimeSlotRelatedView.as_view(),name="Update-timeslot"),
     path('list-timeslot/',TimeSlotListView.as_view(),name="List-timeslot"),
     path('reset-timeslot/',ResetWeekView.as_view(),name="Reset-timeslot"),
+    path('recent-colors/', RecentColors.as_view(), name="Recent-colors"),
 ]
