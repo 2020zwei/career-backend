@@ -132,11 +132,11 @@ WSGI_APPLICATION = 'My_Career_Guidance.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME':    os.environ['CAREER_DATABASE_NAME'],
-        'USER':    os.environ['CAREER_DATABASE_USER'],
-        'PASSWORD': os.environ['CAREER_DATABASE_PASS'],
-        'HOST': os.environ['CAREER_DATABASE_HOST'],
-        'PORT': os.environ['CAREER_DB_PORT'],
+        'NAME':    os.environ.get('CAREER_DATABASE_NAME'),
+        'USER':    os.environ.get('CAREER_DATABASE_USER'),
+        'PASSWORD': os.environ.get('CAREER_DATABASE_PASS'),
+        'HOST': os.environ.get('CAREER_DATABASE_HOST'),
+        'PORT': os.environ.get('CAREER_DB_PORT'),
     }
 }
 
@@ -183,8 +183,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = "media"
-AWS_ACCESS_KEY_ID = os.environ['CAREER_GUIDANCE_AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY = os.environ['CAREER_GUIDANCE_AWS_SECRET_KEY_ID']
+AWS_ACCESS_KEY_ID = os.environ.get('CAREER_GUIDANCE_AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('CAREER_GUIDANCE_AWS_SECRET_KEY_ID')
 # AWS_STORAGE_BUCKET_NAME = 'CGB-Staging-Bucket'
 DOMAIN = 'https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/d2eqtmfyvf15r'
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -204,9 +204,9 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # SMTP email service
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST = os.environ['EMAIL_HOST']
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

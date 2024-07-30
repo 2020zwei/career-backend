@@ -91,3 +91,22 @@ class ResetWeekView(APIView):
         obj = Slot.objects.filter(user=self.request.user.student).delete()
         # obj.delete()
         return Response(data={'success': True, 'message': 'Deleted Successfully'}, status=status.HTTP_200_OK)
+
+
+class RecentColors(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            user = request.user.student
+            recent_colors = Slot.objects.filter(user=user).order_by('-timeslot').values_list('color', flat=True)
+            color_set = set(recent_colors)
+            color_list = list(color_set)
+
+            return Response({'success': True,'colors': color_list}, status=status.HTTP_200_OK)
+
+        except Slot.DoesNotExist:
+            return Response({'success': False, 'message': 'No colors found for this user'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Handle any other exceptions
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

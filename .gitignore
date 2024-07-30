@@ -11,3 +11,4 @@ media
 # random files
 requirements_tree.txt
 static
+.idea/

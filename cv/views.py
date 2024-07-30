@@ -677,9 +677,10 @@ class GeneratePDF(CreateAPIView):
 
 
 class GenerateAndSendPDF(CreateAPIView):
-    def get(self, request):
+    def post(self, request):
         """Generate PDF, Send Email with Attachment, and Delete Files"""
         try:
+            receiver_email = request.data.get("email")
             student = self.request.user
             user_obj = Student.objects.get(id=student.student.id)
             cv_obj =CV.objects.filter(user=student.student).first()
@@ -749,7 +750,7 @@ class GenerateAndSendPDF(CreateAPIView):
                     'Your CV PDF',
                     'Please find your CV PDF attached.',
                     f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
-                    [user_obj.user.email],  # List of recipient email addresses
+                    [receiver_email],  # List of recipient email addresses
                 )
                 email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
 
