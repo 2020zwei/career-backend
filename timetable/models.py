@@ -3,11 +3,6 @@ from users.models import Student
 from .choices import DAY_OF_THE_WEEK
 
 
-
-
-
-
-
 class Slot(models.Model):
     """Model to create TimeTable"""
     title = models.CharField(max_length=100,blank=True, null=True)
@@ -22,3 +17,12 @@ class Slot(models.Model):
     def __str__(self):
         
         return self.user.full_name
+
+
+class UserColors(models.Model):
+    user=models.ForeignKey(Student,on_delete=models.CASCADE)
+    color=models.CharField(max_length=255, null=True, blank=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.color
