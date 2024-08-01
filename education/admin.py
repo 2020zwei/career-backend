@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Quiz, QuizResult,Answer,QuizResultDetail
+from .models import Question, Quiz, QuizResult,Answer,QuizResultDetail, QuizLimit
 from nested_admin import NestedTabularInline, NestedModelAdmin
 # Register your models here.
 
@@ -23,4 +23,32 @@ class QuizAdmin(NestedModelAdmin):
 @admin.register(QuizResult)
 class QuizResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
+
+
+@admin.register(QuizLimit)
+class SetQuizLimitAdmin(admin.ModelAdmin):
+    list_display = ["limit"]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if qs.count() > 1:
+            qs = qs[:1]
+        return qs
+
+    def save_model(self, request, obj, form, change):
+
+        if not change:
+            if QuizLimit.objects.exists():
+                raise ValueError("Only one SetQuizLimit instance is allowed.")
+        super().save_model(request, obj, form, change)
+
+    def has_add_permission(self, request):
+        if QuizLimit.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is None and QuizLimit.objects.exists():
+            return False
+        return super().has_change_permission(request, obj)
 

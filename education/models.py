@@ -51,4 +51,6 @@ class QuizResultDetail(models.Model):
     def __str__(self):
         return self.result.user.full_name
 
-   
+
+class QuizLimit(models.Model):
+    limit = models.IntegerField()
