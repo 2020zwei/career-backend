@@ -9,8 +9,15 @@ from users.models import Student
 from rest_framework import status
 from django.db.models import Q
 from rest_framework.response import Response
-
+from django.forms.models import model_to_dict
+from django.http import JsonResponse
 # Create your views here.
+
+def serialize_admin_level(instance):
+    data = model_to_dict(instance)
+    # Convert any non-serializable types here if needed
+    return data
+
 
 class ChoiceViewRelated(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -52,7 +59,10 @@ class Level8ViewRelated(CreateAPIView):
             student =self.request.user
             choice=Level8.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Level8_Serializer(choice, many=True)
-            return Response(serializer.data)
+            level_data = AdminLevel8.objects.all()
+            serialized_level_data = [serialize_admin_level(instance) for instance in level_data]
+            response = {"user_data": serializer.data, "level_data": serialized_level_data}
+            return Response(response, status=status.HTTP_200_OK)
     
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -87,8 +97,10 @@ class Level5ViewRelated(CreateAPIView):
             student =self.request.user
             choice=Level5.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Level5_Serializer(choice, many=True)
-            return Response(serializer.data)
-    
+            level_data = AdminLevel5.objects.all()
+            serialized_level_data = [serialize_admin_level(instance) for instance in level_data]
+            response = {"user_data": serializer.data, "level_data": serialized_level_data}
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     def create(self, request, *args, **kwargs):
@@ -122,7 +134,7 @@ class ApprenticeViewRelated(CreateAPIView):
             choice=Apprentice.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Apprentice_Serializer(choice, many=True)
             return Response(serializer.data)
-    
+
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     def create(self, request, *args, **kwargs):
@@ -189,8 +201,10 @@ class Level6ViewRelated(CreateAPIView):
             student =self.request.user
             choice=Level6.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Level6_Serializer(choice, many=True)
-            return Response(serializer.data)
-    
+            level_data = AdminLevel6.objects.all()
+            serialized_level_data = [serialize_admin_level(instance) for instance in level_data]
+            response = {"user_data": serializer.data, "level_data": serialized_level_data}
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     def create(self, request, *args, **kwargs):
