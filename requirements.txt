@@ -116,9 +116,9 @@ tzdata==2023.3
 uritemplate==4.1.1
 urllib3==1.26.12
 wcwidth==0.1.9
-weasyprint==62.3
+weasyprint
 webencodings==0.5.1
 websocket-client==0.59.0
 whitenoise==6.4.0
-zipp==3.19.2
-zopfli==0.2.3
+zipp
+zopfli
