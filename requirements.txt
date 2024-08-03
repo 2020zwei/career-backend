@@ -65,7 +65,7 @@ oauthlib==3.2.2
 odfpy==1.4.1
 openpyxl==3.1.5
 packaging==23.0
-pandas==2.2.2
+pandas
 pangocffi==0.11.0
 paramiko==3.1.0
 parso==0.8.3
@@ -94,7 +94,7 @@ python-docx==1.1.0
 python-monkey-business==1.0.0
 python3-openid==3.2.0
 pytz==2022.6
-PyYAML==6.0.1
+PyYAML
 pyzmq==25.0.1
 reportlab==4.0.4
 requests==2.32.3
