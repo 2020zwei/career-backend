@@ -1,6 +1,6 @@
 from .validators import validate_file_size
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from .manager import UserManager
 
 class School(models.Model):
@@ -14,6 +14,7 @@ class School(models.Model):
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=32, null=True, blank=True)
+    is_counselor = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -44,5 +45,14 @@ class Student(models.Model):
     def __str__(self):
         """return name of Student"""
         return self.full_name
- 
 
+
+
+class Counselor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    school = models.ForeignKey(School, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if not self.user.is_counselor:
+            raise ValueError("The user must be a counselor to create a Counselor object")
+        super().save(*args, **kwargs)
