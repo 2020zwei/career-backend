@@ -19,12 +19,19 @@ class StudentAdminDisplay(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'email', 'username']
     search_fields = ['email', 'id']
+    ordering = ('email',)
 
 
 class CounselorAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'school']
     search_fields = ['user__email', 'school__school']
     list_filter = ['school']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['user'].queryset = User.objects.order_by('email')
+        form.base_fields['school'].queryset = School.objects.order_by('school')
+        return form
 
 
 admin.site.register(Counselor, CounselorAdmin)

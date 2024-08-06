@@ -1,8 +1,18 @@
 from django.contrib import admin
 from .models import CV,Education,JuniorCertTest,Experience,Reference,Qualities,Skills,JobTitle,LeavingCertTest, Interests, AdditionalInfo
+from users.models import Counselor
 # Register your models here.
 class CVAdminSite(admin.ModelAdmin):
     list_display=['user','is_juniorcert_test']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(user__school=counselor.school)
+        return qs
+
+
 class EducationAdminSite(admin.ModelAdmin):
     list_display=['user','year','school','examtaken']
 class JuniorCertTestAdminSite(admin.ModelAdmin):

@@ -2,6 +2,8 @@ from .validators import validate_file_size
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from .manager import UserManager
+from django.contrib.auth.models import Group
+
 
 class School(models.Model):
     """Model to create School"""
@@ -47,7 +49,6 @@ class Student(models.Model):
         return self.full_name
 
 
-
 class Counselor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
@@ -56,3 +57,10 @@ class Counselor(models.Model):
         if not self.user.is_counselor:
             raise ValueError("The user must be a counselor to create a Counselor object")
         super().save(*args, **kwargs)
+        self.assign_default_group()
+
+    def assign_default_group(self):
+        group, created = Group.objects.get_or_create(name='Counselors')
+
+        if group not in self.user.groups.all():
+            self.user.groups.add(group)

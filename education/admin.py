@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Question, Quiz, QuizResult,Answer,QuizResultDetail, QuizLimit
 from nested_admin import NestedTabularInline, NestedModelAdmin
+from users.models import Counselor
 # Register your models here.
 
 class AnswerInline(NestedTabularInline):
@@ -23,6 +24,13 @@ class QuizAdmin(NestedModelAdmin):
 @admin.register(QuizResult)
 class QuizResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(user__school=counselor.school)
+        return qs
 
 
 @admin.register(QuizLimit)

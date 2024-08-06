@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 import pandas as pd
 from django import forms
+from users.models import Counselor
 
 class ExcelImportForm(forms.Form):
     excel_file = forms.FileField()
@@ -25,6 +26,70 @@ class ApprenticeInline(NestedTabularInline):
 class OtherInline(NestedTabularInline):
     model = Other
 
+class ChoiceAdmin(admin.ModelAdmin):
+    list_display = ['user']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(user__school=counselor.school)
+        return qs
+
+class ApprenticeAdmin(admin.ModelAdmin):
+    list_display = ['choice']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(choice__user__school=counselor.school)
+        return qs
+
+
+class Level5Admin(admin.ModelAdmin):
+    list_display = ['choice']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(choice__user__school=counselor.school)
+        return qs
+
+
+class OtherAdmin(admin.ModelAdmin):
+    list_display = ['choice']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(choice__user__school=counselor.school)
+        return qs
+
+
+class Level6Admin(admin.ModelAdmin):
+    list_display = ['choice']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(choice__user__school=counselor.school)
+        return qs
+
+
+class Level8Admin(admin.ModelAdmin):
+    list_display = ['choice']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(choice__user__school=counselor.school)
+        return qs
+
 
 class AdminDataAdmin(admin.ModelAdmin):
     change_list_template = "admin/choice_changelist.html"
@@ -40,10 +105,8 @@ class AdminDataAdmin(admin.ModelAdmin):
         if request.method == "POST":
             excel_file = request.FILES["excel_file"]
 
-            # Read the Excel file
             df = pd.read_excel(excel_file)
 
-            # Get all existing codes for each model
             existing_codes = {
                 'Level 5': set(AdminLevel5.objects.values_list('code', flat=True)),
                 'Level 6': set(AdminLevel6.objects.values_list('code', flat=True)),
@@ -55,7 +118,6 @@ class AdminDataAdmin(admin.ModelAdmin):
             for _, row in df.iterrows():
                 nfq_level = row['NFQ Level']
 
-                # Determine which model to use based on NFQ Level
                 if 'Level 5' in nfq_level:
                     model = AdminLevel5
                 elif 'Level 6' in nfq_level:
@@ -63,28 +125,25 @@ class AdminDataAdmin(admin.ModelAdmin):
                 elif 'Level 8' in nfq_level:
                     model = AdminLevel8
                 else:
-                    continue  # Skip if not a recognized level
+                    continue
 
                 code = row.get('Course Code', '')
                 updated_codes.add(code)
 
-                # Update or create the instance
                 instance, created = model.objects.update_or_create(
                     code=code,
                     defaults={
                         'title': row.get('Title', ''),
                         'college': row.get('College', ''),
                         'url': row.get('nid', ''),
-                        'is_expired': False  # Set to False as it's in the new sheet
+                        'is_expired': False
                     }
                 )
 
-                # Add point field for Level6 and Level8
                 if model in [AdminLevel6, AdminLevel8]:
                     instance.point = row.get('Points', '')
                     instance.save()
 
-            # Mark entries as expired if they're not in the new sheet
             for level, codes in existing_codes.items():
                 expired_codes = codes - updated_codes
                 if level == 'Level 5':
@@ -107,9 +166,9 @@ admin.site.register(AdminLevel6, AdminDataAdmin)
 admin.site.register(AdminLevel8, AdminDataAdmin)
 
 # Register your other models
-admin.site.register(Choice)
-admin.site.register(Level5)
-admin.site.register(Level6)
-admin.site.register(Level8)
-admin.site.register(Apprentice)
-admin.site.register(Other)
+admin.site.register(Choice, ChoiceAdmin)
+admin.site.register(Level5, Level5Admin)
+admin.site.register(Level6, Level6Admin)
+admin.site.register(Level8, Level8Admin)
+admin.site.register(Apprentice, ApprenticeAdmin)
+admin.site.register(Other, OtherAdmin)

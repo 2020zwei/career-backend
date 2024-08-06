@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Question, TestType, PsychometricTest,Answer, TestResult,TestResultDetail, CareerIdea, ChoiceIdea, StudyTips
 from nested_admin import NestedTabularInline, NestedModelAdmin
+from users.models import Counselor
 # Register your models here.
 
 @admin.register(CareerIdea)
@@ -39,6 +40,13 @@ class PsychometricTestAdmin(NestedModelAdmin):
 @admin.register(TestResult)
 class TestResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_counselor:
+            counselor = Counselor.objects.get(user=request.user)
+            return qs.filter(user__school=counselor.school)
+        return qs
 
 
 admin.site.register(TestType,TestTypeAdminSite)
