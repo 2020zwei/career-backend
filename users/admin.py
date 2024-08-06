@@ -16,10 +16,32 @@ class StudentAdminDisplay(admin.ModelAdmin):
         return qs
 
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'email', 'username']
-    search_fields = ['email', 'id']
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User
+from .forms import UserCreationForm, UserChangeForm
+
+class UserAdmin(BaseUserAdmin):
+    model = User
+    add_form = UserCreationForm
+    form = UserChangeForm
+    list_display = ('email', 'is_staff', 'is_active', 'is_counselor')
+    list_filter = ('is_staff', 'is_active', 'is_counselor')
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('username', 'is_counselor')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2', 'username', 'is_counselor'),
+        }),
+    )
+    search_fields = ('email',)
     ordering = ('email',)
+    filter_horizontal = ('groups', 'user_permissions')
 
 
 class CounselorAdmin(admin.ModelAdmin):

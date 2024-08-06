@@ -1,8 +1,9 @@
 from .validators import validate_file_size
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, PermissionsMixin, AbstractBaseUser
 from .manager import UserManager
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 
 class School(models.Model):
@@ -13,14 +14,21 @@ class School(models.Model):
     def __str__(self):
         return self.school
 
-class User(AbstractUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=32, null=True, blank=True)
     is_counselor = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
     objects = UserManager()
+
+    def __str__(self):
+        return self.email
 
 class Student(models.Model):
     """Model to create Student"""
