@@ -27,6 +27,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    def save(self, *args, **kwargs):
+        if self.is_counselor:
+            self.is_staff = True
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.email
 

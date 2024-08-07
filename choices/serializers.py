@@ -14,7 +14,7 @@ class ColumnNamesSerializer(serializers.Serializer):
 class Level6_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level6
-        fields=['id','code','point','college','title','choice','order_number']
+        fields=['id','code','point','college','title','choice', 'url', 'order_number']
         extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
@@ -31,7 +31,7 @@ class Level6_Serializer(serializers.ModelSerializer):
 class Level8_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level8
-        fields=['id','code','point','college','title','choice','order_number']
+        fields=['id','code','point','college','title','choice', 'url', 'order_number']
         extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
@@ -61,7 +61,7 @@ class Level8_Serializer(serializers.ModelSerializer):
 class Apprentice_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Apprentice
-        fields=['id','name','level','company','choice','order_number']
+        fields=['id','name','level','company','choice', 'url', 'order_number']
         extra_kwargs = {'choice':{'allow_null': True,'required': False}}
     def create(self, validated_data):
         student = self.context['request'].user.student
@@ -79,7 +79,7 @@ class Apprentice_Serializer(serializers.ModelSerializer):
 class Level5_Serializer(serializers.ModelSerializer):
     class Meta:
         model=Level5
-        fields=['id','code','college','title','choice','order_number']
+        fields=['id','code','college','title','choice', 'url', 'order_number']
         extra_kwargs = {'choice':{'allow_null': True,'required': False} }
     def create(self, validated_data):
         student = self.context['request'].user.student
