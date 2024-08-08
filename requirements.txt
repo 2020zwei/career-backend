@@ -116,7 +116,7 @@ tzdata==2023.3
 uritemplate==4.1.1
 urllib3==1.26.12
 wcwidth==0.1.9
-weasyprint
+weasyprint==52.5
 webencodings==0.5.1
 websocket-client==0.59.0
 whitenoise==6.4.0
