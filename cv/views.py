@@ -668,7 +668,7 @@ class GeneratePDF(RetrieveAPIView):
             with open(file_location, 'rb') as f:
                 file_data = f.read()
             response = HttpResponse(file_data, content_type='application/pdf')
-            response['Content-Disposition'] = 'attachment; filename="'+ "cv" +'".pdf'
+            response['Content-Disposition'] = f'attachment; filename="{full_name}.pdf"'
             os.remove(temp_name + cv_template)
             os.remove("cv.pdf")
             return response
@@ -759,7 +759,7 @@ class GenerateAndSendPDF(RetrieveAPIView):
                     f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
                     [receiver_email],  # List of recipient email addresses
                 )
-                email.attach(f'{user_obj.first_name}.pdf', file_data, 'application/pdf')
+                email.attach(f'{full_name}.pdf', file_data, 'application/pdf')
 
                 email.send()
             except Exception as e:
