@@ -1,10 +1,12 @@
 from django.db import models
 from users.models import Student
+from ckeditor.fields import RichTextField
+
 # Create your models here.
 
 class TestType(models.Model):
     type=models.CharField(max_length=300)
-    description=models.TextField(max_length=1000, null=True, blank=True)
+    description= RichTextField(null=True, blank=True)
 
     def __str__(self):
         return self.type
@@ -45,15 +47,15 @@ class TestResultDetail(models.Model):
 
 class CareerIdea(models.Model):
     type = models.OneToOneField(TestType, on_delete=models.CASCADE)
-    idea = models.TextField(max_length=1400, null=True, blank=True)
+    idea = RichTextField(null=True, blank=True)
 
 
 class ChoiceIdea(models.Model):
     type = models.OneToOneField(TestType, on_delete=models.CASCADE)
-    idea = models.TextField(max_length=1400, null=True, blank=True)
+    idea = RichTextField(null=True, blank=True)
 
 
 class StudyTips(models.Model):
     type = models.ForeignKey(TestType, on_delete=models.CASCADE)
     # title = models.CharField(max_length=255)
-    description = models.TextField(max_length=1400)
+    description = RichTextField(null=True, blank=True)
