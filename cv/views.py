@@ -5,7 +5,7 @@ from django.core.mail import EmailMessage
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
-from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer, InterestSerializer, AdditionalInfoSerializer
+from .serializers import EducationSerializer,JuniorCertTestSerializer,ExperienceSerializer,ReferenceSerializer,CvSerializer, SkillSerializer,QualitiesSerializer, LeavingCertTestSerializer, StudentSerializer, InterestSerializer, AdditionalInfoSerializer, SendCVSerializer
 from .models import CV,Education,JuniorCertTest,Experience,Reference,JobTitle,Qualities,Skills,LeavingCertTest, Interests, AdditionalInfo
 from users.models import Student
 from django.template.loader import render_to_string
@@ -600,7 +600,8 @@ class InterestUpdate(RetrieveUpdateDestroyAPIView):
 
 #     return buffer
 
-class GeneratePDF(CreateAPIView):
+class GeneratePDF(RetrieveAPIView):
+    queryset = CV.objects.all()
     def get(self, request):
         """Fetch All Notes By Officer"""
         try:
@@ -676,7 +677,13 @@ class GeneratePDF(CreateAPIView):
             return Response({'message': "All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GenerateAndSendPDF(CreateAPIView):
+class GenerateAndSendPDF(RetrieveAPIView):
+    queryset = CV.objects.all()
+    serializer_class = SendCVSerializer
+    def get(self, request):
+        return Response({'message': 'This endpoint only supports POST requests.'},
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
     def post(self, request):
         """Generate PDF, Send Email with Attachment, and Delete Files"""
         try:

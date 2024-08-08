@@ -376,3 +376,7 @@ class AdditionalInfoSerializer(serializers.ModelSerializer):
         fields=['id','additional_info']
         list_serializer_class = AdditionalInfoListSerializer
         extra_kwargs = {'id':{'read_only': False,'allow_null': True}}
+
+
+class SendCVSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)

@@ -17,10 +17,10 @@ def send_welcome_email(sender, instance, created, **kwargs):
         message = (
             f'Hello {instance.username},\n\n'
             f'Your counselor account has been created successfully.\n'
-            f'Please log in and change your password as soon as possible.\n'
+            f'Please log in and change your password.\n'
             f'login url: {os.getenv("COUNSELOR_LOGIN_URL")}\n'
-            f'Your email: {instance.email}\n\n'
-            f'Your temporary password is: {temp_password}\n'
+            f'Your email: {instance.email}\n'
+            f'Your password is: {temp_password}\n'
             f'Thank you for registering as a counselor!'
         )
         from_email = os.environ.get('EMAIL_HOST_USER')
