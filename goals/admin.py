@@ -5,6 +5,8 @@ from users.models import Counselor
 
 class GoalAdminSite(admin.ModelAdmin):
     list_display=['id','user','goal','description','realistic','countdown']
+    search_fields = ("user__full_name",)
+
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

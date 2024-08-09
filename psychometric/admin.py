@@ -7,20 +7,24 @@ from users.models import Counselor
 @admin.register(CareerIdea)
 class CareerIdeaAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'idea']
+    search_fields = ('type__type',)
 
 
 @admin.register(ChoiceIdea)
 class ChoiceIdeaAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'idea']
+    search_fields = ('type__type',)
 
 
 @admin.register(StudyTips)
 class StudyTipsAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'description']
+    search_fields = ('type__type',)
     
 
 class TestTypeAdminSite(admin.ModelAdmin):
-    list_display=['id' ,'type','description']
+    list_display=['id', 'type', 'description']
+    search_fields = ("type",)
 
 class AnswerInline(NestedTabularInline):
     model = Answer
@@ -36,10 +40,12 @@ class ResultDetailInline(NestedTabularInline):
 @admin.register(PsychometricTest)
 class PsychometricTestAdmin(NestedModelAdmin):
     inlines = [QuestionInline]
+    search_fields = ('name',)
 
 @admin.register(TestResult)
 class TestResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
+    search_fields = ("user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

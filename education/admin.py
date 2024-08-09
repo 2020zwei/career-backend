@@ -24,6 +24,7 @@ class QuizAdmin(NestedModelAdmin):
 @admin.register(QuizResult)
 class QuizResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
+    search_fields = ('user__full_name',)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

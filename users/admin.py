@@ -1,9 +1,13 @@
 from django.contrib import admin
 from .models import Student, School, User, Counselor
-
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User
+from .forms import UserCreationForm, UserChangeForm
 
 class StudentAdminDisplay(admin.ModelAdmin):
     list_display = ['__str__', 'firstname_and_lastname', 'school', 'dob', 'profile_image', 'cv_completed']
+    search_fields = ("full_name",)
 
     def firstname_and_lastname(self, obj):
         return "%s %s" % (obj.first_name, obj.last_name)
@@ -15,11 +19,6 @@ class StudentAdminDisplay(admin.ModelAdmin):
             return qs.filter(school=counselor.school)
         return qs
 
-
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
-from .forms import UserCreationForm, UserChangeForm
 
 class UserAdmin(BaseUserAdmin):
     model = User

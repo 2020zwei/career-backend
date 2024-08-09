@@ -4,6 +4,7 @@ from users.models import Counselor
 # Register your models here.
 class CVAdminSite(admin.ModelAdmin):
     list_display=['user','is_juniorcert_test']
+    search_fields = ("user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

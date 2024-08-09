@@ -28,6 +28,7 @@ class OtherInline(NestedTabularInline):
 
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ['user']
+    search_fields = ("user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -38,6 +39,7 @@ class ChoiceAdmin(admin.ModelAdmin):
 
 class ApprenticeAdmin(admin.ModelAdmin):
     list_display = ['choice']
+    search_fields = ("choice__user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -49,6 +51,7 @@ class ApprenticeAdmin(admin.ModelAdmin):
 
 class Level5Admin(admin.ModelAdmin):
     list_display = ['choice']
+    search_fields = ("choice__user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -60,6 +63,7 @@ class Level5Admin(admin.ModelAdmin):
 
 class OtherAdmin(admin.ModelAdmin):
     list_display = ['choice']
+    search_fields = ("choice__user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -71,6 +75,7 @@ class OtherAdmin(admin.ModelAdmin):
 
 class Level6Admin(admin.ModelAdmin):
     list_display = ['choice']
+    search_fields = ("choice__user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -82,6 +87,7 @@ class Level6Admin(admin.ModelAdmin):
 
 class Level8Admin(admin.ModelAdmin):
     list_display = ['choice']
+    search_fields = ("choice__user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

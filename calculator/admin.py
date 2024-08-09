@@ -11,6 +11,7 @@ class SubjectGradeAdmin(admin.ModelAdmin):
 
 class UserPointsAdmin(admin.ModelAdmin):
     list_display = ['user', 'total_points']
+    search_fields = ("user__full_name",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
