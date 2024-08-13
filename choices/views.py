@@ -15,7 +15,6 @@ from django.http import JsonResponse
 
 def serialize_admin_level(instance):
     data = model_to_dict(instance)
-    # Convert any non-serializable types here if needed
     return data
 
 
@@ -133,7 +132,8 @@ class ApprenticeViewRelated(CreateAPIView):
             student =self.request.user
             choice=Apprentice.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Apprentice_Serializer(choice, many=True)
-            return Response(serializer.data)
+            response = {"user_data": serializer.data, "level_data": []}
+            return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -167,7 +167,8 @@ class OtherViewRelated(CreateAPIView):
             student =self.request.user
             choice=Other.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Other_Serializer(choice, many=True)
-            return Response(serializer.data)
+            response = {"user_data": serializer.data, "level_data": []}
+            return Response(response, status=status.HTTP_200_OK)
     
         except Exception as e:
            return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

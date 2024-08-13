@@ -24,7 +24,7 @@ class Level6(models.Model):
     title = models.CharField(max_length=300, null=True, blank=True)
     point=models.CharField(max_length=50,null=True,blank=True)
     college=models.CharField(max_length=300,null=True,blank=True)
-    url=models.CharField(max_length=300, null=True,blank=True)
+    courseInformation=models.CharField(max_length=300, null=True,blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
     
     def __str__(self):
@@ -40,7 +40,7 @@ class Level8(models.Model):
     title = models.CharField(max_length=300, null=True, blank=True)
     point=models.CharField(max_length=50,null=True,blank=True)
     college=models.CharField(max_length=300,null=True,blank=True)
-    url=models.CharField(max_length=300, null=True,blank=True)
+    courseInformation=models.CharField(max_length=300, null=True,blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
     
     def __str__(self):
@@ -55,7 +55,7 @@ class Apprentice(models.Model):
     name = models.CharField(max_length=50, null=True, blank=True)
     level = models.CharField(max_length=50, null=True, blank=True)
     company = models.CharField(max_length=50, null=True, blank=True)
-    url=models.CharField(max_length=50, null=True,blank=True)
+    courseInformation=models.CharField(max_length=50, null=True,blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -70,7 +70,7 @@ class Level5(models.Model):
     code = models.CharField(max_length=50, null=True, blank=True, unique=True)
     title = models.CharField(max_length=300, null=True, blank=True)
     college=models.CharField(max_length=300,null=True,blank=True)
-    url=models.CharField(max_length=300, null=True,blank=True)
+    courseInformation=models.CharField(max_length=300, null=True,blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
     
     def __str__(self):
@@ -97,7 +97,7 @@ class AdminLevel5(models.Model):
     code = models.CharField(max_length=50, null=True, blank=True, unique=True)
     title = models.CharField(max_length=300, null=True, blank=True)
     college = models.CharField(max_length=300, null=True, blank=True)
-    url = models.CharField(max_length=300, null=True, blank=True)
+    courseInformation = models.CharField(max_length=300, null=True, blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
     is_expired = models.BooleanField(default=False)
 
@@ -110,7 +110,7 @@ class AdminLevel6(models.Model):
     title = models.CharField(max_length=300, null=True, blank=True)
     point = models.CharField(max_length=50, null=True, blank=True)
     college = models.CharField(max_length=300, null=True, blank=True)
-    url = models.CharField(max_length=300, null=True, blank=True)
+    courseInformation = models.CharField(max_length=300, null=True, blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
     is_expired = models.BooleanField(default=False)
 
@@ -123,7 +123,7 @@ class AdminLevel8(models.Model):
     title = models.CharField(max_length=300, null=True, blank=True)
     point = models.CharField(max_length=50, null=True, blank=True)
     college = models.CharField(max_length=300, null=True, blank=True)
-    url = models.CharField(max_length=300, null=True, blank=True)
+    courseInformation = models.CharField(max_length=300, null=True, blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
     is_expired = models.BooleanField(default=False)
 
