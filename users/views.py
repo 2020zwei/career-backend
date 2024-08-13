@@ -1,19 +1,25 @@
 from django.shortcuts import render
-from rest_framework.views import APIView
 from django.core.mail import EmailMessage
 from rest_framework.generics import CreateAPIView,RetrieveAPIView,GenericAPIView,UpdateAPIView
-from rest_framework.permissions import IsAuthenticated
-from .models import User,Student, School
+from .models import User, Student, School, StripeCustomer
 from .serializers import SignupUserSerializer,UserSerializer,SchoolSerializer, StudentSignUpSerializer, UserSignUpSerializer, CustomTokenCreateSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from common.response_template import get_response_template
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 import os
+from .stripe import Stripe
+import stripe
+from django.core.exceptions import ObjectDoesNotExist
+
+
+stripeObject = Stripe()
+
 
 class CustomTokenObtainPairView(TokenViewBase):
     """
@@ -223,3 +229,75 @@ class ResetPasswordAPIView(APIView):
             response_template['data'] = "Password reset successfully."
             return Response(response_template)
         raise ValidationError("OTP is not verified yet")
+
+
+class CreatePaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        stripe.api_key = os.environ.get('CG_STRIPE_SECRET_KEY')
+        payment_method_info = stripe.PaymentMethod.create(
+            type="card",
+            card={
+                "token": "tok_visa",
+            },
+
+            metadata={
+                "name": "Waqas Idrees",
+                "zip_or_postalCode": "1235"
+            }
+        )
+        return Response({"detail": payment_method_info})
+
+    def post(self, request):
+        stripe.api_key = os.environ.get('CG_STRIPE_SECRET_KEY')
+        try:
+            user = request.user
+            student_user = Student.objects.get(user=user)
+        except ObjectDoesNotExist:
+            return Response({"message": "you are not a student user"}, status=status.HTTP_404_NOT_FOUND)
+
+        stripe_customer, created = StripeCustomer.objects.get_or_create(user=student_user)
+        if created:
+            try:
+                stripe_customer_data = stripeObject.create_customer(email=student_user.user.email)
+                stripe_customer.stripe_customer_id = stripe_customer_data.id
+                stripe_customer.save()
+            except Exception as e:
+                return Response({'success': False, "message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        stripe_customer_id = stripe_customer.stripe_customer_id
+        payment_method_token = request.data.get('payment_method_token')
+        amount = 1000  # Amount in cents (10 euros)
+        currency = 'eur'
+
+        try:
+            stripeObject.attach_payment_method(stripe_customer_id, payment_method_token)
+
+            payment_intent = stripeObject.create_payment_intent(
+                amount=amount,
+                currency=currency,
+                payment_method_id=payment_method_token,
+                customer_id=stripe_customer_id
+            )
+
+            if payment_intent.status == 'succeeded':
+                stripe_customer.payment_method = "Card"
+                stripe_customer.subscribed = True
+                stripe_customer.payment_method_token = payment_method_token
+                student_user.is_subscribed = True
+                student_user.save()
+                stripe_customer.save()
+
+                return Response({'success': True, 'message': 'The Payment has been successfully completed.'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({'success': False, 'message': 'Payment failed.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except stripe.error.CardError as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except stripe.error.StripeError as e:
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

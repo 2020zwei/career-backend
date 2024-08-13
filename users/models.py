@@ -5,11 +5,17 @@ from .manager import UserManager
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
+school_category = (
+    ('Gold', 'Gold'),
+    ('Platinum', 'Platinum'),
+    ('Silver', 'Silver')
+)
 
 class School(models.Model):
     """Model to create School"""
     school = models.CharField(max_length=100)
     county = models.CharField(max_length=100)
+    category = models.CharField(choices=school_category, max_length=100, default='Silver')
     
     def __str__(self):
         return self.school
@@ -56,10 +62,23 @@ class Student(models.Model):
     cv_completed=models.BooleanField(default=False)
     otp_verified = models.BooleanField(default=False)
     current_step = models.IntegerField(default=1)
+    is_subscribed = models.BooleanField(default=False)
 
     def __str__(self):
         """return name of Student"""
         return self.full_name
+
+
+class StripeCustomer(models.Model):
+    user = models.OneToOneField(Student, on_delete=models.CASCADE)
+    stripe_customer_id = models.CharField(max_length=255)
+    payment_method = models.CharField(max_length=100,null=True, blank=True)
+    subscribed = models.BooleanField(default=False)
+    payment_method_token = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        """return email of Student"""
+        return self.user.user.email
 
 
 class Counselor(models.Model):
