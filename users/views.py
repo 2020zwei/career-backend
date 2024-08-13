@@ -94,7 +94,11 @@ class SignupUser(APIView):
             student_serializer_obj = StudentSignUpSerializer(data=student_data)
             if student_serializer_obj.is_valid():
                 student_serializer_obj.save()
-                print("workinggg")
+                if school_obj.category == "Gold" or school_obj.category == "Platinum":
+                    student = Student.objects.get(user=user_obj)
+                    student.is_subscribed = True
+                    student.save()
+                    print("workinggg")
             else:
                 e = student_serializer_obj.errors
                 print(e)

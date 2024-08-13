@@ -56,6 +56,9 @@ class CustomTokenCreateSerializer(TokenCreateSerializer):
 
             data['refresh'] = str(refresh)
             data['access'] = str(refresh.access_token)
+            student = Student.objects.get(user=self.user)
+            data['is_subscribed'] = student.is_subscribed
+            data['password'] = None
             return data
         print("working")
         custom_errors = {"email": [self.default_error_messages["inactive_account"]]}
@@ -128,7 +131,8 @@ class UserSerializer(serializers.ModelSerializer):
     new_password = serializers.CharField(write_only=True, required=False)  # New password field
     class Meta:
         model=Student
-        fields=['full_name', 'school', 'dob', 'profile_image', 'email','number','address','city','country','current_step','cv_completed', 'new_password']
+        fields=['full_name', 'school', 'dob', 'profile_image', 'email','number','address','city','country','current_step','cv_completed', 'new_password', 'is_subscribed']
+        read_only_fields = ['is_subscribed']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
