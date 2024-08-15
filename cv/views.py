@@ -924,10 +924,8 @@ class GenerateDOCX(CreateAPIView):
                 doc_io.getvalue(), 
                 content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             )
-            email = user_obj.user.email
-            doc_name = email.split('@')[0]
 
-            response['Content-Disposition'] = f'attachment; filename={doc_name}.docx'
+            response['Content-Disposition'] = f'attachment; filename="{full_name}.docx"'
 
             return response
         
