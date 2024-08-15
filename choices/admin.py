@@ -141,7 +141,7 @@ class AdminDataAdmin(admin.ModelAdmin):
                     defaults={
                         'title': row.get('Title', ''),
                         'college': row.get('College', ''),
-                        'courseInformation': row.get('nid', ''),
+                        'course_information': row.get('nid', ''),
                         'is_expired': False
                     }
                 )
