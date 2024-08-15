@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'education',
     'choices',
     'corsheaders',
+    'ai_report',
 ]
 
 MIDDLEWARE = [
@@ -193,6 +194,8 @@ DOMAIN = 'https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Or any desired higher value
 
+
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 AWS_STORAGE_BUCKET_NAME = 'cgb-staging-bucket'
 AWS_S3_SIGNATURE_NAME = 's3v4',
