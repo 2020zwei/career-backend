@@ -776,6 +776,7 @@ class GenerateAndSendPDF(RetrieveAPIView):
 
 
 class GenerateDOCX(CreateAPIView):
+    queryset = CV.objects.all()
     def get(self, request):
         """Fetch All Notes By Officer"""
         try:
@@ -925,6 +926,7 @@ class GenerateDOCX(CreateAPIView):
                 content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             )
 
+            print("full name ??????????????????????????????", full_name)
             response['Content-Disposition'] = f'attachment; filename="{full_name}.docx"'
 
             return response
