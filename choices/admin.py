@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 from nested_admin import NestedTabularInline, NestedModelAdmin
 from django.urls import path
-from django.shortcuts import redirect
+from django.shortcuts import redirect, HttpResponse
 from django.template.response import TemplateResponse
 import pandas as pd
 from django import forms
@@ -108,63 +108,66 @@ class AdminDataAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def import_spreadsheet(self, request):
-        if request.method == "POST":
-            excel_file = request.FILES["excel_file"]
+        try:
+            if request.method == "POST":
+                excel_file = request.FILES["excel_file"]
 
-            df = pd.read_excel(excel_file)
+                df = pd.read_excel(excel_file)
 
-            existing_codes = {
-                'Level 5': set(AdminLevel5.objects.values_list('code', flat=True)),
-                'Level 6': set(AdminLevel6.objects.values_list('code', flat=True)),
-                'Level 8': set(AdminLevel8.objects.values_list('code', flat=True)),
-            }
+                existing_codes = {
+                    'Level 5': set(AdminLevel5.objects.values_list('code', flat=True)),
+                    'Level 6': set(AdminLevel6.objects.values_list('code', flat=True)),
+                    'Level 8': set(AdminLevel8.objects.values_list('code', flat=True)),
+                }
 
-            updated_codes = set()
+                updated_codes = set()
 
-            for _, row in df.iterrows():
-                nfq_level = row['NFQ Level']
+                for _, row in df.iterrows():
+                    nfq_level = row['NFQ Level']
 
-                if 'Level 5' in nfq_level:
-                    model = AdminLevel5
-                elif 'Level 6' in nfq_level:
-                    model = AdminLevel6
-                elif 'Level 8' in nfq_level:
-                    model = AdminLevel8
-                else:
-                    continue
+                    if 'Level 5' in nfq_level:
+                        model = AdminLevel5
+                    elif 'Level 6' in nfq_level:
+                        model = AdminLevel6
+                    elif 'Level 8' in nfq_level:
+                        model = AdminLevel8
+                    else:
+                        continue
 
-                code = row.get('Course Code', '')
-                updated_codes.add(code)
+                    code = row.get('Course Code', '')
+                    updated_codes.add(code)
 
-                instance, created = model.objects.update_or_create(
-                    code=code,
-                    defaults={
-                        'title': row.get('Title', ''),
-                        'college': row.get('College', ''),
-                        'course_information': row.get('nid', ''),
-                        'is_expired': False
-                    }
-                )
+                    instance, created = model.objects.update_or_create(
+                        code=code,
+                        defaults={
+                            'title': row.get('Title', ''),
+                            'college': row.get('College', ''),
+                            'course_information': row.get('nid', ''),
+                            'is_expired': False
+                        }
+                    )
 
-                if model in [AdminLevel6, AdminLevel8]:
-                    instance.point = row.get('Points', '')
-                    instance.save()
+                    if model in [AdminLevel6, AdminLevel8]:
+                        instance.point = row.get('Points', '')
+                        instance.save()
 
-            for level, codes in existing_codes.items():
-                expired_codes = codes - updated_codes
-                if level == 'Level 5':
-                    AdminLevel5.objects.filter(code__in=expired_codes).update(is_expired=True)
-                elif level == 'Level 6':
-                    AdminLevel6.objects.filter(code__in=expired_codes).update(is_expired=True)
-                elif level == 'Level 8':
-                    AdminLevel8.objects.filter(code__in=expired_codes).update(is_expired=True)
+                for level, codes in existing_codes.items():
+                    expired_codes = codes - updated_codes
+                    if level == 'Level 5':
+                        AdminLevel5.objects.filter(code__in=expired_codes).update(is_expired=True)
+                    elif level == 'Level 6':
+                        AdminLevel6.objects.filter(code__in=expired_codes).update(is_expired=True)
+                    elif level == 'Level 8':
+                        AdminLevel8.objects.filter(code__in=expired_codes).update(is_expired=True)
 
-            self.message_user(request, "Spreadsheet imported successfully")
-            return redirect("..")
+                self.message_user(request, "Spreadsheet imported successfully")
+                return redirect("..")
 
-        form = ExcelImportForm()
-        payload = {"form": form}
-        return TemplateResponse(request, "admin/excel_form.html", payload)
+            form = ExcelImportForm()
+            payload = {"form": form}
+            return TemplateResponse(request, "admin/excel_form.html", payload)
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {str(e)}", status=500)
 
 
 admin.site.register(AdminLevel5, AdminDataAdmin)

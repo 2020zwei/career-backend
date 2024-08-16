@@ -93,7 +93,9 @@ class Other(models.Model):
 
 
 # admin models for data from spreadsheet
-class AdminLevel5(models.Model):
+
+
+class AdminLevelBase(models.Model):
     code = models.CharField(max_length=50, null=True, blank=True, unique=True)
     title = models.CharField(max_length=300, null=True, blank=True)
     college = models.CharField(max_length=300, null=True, blank=True)
@@ -101,33 +103,20 @@ class AdminLevel5(models.Model):
     order_number = models.PositiveIntegerField(null=True, blank=True)
     is_expired = models.BooleanField(default=False)
 
+    class Meta:
+        abstract = True
+
     def __str__(self):
         return f"{self.code} - {self.title}"
 
 
-class AdminLevel6(models.Model):
-    code = models.CharField(max_length=50, null=True, blank=True, unique=True)
-    title = models.CharField(max_length=300, null=True, blank=True)
+class AdminLevel5(AdminLevelBase):
+    pass
+
+
+class AdminLevel6(AdminLevelBase):
     point = models.CharField(max_length=50, null=True, blank=True)
-    college = models.CharField(max_length=300, null=True, blank=True)
-    course_information = models.CharField(max_length=300, null=True, blank=True)
-    order_number = models.PositiveIntegerField(null=True, blank=True)
-    is_expired = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.code} - {self.title}"
 
 
-class AdminLevel8(models.Model):
-    code = models.CharField(max_length=50, null=True, blank=True, unique=True)
-    title = models.CharField(max_length=300, null=True, blank=True)
+class AdminLevel8(AdminLevelBase):
     point = models.CharField(max_length=50, null=True, blank=True)
-    college = models.CharField(max_length=300, null=True, blank=True)
-    course_information = models.CharField(max_length=300, null=True, blank=True)
-    order_number = models.PositiveIntegerField(null=True, blank=True)
-    is_expired = models.BooleanField(default=False)
-
-
-    def __str__(self):
-        return f"{self.code} - {self.title}"
-
