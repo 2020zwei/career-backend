@@ -7,6 +7,7 @@ from django.template.response import TemplateResponse
 import pandas as pd
 from django import forms
 from users.models import Counselor
+from django.contrib import messages
 
 class ExcelImportForm(forms.Form):
     excel_file = forms.FileField()
@@ -97,7 +98,83 @@ class Level8Admin(admin.ModelAdmin):
         return qs
 
 
-class AdminDataAdmin(admin.ModelAdmin):
+class BaseAdminDataAdmin(admin.ModelAdmin):
+    change_list_template = "admin/choice_changelist.html"
+    level = None
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('import-spreadsheet/', self.import_spreadsheet),
+        ]
+        return my_urls + urls
+
+    def import_spreadsheet(self, request):
+        try:
+            if request.method == "POST":
+                excel_file = request.FILES["excel_file"]
+                df = pd.read_excel(excel_file)
+                model = self.level
+                existing_codes = set(model.objects.values_list('code', flat=True))
+                updated_codes = set()
+
+                for index, row in df.iterrows():
+                    code = row.get('Course Code', '')
+
+                    if not code or pd.isna(code):
+                        print(f"Skipping row {index} due to empty or NaN Course Code")
+                        continue
+
+                    code = row.get('Course Code', '').strip()
+                    title = row.get('Title', '').strip() if not pd.isna(row.get('Title', '')) else None
+                    college = row.get('College', '').strip() if not pd.isna(row.get('College', '')) else None
+                    points = row.get('Points', '') if not pd.isna(row.get('Points', '')) else None
+
+                    instance, created = model.objects.update_or_create(
+                        code=code,
+                        defaults={
+                            'title': title,
+                            'college': college,
+                            'course_information': row.get('nid', '').strip() if not pd.isna(
+                                row.get('nid', '')) else None,
+                            'is_expired': False
+                        }
+                    )
+                    instance.point = points
+                    instance.save()
+
+                expired_codes = existing_codes - updated_codes
+                model.objects.filter(code__in=expired_codes).update(is_expired=True)
+
+                self.message_user(request, "Spreadsheet imported successfully", level=messages.SUCCESS)
+                duplicate_codes = df[df.duplicated(subset=['Course Code'], keep=False)]
+                if not duplicate_codes.empty:
+                    self.message_user(request, f"{len(duplicate_codes)} Duplicate Course Codes found!", level=messages.ERROR)
+                    for index, row in duplicate_codes.iterrows():
+                        print(f"Row {index}: {row['Course Code']} - {row['Title']}")
+                return redirect("..")
+
+            form = ExcelImportForm()
+            payload = {"form": form}
+            return TemplateResponse(request, "admin/excel_form.html", payload)
+
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {str(e)}", status=500)
+
+
+class AdminLevel5DataAdmin(BaseAdminDataAdmin):
+    level = AdminLevel5
+
+
+class AdminLevel6DataAdmin(BaseAdminDataAdmin):
+    level = AdminLevel6
+
+
+class AdminLevel8DataAdmin(BaseAdminDataAdmin):
+    level = AdminLevel8
+
+
+class AdminApprenticeAdmin(admin.ModelAdmin):
     change_list_template = "admin/choice_changelist.html"
 
     def get_urls(self):
@@ -111,68 +188,101 @@ class AdminDataAdmin(admin.ModelAdmin):
         try:
             if request.method == "POST":
                 excel_file = request.FILES["excel_file"]
-
                 df = pd.read_excel(excel_file)
+                existing_names = set(AdminApprentice.objects.values_list('name', flat=True))
+                updated_names = set()
 
-                existing_codes = {
-                    'Level 5': set(AdminLevel5.objects.values_list('code', flat=True)),
-                    'Level 6': set(AdminLevel6.objects.values_list('code', flat=True)),
-                    'Level 8': set(AdminLevel8.objects.values_list('code', flat=True)),
-                }
+                for index, row in df.iterrows():
+                    name = row.get('Apprenticeship', '').strip()
 
-                updated_codes = set()
-
-                for _, row in df.iterrows():
-                    nfq_level = row['NFQ Level']
-
-                    if 'Level 5' in nfq_level:
-                        model = AdminLevel5
-                    elif 'Level 6' in nfq_level:
-                        model = AdminLevel6
-                    elif 'Level 8' in nfq_level:
-                        model = AdminLevel8
-                    else:
+                    if not name or pd.isna(name):
+                        print(f"Skipping row {index} due to empty or NaN Apprenticeship")
                         continue
 
-                    code = row.get('Course Code', '')
-                    updated_codes.add(code)
+                    updated_names.add(name)
 
-                    instance, created = model.objects.update_or_create(
-                        code=code,
+                    instance, created = AdminApprentice.objects.update_or_create(
+                        name=name,
                         defaults={
-                            'title': row.get('Title', ''),
-                            'college': row.get('College', ''),
-                            'course_information': row.get('nid', ''),
+                            'level': row.get('NFQ Level', '').strip() if not pd.isna(row.get('NFQ Level', '')) else None,
+                            'company': row.get('Industry Lead', '').strip() if not pd.isna(row.get('Industry Lead', '')) else None,
                             'is_expired': False
                         }
                     )
 
-                    if model in [AdminLevel6, AdminLevel8]:
-                        instance.point = row.get('Points', '')
-                        instance.save()
+                expired_names = existing_names - updated_names
+                AdminApprentice.objects.filter(name__in=expired_names).update(is_expired=True)
 
-                for level, codes in existing_codes.items():
-                    expired_codes = codes - updated_codes
-                    if level == 'Level 5':
-                        AdminLevel5.objects.filter(code__in=expired_codes).update(is_expired=True)
-                    elif level == 'Level 6':
-                        AdminLevel6.objects.filter(code__in=expired_codes).update(is_expired=True)
-                    elif level == 'Level 8':
-                        AdminLevel8.objects.filter(code__in=expired_codes).update(is_expired=True)
+                self.message_user(request, "Spreadsheet imported successfully", level=messages.SUCCESS)
+                duplicate_names = df[df.duplicated(subset=['Apprenticeship'], keep=False)]
+                if not duplicate_names.empty:
+                    self.message_user(request, f"{len(duplicate_names)} Duplicate Apprenticeship names found!", level=messages.ERROR)
+                    for index, row in duplicate_names.iterrows():
+                        print(f"Row {index}: {row['Apprenticeship']} - {row['NFQ Level']}")
 
-                self.message_user(request, "Spreadsheet imported successfully")
                 return redirect("..")
 
             form = ExcelImportForm()
             payload = {"form": form}
             return TemplateResponse(request, "admin/excel_form.html", payload)
+
         except Exception as e:
             return HttpResponse(f"An error occurred: {str(e)}", status=500)
 
 
-admin.site.register(AdminLevel5, AdminDataAdmin)
-admin.site.register(AdminLevel6, AdminDataAdmin)
-admin.site.register(AdminLevel8, AdminDataAdmin)
+class AdminOtherAdmin(admin.ModelAdmin):
+    change_list_template = "admin/choice_changelist.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('import-spreadsheet/', self.import_spreadsheet),
+        ]
+        return my_urls + urls
+
+    def import_spreadsheet(self, request):
+        try:
+            if request.method == "POST":
+                excel_file = request.FILES["excel_file"]
+                df = pd.read_excel(excel_file, header=None)  # Read without headers
+
+                # Delete all existing ideas
+                AdminOther.objects.all().delete()
+
+                new_ideas = []
+                for index, row in df.iterrows():
+                    # Strip whitespace and ensure no NaN values
+                    idea = str(row.iloc[0]).strip()
+
+                    if not idea or pd.isna(idea):
+                        print(f"Skipping row {index} due to empty or NaN idea")
+                        continue
+
+                    # Collect new ideas to bulk create later
+                    new_ideas.append(AdminOther(idea=idea))
+
+                # Bulk create all new ideas
+                AdminOther.objects.bulk_create(new_ideas)
+
+                self.message_user(request, "Spreadsheet imported successfully", level=messages.SUCCESS)
+
+                return redirect("..")
+
+            form = ExcelImportForm()
+            payload = {"form": form}
+            return TemplateResponse(request, "admin/excel_form.html", payload)
+
+        except Exception as e:
+            return HttpResponse(f"An error occurred: {str(e)}", status=500)
+
+
+# Admin Models for storing data from sheets
+admin.site.register(AdminLevel5, AdminLevel5DataAdmin)
+admin.site.register(AdminLevel6, AdminLevel6DataAdmin)
+admin.site.register(AdminLevel8, AdminLevel8DataAdmin)
+admin.site.register(AdminApprentice, AdminApprenticeAdmin)
+admin.site.register(AdminOther, AdminOtherAdmin)
+
 
 # Register your other models
 admin.site.register(Choice, ChoiceAdmin)

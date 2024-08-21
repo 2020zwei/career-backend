@@ -132,7 +132,9 @@ class ApprenticeViewRelated(CreateAPIView):
             student =self.request.user
             choice=Apprentice.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Apprentice_Serializer(choice, many=True)
-            response = {"user_data": serializer.data, "level_data": []}
+            level_data = AdminApprentice.objects.all()
+            serialized_level_data = [serialize_admin_level(instance) for instance in level_data]
+            response = {"user_data": serializer.data, "level_data": serialized_level_data}
             return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -167,7 +169,9 @@ class OtherViewRelated(CreateAPIView):
             student =self.request.user
             choice=Other.objects.filter(choice__user=student.student).order_by('order_number')
             serializer = Other_Serializer(choice, many=True)
-            response = {"user_data": serializer.data, "level_data": []}
+            level_data = AdminOther.objects.all()
+            serialized_level_data = [serialize_admin_level(instance) for instance in level_data]
+            response = {"user_data": serializer.data, "level_data": serialized_level_data}
             return Response(response, status=status.HTTP_200_OK)
     
         except Exception as e:
