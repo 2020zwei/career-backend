@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'education',
     'choices',
     'corsheaders',
-    'ai_report',
+    'guidance_report',
 ]
 
 MIDDLEWARE = [
