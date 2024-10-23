@@ -112,7 +112,7 @@ class BaseAdminDataAdmin(admin.ModelAdmin):
     def import_spreadsheet(self, request):
         try:
             if request.method == "POST":
-                excel_file = request.FILES["excel_file"]
+                excel_file = request.FILES["courses_file"]
                 df = pd.read_excel(excel_file)
                 model = self.level
                 existing_codes = set(model.objects.values_list('code', flat=True))
@@ -187,7 +187,7 @@ class AdminApprenticeAdmin(admin.ModelAdmin):
     def import_spreadsheet(self, request):
         try:
             if request.method == "POST":
-                excel_file = request.FILES["excel_file"]
+                excel_file = request.FILES["courses_file"]
                 df = pd.read_excel(excel_file)
                 existing_names = set(AdminApprentice.objects.values_list('name', flat=True))
                 updated_names = set()
@@ -243,7 +243,7 @@ class AdminOtherAdmin(admin.ModelAdmin):
     def import_spreadsheet(self, request):
         try:
             if request.method == "POST":
-                excel_file = request.FILES["excel_file"]
+                excel_file = request.FILES["courses_file"]
                 df = pd.read_excel(excel_file, header=None)  # Read without headers
 
                 # Delete all existing ideas

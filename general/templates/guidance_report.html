@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guidance Report</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+{#.container {#}
+{#    max-width: 800px;#}
+{#    margin: 0 auto;#}
+{#    background-color: #fff;#}
+{#    padding: 20px;#}
+{#    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);#}
+
+
+header h1 {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+header h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+section {
+    margin: 0;
+    padding: 10px 0;
+}
+
+section h1 {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+section p {
+    margin: 0;
+    padding-bottom: 20px;
+}
+
+.download-button button {
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.download-button button:hover {
+    background-color: #45a049;
+}
+
+.guidance-title {
+    margin-right: 50px;
+    float: right;
+}
+
+.guidance-title-sec {
+    margin-bottom: 100px;
+}
+
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <section class="guidance-title-sec">
+            <p class="guidance-title">My Guidance Report for {{ first_name }} {{ last_name }} </p>
+        </section>
+
+        <section class="executive-summary">
+            <h1>Executive Summary</h1>
+            <p>{{ executive_summary }}</p>
+        </section>
+
+        <section class="self-assessment">
+            <h1>Self Assessment Results</h1>
+            <p>{{ self_assessment_result }}</p>
+        </section>
+
+        <section class="study-advice">
+            <h1>Study Advice</h1>
+            <p>{% autoescape off %}{{ study_advice }}{% endautoescape %}</p>
+        </section>
+
+        <section class="academic-record">
+            <h1>Academic Record</h1>
+            <p>{{ academic_record }}</p>
+        </section>
+
+        <section class="career-assessment">
+            <h1>Career Assessment</h1>
+            <p>{{ career_assessment }}</p>
+        </section>
+
+        <section class="goal-setting">
+            <h1>Goal Setting</h1>
+            <p id="goal-setting-content"></p>
+        </section>
+
+        <section class="educational-options">
+            <h1>Educational Options</h1>
+            <p id="educational-options-content"></p>
+        </section>
+
+        <section class="suggested-resources">
+            <h1>Suggested Resources</h1>
+            <p id="suggested-resources-content"></p>
+        </section>
+
+        <section class="conclusion">
+            <h1>Conclusion</h1>
+            <p id="conclusion-content"></p>
+        </section>
+    </div>
+</body>
+</html>
