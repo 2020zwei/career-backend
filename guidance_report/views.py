@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from .utils import generate_gpt_response
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 from weasyprint import HTML
 import os
@@ -211,3 +211,21 @@ class GeneratePDFReport(APIView):
 
         except Exception as e:
             return Response({'message': "All steps of Guidance Report should be completed . " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChatbotAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        welcome_message = "Welcome to the Guidance Chatbot! Type your message to start the conversation."
+        return Response({"success": True, "message": welcome_message}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user_message = request.data.get("message", "").strip()
+        if not user_message:
+            return Response({"success": False, "message": "Message content is missing"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set a shorter max_tokens for a concise response
+        gpt_response = generate_gpt_response(user_message, max_tokens=100)
+
+        return Response({"success": True, "response": gpt_response}, status=status.HTTP_200_OK)
