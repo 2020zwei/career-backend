@@ -225,7 +225,6 @@ class ChatbotAPIView(APIView):
         if not user_message:
             return Response({"success": False, "message": "Message content is missing"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Set a shorter max_tokens for a concise response
-        gpt_response = generate_gpt_response(user_message, max_tokens=100)
+        gpt_response = generate_gpt_response(user_message)
 
         return Response({"success": True, "response": gpt_response}, status=status.HTTP_200_OK)

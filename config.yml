@@ -1,0 +1,22 @@
+branch-defaults:
+  dev:
+    environment: CGB-Staging-Serve
+    group_suffix: null
+  develop:
+    environment: CGB-Staging-Server
+  main:
+    environment:
+global:
+  application_name: Career-Guidance-Backend
+  branch: null
+  default_ec2_keyname: null
+  default_platform: Python 3.8 running on 64bit Amazon Linux 2023
+  default_region: us-east-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: career-guidance
+  repository: null
+  sc: git
+  workspace_type: Application
