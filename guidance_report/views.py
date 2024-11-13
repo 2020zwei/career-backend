@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from users.models import Student
 from cv.models import Skills, Experience, Interests, CV, Qualities
 from choices.models import Level5, Level6, Level8, Apprentice
-from calculator.models import UserPoints, Subject, SubjectGrade
+from calculator.models import UserPoints, SubjectGrade
 from goals.models import Goal
 from psychometric.models import TestResult
 from django.forms.models import model_to_dict
@@ -213,18 +213,180 @@ class GeneratePDFReport(APIView):
             return Response({'message': "All steps of Guidance Report should be completed . " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ChatbotAPIView(APIView):
+class GenerateGuidanceReportGPT(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        welcome_message = "Welcome to the Guidance Chatbot! Type your message to start the conversation."
-        return Response({"success": True, "message": welcome_message}, status=status.HTTP_200_OK)
-
     def post(self, request):
-        user_message = request.data.get("message", "").strip()
-        if not user_message:
-            return Response({"success": False, "message": "Message content is missing"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = self.request.user
+            try:
+                student = Student.objects.get(user=user)
+            except Student.DoesNotExist:
+                return Response({"success": False, "message": "User does not exist or is not a student"},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        gpt_response = generate_gpt_response(user_message)
+            prompt = (
+                "You are an educational counselor tasked with creating a personalized guidance report for a student based on their data."
+                " Use the provided student data to create a comprehensive report covering the following topics:\n"
+                "1. Executive Summary\n"
+                "2. Self Assessment Results\n"
+                "3. Study Advice\n"
+                "4. Academic Record\n"
+                "5. Career Assessment\n"
+                "6. Goal Setting\n"
+                "7. Educational Options\n"
+                "8. Suggested Resources\n"
+                "9. Conclusion\n"
+                "The report should be personalized, detailed, and incorporate all the provided data."
+                "\n\n"
+                "**Important Instructions:**\n"
+                "- Output **only** the final report in **HTML format**.\n"
+                "- **Do not** include any explanations, comments, or additional text before or after the HTML code.\n"
+                "- **Do not** include any code fences or markdown formatting.\n"
+                "- Use appropriate HTML tags for headings, paragraphs, and lists:\n"
+                "  - `<h1>` for the main title\n"
+                "  - `<h2>` for section headings\n"
+                "  - `<p>` for paragraphs\n"
+                "  - `<ul>` and `<li>` for bullet points\n"
+                "- Ensure the HTML is properly formatted and valid.\n"
+                "- Do **not** mention 'Student Data' or any placeholder text in the output.\n\n"
+                "Student Data starts below this line:\n"
+                "--------------------------------\n"
+            )
 
-        return Response({"success": True, "response": gpt_response}, status=status.HTTP_200_OK)
+            # Retrieve the request data
+            request_data = request.data
+
+            student_data = serialize_students_data(student)
+            prompt += f"Student's Data: {student_data}\n"
+
+
+            # Predicted Points and Subjects
+            if request_data.get('predicted_points_and_subjects') == 'Yes':
+                user_points = UserPoints.objects.filter(user=student).first()
+                if user_points:
+                    prompt += f"- Predicted Points: {user_points.total_points}\n"
+                    # Add subjects if available
+                    subjects = SubjectGrade.objects.filter(user=student)
+                    if subjects.exists():
+                        subject_list = ", ".join([subject.name for subject in subjects])
+                        prompt += f"- Subjects: {subject_list}\n"
+                else:
+                    prompt += "- Predicted Points and Subjects: Not available\n"
+
+            # My Stated Goals
+            if request_data.get('my_stated_goals') == 'Yes':
+                goals = Goal.objects.filter(user=student)
+                if goals.exists():
+                    goal_list = "\n".join([f"  - {goal.goal}: {goal.description}" for goal in goals])
+                    prompt += f"- Goals:\n{goal_list}\n"
+                else:
+                    prompt += "- Goals: Not available\n"
+
+            # Multiple Intelligence Score
+            if request_data.get('mis') == 'Yes':
+                mi_score = TestResult.objects.filter(user=student, test__name='Multiple Intelligence').first()
+                if mi_score:
+                    prompt += f"- Multiple Intelligence Score: {mi_score.score}\n"
+                else:
+                    prompt += "- Multiple Intelligence Score: Not available\n"
+
+            # Address
+            if request_data.get('address') == 'Yes':
+                cv = CV.objects.filter(user=student).first()
+                if cv and cv.address and cv.city and cv.town:
+                    prompt += f"- Address: {cv.address}, {cv.city}, {cv.town}\n"
+                else:
+                    prompt += "- Address: Not available\n"
+
+            # Personal Statement
+            if request_data.get('personal_statement') == 'Yes':
+                cv = CV.objects.filter(user=student).first()
+                if cv and cv.objective:
+                    prompt += f"- Personal Statement: {cv.objective}\n"
+                else:
+                    prompt += "- Personal Statement: Not available\n"
+
+            # Work Experience
+            if request_data.get('work_experience') == 'Yes':
+                work_experience = Experience.objects.filter(user=student)
+                if work_experience.exists():
+                    experience_list = "\n".join([f"  - {exp.job_title} at {exp.company}" for exp in work_experience])
+                    prompt += f"- Work Experience:\n{experience_list}\n"
+                else:
+                    prompt += "- Work Experience: Not available\n"
+
+            # Skills
+            if request_data.get('skills') == 'Yes':
+                skills = Skills.objects.filter(user=student)
+                if skills.exists():
+                    skills_list = ", ".join([skill.skill_dropdown for skill in skills])
+                    prompt += f"- Skills: {skills_list}\n"
+                else:
+                    prompt += "- Skills: Not available\n"
+
+            # Qualities
+            if request_data.get('qualities') == 'Yes':
+                qualities = Qualities.objects.filter(user=student)
+                if qualities.exists():
+                    qualities_list = ", ".join([quality.quality_dropdown for quality in qualities])
+                    prompt += f"- Qualities: {qualities_list}\n"
+                else:
+                    prompt += "- Qualities: Not available\n"
+
+            # Interests
+            if request_data.get('interest') == 'Yes':
+                interests = Interests.objects.filter(user=student)
+                if interests.exists():
+                    interests_list = ", ".join([interest.interests for interest in interests])
+                    prompt += f"- Interests: {interests_list}\n"
+                else:
+                    prompt += "- Interests: Not available\n"
+
+            # Values Assessment
+            if request_data.get('values_assessment') == 'Yes':
+                values_assessment = TestResult.objects.filter(user=student, test__name='Values Assessment').first()
+                if values_assessment:
+                    prompt += f"- Values Assessment Score: {values_assessment.score}\n"
+                else:
+                    prompt += "- Values Assessment: Not available\n"
+
+            # Interest Assessment
+            if request_data.get('interest_assessment') == 'Yes':
+                interest_assessment = TestResult.objects.filter(user=student, test__name='Interest Assessment').first()
+                if interest_assessment:
+                    prompt += f"- Interest Assessment Score: {interest_assessment.score}\n"
+                else:
+                    prompt += "- Interest Assessment: Not available\n"
+
+            # Education Options
+            education_options = request_data.get('education_options', [])
+            if education_options:
+                # Prepare the education mappings
+                education_mappings = {
+                    "level 8": Level8.objects.filter(choice__user=student),
+                    "level 6/7": Level6.objects.filter(choice__user=student),
+                    "level 5(plc)": Level5.objects.filter(choice__user=student),
+                    "apprentices": Apprentice.objects.filter(choice__user=student)
+                }
+                for key in education_options:
+                    if key in education_mappings:
+                        entries = education_mappings[key]
+                        if entries.exists():
+                            education_list = "\n".join([f"  - {entry}" for entry in entries])
+                            prompt += f"- Education Option - {key.title()}:\n{education_list}\n"
+                        else:
+                            prompt += f"- Education Option - {key.title()}: Not available\n"
+
+            # Add additional instructions to the prompt
+            prompt += "\n\nPlease write the report in a formal and professional tone, using clear and concise language. Make sure to reference the student's specific data throughout the report, providing personalized advice and recommendations."
+
+            # Generate the GPT response
+            gpt_response = generate_gpt_response(prompt)
+
+            response = {"success": True, "message": "GPT report generated successfully", "gpt_response": gpt_response}
+
+            return Response(response, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"success": False, "message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
