@@ -79,6 +79,8 @@ class GenerateGpt(APIView):
             student data:
             \n"""
 
+
+
             # Main Models
             main_models = request.data.get('main_models', [])
             if "predicted points and subjects" in main_models:
@@ -254,12 +256,34 @@ class GenerateGuidanceReportGPT(APIView):
                 "--------------------------------\n"
             )
 
+
+
             # Retrieve the request data
             request_data = request.data
 
             student_data = serialize_students_data(student)
             prompt += f"Student's Data: {student_data}\n"
 
+            # Check if this is a feedback-driven request
+            feedback = request_data.get("feedback", None)
+            previous_response = request_data.get("previous_response", None)
+
+            if feedback and previous_response:
+                # Append the previous report and feedback to the prompt
+                prompt += (
+                    "This is a revision request. Below is the previously generated report and the feedback provided by the user.\n\n"
+                    "Previously generated report:\n"
+                    "--------------------------------\n"
+                    f"{previous_response}\n\n"
+                    "Feedback from the user:\n"
+                    f"- {feedback}\n\n"
+                    "Please revise the report based on this feedback while retaining the original structure and addressing all feedback."
+                )
+            else:
+                # Generate the initial report
+                prompt += (
+                    "This is an initial report generation request. Use the provided student data to generate a detailed and personalized report.\n\n"
+                )
 
             # Predicted Points and Subjects
             if request_data.get('predicted_points_and_subjects') == 'Yes':
@@ -390,3 +414,4 @@ class GenerateGuidanceReportGPT(APIView):
 
         except Exception as e:
             return Response({"success": False, "message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
