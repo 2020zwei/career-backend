@@ -933,3 +933,126 @@ class GenerateDOCX(CreateAPIView):
         
         except Exception as e:
             return Response({'message': str(e) + " All steps of CV should be completed"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GenerateAndSendDOCX(APIView):
+    queryset = CV.objects.all()
+
+    def post(self, request):
+        """Generate DOCX, Send Email with Attachment"""
+        try:
+            # Get recipient email from request
+            receiver_email = request.data.get("email")
+            if not receiver_email:
+                return Response({"message": "Email address is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Fetch user and associated data
+            student = self.request.user
+            user_obj = Student.objects.get(id=student.student.id)
+            cv_obj = CV.objects.filter(user=student.student).first()
+            education_obj = Education.objects.filter(user=student.student)
+            junior_cert_obj = JuniorCertTest.objects.filter(user=student.student)
+            leave_cert_obj = LeavingCertTest.objects.filter(user=student.student)
+            exp_obj = Experience.objects.filter(user=student.student)
+            skill_obj = Skills.objects.filter(user=student.student)
+            quality_obj = Qualities.objects.filter(user=student.student)
+            interest_obj = Interests.objects.filter(user=student.student)
+            additional_info = AdditionalInfo.objects.filter(user=student.student)
+            refer_obj = Reference.objects.filter(user=student.student)
+
+            # Handle missing additional info
+            add_info = [i.additional_info for i in additional_info][
+                0] if additional_info else "No additional info provided"
+
+            # Fetch user details
+            full_name = user_obj.full_name or "Unnamed User"
+            number = cv_obj.number or "Phone No."
+
+            # Generate DOCX file
+            doc = Document()
+
+            # Add heading for full name
+            name = doc.add_heading(f'{full_name}')
+            name.alignment = 1
+            name.runs[0].font.size = Pt(32)
+            name.runs[0].font.color.rgb = RGBColor(0, 0, 0)
+
+            # Add contact info
+            doc.add_paragraph(f'{cv_obj.email} - {number} - {cv_obj.address or ""} - {cv_obj.eircode or ""} - {cv_obj.city or ""}')
+            doc.add_paragraph('_' * 100)
+
+            # Personal statement
+            doc.add_heading('Personal Statement', level=2)
+            doc.add_paragraph(f'{cv_obj.objective or "No Objective Provided"}')
+
+            # Skills and qualities
+            doc.add_heading('Skills and Qualities', level=2)
+            for skill in skill_obj:
+                doc.add_paragraph(f"{skill.skill_dropdown_value}: {skill.description}")
+
+            for quality in quality_obj:
+                doc.add_paragraph(f"{quality.quality_dropdown_value}: {quality.description}")
+
+            # Education
+            doc.add_heading('Education', level=2)
+            for edu in education_obj:
+                doc.add_paragraph(f"{edu.school} ({edu.year} - {'Present' if edu.present else edu.enddate})")
+
+            # Junior Cert
+            if len(junior_cert_obj) != 0:
+                doc.add_heading('Junior Cert', level=2)
+                for cert in junior_cert_obj:
+                    doc.add_paragraph(f"{cert.subject}, {cert.level}, {cert.result}")
+
+            # Leaving Cert
+            if len(leave_cert_obj) != 0:
+                doc.add_heading('Leaving Cert', level=2)
+                for cert in leave_cert_obj:
+                    doc.add_paragraph(f"{cert.subject}, {cert.level}, {cert.result}")
+
+            # Work experience
+            doc.add_heading('Work Experience', level=2)
+            for exp in exp_obj:
+                exp_period = f"{exp.startdate} - {'Present' if exp.is_current_work else exp.enddate}"
+                doc.add_paragraph(f"{exp.job_title} at {exp.company}, {exp.city} ({exp_period})")
+                doc.add_paragraph(exp.description)
+
+            # Hobbies and interests
+            doc.add_heading('Hobbies and Interests', level=2)
+            for interest in interest_obj:
+                doc.add_paragraph(f"{interest.interests}: {interest.description}")
+
+            # Achievements
+            doc.add_heading('Achievements', level=2)
+            doc.add_paragraph(add_info)
+
+            # Referees
+            doc.add_heading('Referees', level=2)
+            for ref in refer_obj:
+                doc.add_paragraph(f"{ref.name}, {ref.position}")
+                doc.add_paragraph(f"{ref.contact_number}, {ref.email}")
+
+            # Save to BytesIO
+            doc_io = BytesIO()
+            doc.save(doc_io)
+            doc_io.seek(0)
+
+            # Prepare email
+            try:
+                email = EmailMessage(
+                    'Your CV DOCX',
+                    'Please find your CV DOCX attached.',
+                    f"{os.environ['EMAIL_HOST_USER']}",  # Replace with your email address
+                    [receiver_email],  # List of recipient email addresses
+                )
+                email.attach(f'{full_name}.docx', doc_io.getvalue(),
+                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                email.send()
+            except Exception as email_error:
+                return Response({"message": f"Error sending email: {email_error}"},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({'message': "CV DOCX sent successfully"}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'message': f"Error generating and sending DOCX: {e}"}, status=status.HTTP_400_BAD_REQUEST)
