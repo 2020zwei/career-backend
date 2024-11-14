@@ -1,51 +1,72 @@
 from django.contrib import admin
-from .models import Question, TestType, PsychometricTest,Answer, TestResult,TestResultDetail, CareerIdea, ChoiceIdea, StudyTips
+from .models import (
+    Question, TestType, PsychometricTest, Answer, TestResult,
+    TestResultDetail, CareerIdea, ChoiceIdea, StudyTips
+)
 from nested_admin import NestedTabularInline, NestedModelAdmin
 from users.models import Counselor
-# Register your models here.
 
+
+# Admin for CareerIdea
 @admin.register(CareerIdea)
 class CareerIdeaAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'idea']
-    search_fields = ('type__type',)
+    search_fields = ['type__type', 'idea']
 
 
+# Admin for ChoiceIdea
 @admin.register(ChoiceIdea)
 class ChoiceIdeaAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'idea']
-    search_fields = ('type__type',)
+    search_fields = ['type__type', 'idea']
 
 
+# Admin for StudyTips
 @admin.register(StudyTips)
 class StudyTipsAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'description']
-    search_fields = ('type__type',)
-    
+    search_fields = ['type__type', 'description']
 
+
+# Admin for TestType
 class TestTypeAdminSite(admin.ModelAdmin):
-    list_display=['id', 'type', 'description']
-    search_fields = ("type",)
+    list_display = ['id', 'type', 'description']
+    search_fields = ['type', 'description']
 
+
+# Inline for Answers
 class AnswerInline(NestedTabularInline):
     model = Answer
+    extra = 1
 
+
+# Inline for Questions
 class QuestionInline(NestedTabularInline):
     model = Question
-    inlines = [
-        AnswerInline,
-    ]
+    inlines = [AnswerInline]
+    extra = 1
+
+
+# Inline for TestResultDetail
 class ResultDetailInline(NestedTabularInline):
     model = TestResultDetail
+    extra = 0
 
+
+# Admin for PsychometricTest
 @admin.register(PsychometricTest)
 class PsychometricTestAdmin(NestedModelAdmin):
     inlines = [QuestionInline]
-    search_fields = ('name',)
+    list_display = ['id', 'name', 'intro']
+    search_fields = ['name', 'intro']
 
+
+# Admin for TestResult
 @admin.register(TestResult)
 class TestResultAdmin(NestedModelAdmin):
     inlines = [ResultDetailInline]
-    search_fields = ("user__full_name",)
+    list_display = ['id', 'user', 'test', 'score']
+    search_fields = ['user__full_name', 'test__name', 'score']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -55,4 +76,5 @@ class TestResultAdmin(NestedModelAdmin):
         return qs
 
 
-admin.site.register(TestType,TestTypeAdminSite)
+# Admin for TestType
+admin.site.register(TestType, TestTypeAdminSite)

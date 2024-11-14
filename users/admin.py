@@ -1,16 +1,17 @@
 from django.contrib import admin
 from .models import Student, School, User, Counselor
-from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
 from .forms import UserCreationForm, UserChangeForm
 
 class StudentAdminDisplay(admin.ModelAdmin):
     list_display = ['__str__', 'firstname_and_lastname', 'school', 'dob', 'profile_image', 'cv_completed']
-    search_fields = ("full_name",)
+    search_fields = (
+        "full_name", "first_name", "last_name", "school",
+        "city", "country", "address", "eircode", "number"
+    )
 
     def firstname_and_lastname(self, obj):
-        return "%s %s" % (obj.first_name, obj.last_name)
+        return f"{obj.first_name} {obj.last_name}"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -38,14 +39,14 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2', 'username', 'is_counselor'),
         }),
     )
-    search_fields = ('email',)
+    search_fields = ('email', 'username',)
     ordering = ('email',)
     filter_horizontal = ('groups', 'user_permissions')
 
 
 class CounselorAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'school']
-    search_fields = ['user__email', 'school__school']
+    search_fields = ['user__email', 'user__username', 'school__school']
     list_filter = ['school']
 
     def get_form(self, request, obj=None, **kwargs):
@@ -55,8 +56,12 @@ class CounselorAdmin(admin.ModelAdmin):
         return form
 
 
-admin.site.register(Counselor, CounselorAdmin)
-admin.site.register(Student,StudentAdminDisplay)
-admin.site.register(School)
-admin.site.register(User, UserAdmin)
+class SchoolAdmin(admin.ModelAdmin):
+    list_display = ['school', 'county', 'category']
+    search_fields = ['school', 'county', 'category']
 
+
+admin.site.register(Counselor, CounselorAdmin)
+admin.site.register(Student, StudentAdminDisplay)
+admin.site.register(School, SchoolAdmin)
+admin.site.register(User, UserAdmin)

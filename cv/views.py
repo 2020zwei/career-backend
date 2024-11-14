@@ -664,7 +664,7 @@ class GeneratePDF(RetrieveAPIView):
             #   open(temp_name + cv_template, "w").write(render_to_string('cv.html',context))
             rendered_template = render_to_string('cv.html', context)
             open(temp_name + cv_template, "w").write(rendered_template)
-            HTML(temp_name + cv_template).write_pdf(str("cv")+'.pdf')
+            HTML(temp_name + cv_template).write_pdf(str("cv")+'.p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df')
             file_location = f'{"cv"}.pdf'
             with open(file_location, 'rb') as f:
                 file_data = f.read()
