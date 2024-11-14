@@ -2,6 +2,7 @@ import os
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.mail import EmailMessage
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView,RetrieveUpdateDestroyAPIView,ListAPIView,RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
@@ -967,6 +968,7 @@ class GenerateAndSendDOCX(APIView):
             # Fetch user details
             full_name = user_obj.full_name or "Unnamed User"
             number = cv_obj.number or "Phone No."
+            city = cv_obj.city or "City"
 
             # Generate DOCX file
             doc = Document()
@@ -978,7 +980,9 @@ class GenerateAndSendDOCX(APIView):
             name.runs[0].font.color.rgb = RGBColor(0, 0, 0)
 
             # Add contact info
-            doc.add_paragraph(f'{cv_obj.email} - {number} - {cv_obj.address or ""} - {cv_obj.eircode or ""} - {cv_obj.city or ""}')
+            contact_info = doc.add_paragraph(
+                f'{cv_obj.email} - {number} - {cv_obj.address or ""} - {cv_obj.eircode or ""} - {city}')
+            contact_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
             doc.add_paragraph('_' * 100)
 
             # Personal statement
