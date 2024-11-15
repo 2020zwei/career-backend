@@ -821,7 +821,7 @@ class GenerateDOCX(CreateAPIView):
             name.alignment = 1
             name.runs[0].font.size = Pt(32)
             name.runs[0].font.color.rgb = RGBColor(0, 0, 0)
-            doc.add_paragraph(f'{cv_obj.email} - {number} - {cv_obj.address} - {cv_obj.eircode}')
+            doc.add_paragraph(f'{cv_obj.email} - {number} - {cv_obj.address} - {cv_obj.eircode} - {cv_obj.city}')
             doc.add_paragraph('_' * 100)
 
             doc.add_heading('PERSONAL STATEMENT').runs[0].font.color.rgb = RGBColor(0, 0, 0)
