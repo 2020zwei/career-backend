@@ -35,7 +35,12 @@ urlpatterns = [
     path('education/', include("education.urls")),
     path('choices/', include("choices.urls")),
     path('ai-report/', include("guidance_report.urls")),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # uncomment this line if you want to test in chrome
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')), # uncomment this line if you want to test in chrome,
+    path('diary/', include('diary.urls'))
+
+
+  
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = "My Career Guidance"

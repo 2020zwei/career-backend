@@ -55,6 +55,9 @@ INSTALLED_APPS = [
     'choices',
     'corsheaders',
     'guidance_report',
+    'diary',
+    'django_extensions',
+
 ]
 
 MIDDLEWARE = [
