@@ -9,9 +9,7 @@ class WorkExperienceQuestionViewSet(viewsets.ViewSet):
     Handles grouped GET and POST requests for WorkExperienceQuestion.
     """
     def list(self, request):
-        """
-        Retrieve questions and answers grouped by day.
-        """
+    
         day = request.query_params.get('day')
         if day and day not in dict(WorkExperienceQuestion.DAY_CHOICES).keys():
             raise ValidationError(
@@ -40,11 +38,16 @@ class WorkExperienceQuestionViewSet(viewsets.ViewSet):
         return Response(list(grouped_data.values()), status=status.HTTP_200_OK)
 
     def create(self, request):
-        """
-        Handle grouped creation of questions and answers.
-        """
-        serializer = NestedWorkExperienceSerializer(data=request.data, many=True)
+       
+        data = request.data
+
+
+        if isinstance(data, dict):
+            data = [data]
+
+        serializer = NestedWorkExperienceSerializer(data=data, many=True)
         serializer.is_valid(raise_exception=True)
+
         for entry in serializer.validated_data:
             day = entry["day"]
             date = entry["date"]
@@ -61,4 +64,6 @@ class WorkExperienceQuestionViewSet(viewsets.ViewSet):
                     answer=qa["answer"]
                 ) for qa in questions_and_answers
             ])
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
