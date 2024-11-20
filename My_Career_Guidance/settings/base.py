@@ -56,8 +56,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'guidance_report',
     'diary',
-    'django_extensions',
-
 ]
 
 MIDDLEWARE = [
