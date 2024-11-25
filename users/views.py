@@ -16,6 +16,8 @@ import os
 from .stripe import Stripe
 import stripe
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 
 stripeObject = Stripe()
@@ -40,13 +42,14 @@ class CustomTokenObtainPairView(TokenViewBase):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+
 class SignupUser(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
         with transaction.atomic():
             user_serializer_obj  = UserSignUpSerializer(data=request.data)
-            
+
             try:
                 email = request.data.get('email')
                 user_serializer_obj.validate_email(email)
@@ -57,22 +60,17 @@ class SignupUser(APIView):
             try:
                 user_serializer_obj.is_valid(raise_exception=True)
             except ValidationError as e:
-                # Check if the error message contains "user with this email already exists."
                 if "user with this email already exists" in str(e):
                     return Response({"message": "The email address provided is already registered. Please use a different email address or log in with your existing account."}, status=400)
 
             user_obj = user_serializer_obj.save()
             school_name = request.data.get('school')
-            # profile_image = request.data.get('profile_image') or settings.DEFAULT_PROFILE_IMAGE_PATH
+            
             try:
                 school_obj = School.objects.get(school=school_name)
             except School.DoesNotExist:
-                # Create a new School object if it doesn't exist
-                school_data = {
-                    'school': school_name,
-                }
+                school_data = {'school': school_name}
 
-            # Create the Student object
             full_name = request.data.get('full_name')
             if full_name:
                 words = full_name.split()
@@ -82,6 +80,7 @@ class SignupUser(APIView):
                 else:
                     first_name = ""
                     last_name = ""
+
             student_data = {
                 'first_name': first_name,
                 'last_name': last_name,
@@ -91,26 +90,25 @@ class SignupUser(APIView):
                 'user': user_obj.pk,
                 'profile_image': request.data.get('profile_image'),
             }
+
             student_serializer_obj = StudentSignUpSerializer(data=student_data)
             if student_serializer_obj.is_valid():
                 student_serializer_obj.save()
+
                 if school_obj.category == "Gold" or school_obj.category == "Platinum":
                     student = Student.objects.get(user=user_obj)
                     student.is_subscribed = True
                     student.save()
-                    print("workinggg")
-            else:
-                e = student_serializer_obj.errors
-                print(e)
-                # Handle the case when data is not valid, similar to how you handled it for user_serializer_obj
-                if "Ensure that there are no more than 15 digits in total." in str(e):
-                    return Response({"message": "Ensure that there are no more than 15 digits in total."}, status=400)
-                else:
-                    return Response({"message": str(e)}, status=400)
-            print("doneeeee")
+            
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user_obj)
+            access_token = str(refresh.access_token)
+
             response_template = get_response_template()
             response_template['data'] = student_serializer_obj.data
+            response_template['access_token'] = access_token  # Include the access token in the response
             return Response(data=response_template)
+
 
 
 class UserView(RetrieveAPIView):
