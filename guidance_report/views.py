@@ -287,19 +287,24 @@ class GenerateGuidanceReportGPT(APIView):
 
             # Predicted Points and Subjects
             if request_data.get('predicted_points_and_subjects') == 'Yes':
+                # Fetch UserPoints for the student
                 user_points = UserPoints.objects.filter(user=student).first()
                 if user_points:
                     prompt += f"- Predicted Points: {user_points.total_points}\n"
-                    # Add subjects if available
-                    subjects = SubjectGrade.objects.filter(user=student)
+
+                    # Fetch related grades through the grades ManyToManyField
+                    subjects = user_points.grades.all()
                     if subjects.exists():
-                        subject_list = ", ".join([subject.name for subject in subjects])
+                        subject_list = ", ".join([subject.subject.name for subject in subjects])  # Access subject names
                         prompt += f"- Subjects: {subject_list}\n"
+                    else:
+                        prompt += "- Subjects: Not available\n"
                 else:
                     prompt += "- Predicted Points and Subjects: Not available\n"
 
             # My Stated Goals
             if request_data.get('my_stated_goals') == 'Yes':
+                # Fetch goals for the student
                 goals = Goal.objects.filter(user=student)
                 if goals.exists():
                     goal_list = "\n".join([f"  - {goal.goal}: {goal.description}" for goal in goals])
