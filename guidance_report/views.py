@@ -287,13 +287,13 @@ class GenerateGuidanceReportGPT(APIView):
 
             # Predicted Points and Subjects
             if request_data.get('predicted_points_and_subjects') == 'Yes':
-                user_points = UserPoints.objects.filter(user=student).first()
+                user_points = UserPoints.objects.filter(user=student.user).first()
                 if user_points:
                     prompt += f"- Predicted Points: {user_points.total_points}\n"
                     # Add subjects if available
-                    subjects = SubjectGrade.objects.filter(user=student)
+                    subjects = user_points.grades.all()  # Access related SubjectGrade entries
                     if subjects.exists():
-                        subject_list = ", ".join([subject.name for subject in subjects])
+                        subject_list = ", ".join([subject.subject.name for subject in subjects])
                         prompt += f"- Subjects: {subject_list}\n"
                 else:
                     prompt += "- Predicted Points and Subjects: Not available\n"
