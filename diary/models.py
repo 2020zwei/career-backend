@@ -3,16 +3,16 @@ from users.models import Student  # Ensure this import is correct
 
 class WorkExperienceQuestion(models.Model):
     DAY_CHOICES = [
-        ('Day 1', 'Day 1'),
-        ('Day 2', 'Day 2'),
-        ('Day 3', 'Day 3'),
-        ('Day 4', 'Day 4'),
-        ('Day 5', 'Day 5'),
-        ('Day 6', 'Day 6'),
-        ('Day 7', 'Day 7'),
-        ('Day 8', 'Day 8'),
-        ('Day 9', 'Day 9'),
-        ('Day 10', 'Day 10'),
+        ('Day1', 'Day1'),
+        ('Day2', 'Day2'),
+        ('Day3', 'Day3'),
+        ('Day4', 'Day4'),
+        ('Day5', 'Day5'),
+        ('Day6', 'Day6'),
+        ('Day7', 'Day7'),
+        ('Day8', 'Day8'),
+        ('Day9', 'Day9'),
+        ('Day10', 'Day10'),
     ]
     
     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=False)

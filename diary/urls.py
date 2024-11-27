@@ -7,4 +7,5 @@ router.register(r'api/work-experience-questions', WorkExperienceQuestionViewSet,
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('api/work-experience-questions/update-day/', WorkExperienceQuestionViewSet.as_view({'put': 'update_day'}), name='update-day'),
 ]
