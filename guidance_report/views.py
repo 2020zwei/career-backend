@@ -223,6 +223,7 @@ class GenerateGuidanceReportGPT(APIView):
             user = self.request.user
             try:
                 student = Student.objects.get(user=user)
+                print("student: ", student)
             except Student.DoesNotExist:
                 return Response({"success": False, "message": "User does not exist or is not a student"},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -255,8 +256,6 @@ class GenerateGuidanceReportGPT(APIView):
                 "Student Data starts below this line:\n"
                 "--------------------------------\n"
             )
-
-
 
             # Retrieve the request data
             request_data = request.data
@@ -295,8 +294,11 @@ class GenerateGuidanceReportGPT(APIView):
                     # Fetch related grades through the grades ManyToManyField
                     subjects = user_points.grades.all()
                     if subjects.exists():
-                        subject_list = ", ".join([subject.subject.name for subject in subjects])  # Access subject names
-                        prompt += f"- Subjects: {subject_list}\n"
+                        subject_list = "\n".join([
+                            f"  - Subject: {subject.subject.name}, Grade: {subject.grade}, Points: {subject.point}, Level: {subject.level.subjectlevel}"
+                            for subject in subjects
+                        ])
+                        prompt += f"- Subjects:\n{subject_list}\n"
                     else:
                         prompt += "- Subjects: Not available\n"
                 else:
@@ -340,7 +342,10 @@ class GenerateGuidanceReportGPT(APIView):
             if request_data.get('work_experience') == 'Yes':
                 work_experience = Experience.objects.filter(user=student)
                 if work_experience.exists():
-                    experience_list = "\n".join([f"  - {exp.job_title} at {exp.company}" for exp in work_experience])
+                    experience_list = "\n".join([
+                        f"  - Job Title: {exp.job_title}, Company: {exp.company}, City: {exp.city}, Country: {exp.country}, Description: {exp.description}"
+                        for exp in work_experience
+                    ])
                     prompt += f"- Work Experience:\n{experience_list}\n"
                 else:
                     prompt += "- Work Experience: Not available\n"
@@ -349,8 +354,8 @@ class GenerateGuidanceReportGPT(APIView):
             if request_data.get('skills') == 'Yes':
                 skills = Skills.objects.filter(user=student)
                 if skills.exists():
-                    skills_list = ", ".join([skill.skill_dropdown for skill in skills])
-                    prompt += f"- Skills: {skills_list}\n"
+                    skills_list = "\n".join([f"  - {skill.skill_dropdown}: {skill.description}" for skill in skills])
+                    prompt += f"- Skills:\n{skills_list}\n"
                 else:
                     prompt += "- Skills: Not available\n"
 
@@ -393,16 +398,20 @@ class GenerateGuidanceReportGPT(APIView):
             if education_options:
                 # Prepare the education mappings
                 education_mappings = {
-                    "level 8": Level8.objects.filter(choice__user=student),
-                    "level 6/7": Level6.objects.filter(choice__user=student),
-                    "level 5(plc)": Level5.objects.filter(choice__user=student),
-                    "apprentices": Apprentice.objects.filter(choice__user=student)
+                    "level 8": Level8,
+                    "level 6/7": Level6,
+                    "level 5(plc)": Level5,
+                    "apprentices": Apprentice
                 }
                 for key in education_options:
                     if key in education_mappings:
-                        entries = education_mappings[key]
+                        entries = education_mappings[key].objects.filter(choice__user=student)
                         if entries.exists():
-                            education_list = "\n".join([f"  - {entry}" for entry in entries])
+                            # Build the education list with detailed information
+                            education_list = "\n".join([
+                                f"  - Code: {entry.code}, Title: {entry.title}, College: {entry.college}, Points: {getattr(entry, 'point', 'N/A')}, Info: {entry.course_information}"
+                                for entry in entries
+                            ])
                             prompt += f"- Education Option - {key.title()}:\n{education_list}\n"
                         else:
                             prompt += f"- Education Option - {key.title()}: Not available\n"
