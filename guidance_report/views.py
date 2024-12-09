@@ -1,3 +1,5 @@
+from html import unescape
+
 from django.http import HttpResponse
 from .utils import generate_gpt_response
 from rest_framework.views import APIView
@@ -229,7 +231,7 @@ class GenerateGuidanceReportGPT(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
             prompt = (
-                "You are an educational counselor tasked with creating a career guidance report for a second-level student in Ireland. "
+                "You are an educational counselor tasked with creating a career guidance report for the student. "
                 "The report must follow this structured format:\n\n"
                 "<h1>Career Guidance Report</h1>\n\n"
                 "<h2>Introduction</h2>\n"
@@ -260,11 +262,11 @@ class GenerateGuidanceReportGPT(APIView):
                 "</ul>\n\n"
                 "<h2>Conclusion</h2>\n"
                 "<p>Provide an encouraging summary highlighting the student's strengths and the alignment of their goals with their potential career paths.</p>\n\n"
-                "**Output Requirements:**\n"
-                "- Use proper HTML tags for headings, paragraphs, and lists.\n"
-                "- Format data into readable sections with lists, tables, or structured paragraphs.\n"
-                "- Ensure the language is professional, encouraging, and tailored to the student's strengths.\n"
-                "- Do not include placeholder text or any explanations outside the report structure.\n"
+                "**Important Instructions:**\n"
+                "- Output **only** valid and properly formatted raw HTML. Do not include any code blocks or markdown formatting.\n"
+                "- Use standard HTML tags for headings, paragraphs, and lists.\n"
+                "- Ensure there are no escape characters (e.g., \\n) in the output.\n"
+                "- Do **not** include explanations, comments, or any text outside the HTML structure.\n"
             )
 
             # Retrieve the request data
@@ -432,7 +434,16 @@ class GenerateGuidanceReportGPT(APIView):
             # Generate the GPT response
             gpt_response = generate_gpt_response(prompt)
 
-            response = {"success": True, "message": "GPT report generated successfully", "gpt_response": gpt_response}
+            # Sanitize response: Remove any backticks or markdown artifacts
+            if gpt_response.startswith("```html"):
+                gpt_response = gpt_response.strip("```html").strip("```")
+            gpt_response = unescape(gpt_response)  # Handle any escaped HTML entities like `&lt;` or `&amp;`
+
+            response = {
+                "success": True,
+                "message": "GPT report generated successfully",
+                "gpt_response": gpt_response
+            }
 
             return Response(response, status=status.HTTP_200_OK)
 
