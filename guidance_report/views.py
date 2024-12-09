@@ -1,3 +1,5 @@
+from html import unescape
+
 from django.http import HttpResponse
 from .utils import generate_gpt_response
 from rest_framework.views import APIView
