@@ -14,7 +14,7 @@ from cv.models import Skills, Experience, Interests, CV, Qualities
 from choices.models import Level5, Level6, Level8, Apprentice
 from calculator.models import UserPoints, SubjectGrade
 from goals.models import Goal
-from psychometric.models import TestResult
+from psychometric.models import TestResult, TestResultDetail, PsychometricTest
 from django.forms.models import model_to_dict
 from django.db.models import QuerySet
 
@@ -217,236 +217,185 @@ class GeneratePDFReport(APIView):
             return Response({'message': "All steps of Guidance Report should be completed . " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
 class GenerateGuidanceReportGPT(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        user = request.user
         try:
-            user = self.request.user
+            # Fetch the student record
             try:
                 student = Student.objects.get(user=user)
-                print("student: ", student)
             except Student.DoesNotExist:
-                return Response({"success": False, "message": "User does not exist or is not a student"},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response({"success": False, "message": "Student record not found."}, status=404)
 
-            prompt = (
-                "You are an educational counselor tasked with creating a career guidance report for the student. "
-                "The report must follow this structured format:\n\n"
-                "<h1>Career Guidance Report</h1>\n\n"
-                "<h2>Introduction</h2>\n"
-                "<p>Provide a brief introduction with personal details, including name, age, and educational stage.</p>\n\n"
-                "<h2>Self-Assessment Results</h2>\n"
-                "<p>Summarize the student's results from the Multiple Intelligences Test, Occupational Values Assessment, and Occupational Interest Assessment.</p>\n"
-                "<ul>\n"
-                "  <li><strong>Multiple Intelligences:</strong> List top three intelligences with descriptions.</li>\n"
-                "  <li><strong>Occupational Interests:</strong> Highlight top three interests and their implications.</li>\n"
-                "  <li><strong>Occupational Values:</strong> Outline top three values with explanations.</li>\n"
-                "</ul>\n"
-                "<p>Explain what these results mean for the student's strengths and potential career paths. Suggest five compatible careers with brief descriptions.</p>\n\n"
-                "<h2>Suggested Study Techniques and Advice</h2>\n"
-                "<p>Provide study techniques tailored to the student's strengths based on the Multiple Intelligences scores.</p>\n\n"
-                "<h2>Academic Achievement</h2>\n"
-                "<p>Summarize the CAO points and highlight strong subjects. Suggest relevant courses based on academic performance.</p>\n\n"
-                "<h2>Career Exploration</h2>\n"
-                "<p>Offer practical advice for exploring careers further, such as shadowing, volunteering, and attending open days.</p>\n\n"
-                "<h2>Goals of Student</h2>\n"
-                "<p>Outline short-term (next three months) and long-term (next year) goals with actionable steps.</p>\n\n"
-                "<h2>Compatible Courses</h2>\n"
-                "<ul>\n"
-                "  <li>10 Level 8 Courses</li>\n"
-                "  <li>10 Level 6/7 Courses</li>\n"
-                "  <li>5 Apprenticeships</li>\n"
-                "  <li>3 QQI Level 5 Courses</li>\n"
-                "  <li>Other non-education-based ideas</li>\n"
-                "</ul>\n\n"
-                "<h2>Conclusion</h2>\n"
-                "<p>Provide an encouraging summary highlighting the student's strengths and the alignment of their goals with their potential career paths.</p>\n\n"
-                "**Important Instructions:**\n"
-                "- Output **only** valid and properly formatted raw HTML. Do not include any code blocks or markdown formatting.\n"
-                "- Use standard HTML tags for headings, paragraphs, and lists.\n"
-                "- Ensure there are no escape characters (e.g., \\n) in the output.\n"
-                "- Do **not** include explanations, comments, or any text outside the HTML structure.\n"
-            )
+            # Fetch the CV record for the student
+            try:
+                cv = CV.objects.get(user=student)
+            except CV.DoesNotExist:
+                cv = None
 
-            # Retrieve the request data
-            request_data = request.data
+            # Gather Personal Information
+            personal_info = {
+                "first_name": student.first_name or "Not provided",
+                "last_name": student.last_name or "Not provided",
+                "full_name": student.full_name or "Not provided",
+                "city": cv.city if cv else "Not provided",
+                "county": cv.town if cv else "Not provided",
+                "eircode": cv.eircode if cv else "Not provided",
+                "school": student.school or "Not provided",
+            }
 
-            student_data = serialize_students_data(student)
-            prompt += f"Student's Data: {student_data}\n"
+            # Parse request body
+            data = request.data
 
-            # Check if this is a feedback-driven request
-            feedback = request_data.get("feedback", None)
-            previous_response = request_data.get("previous_response", None)
-
-            if feedback and previous_response:
-                # Append the previous report and feedback to the prompt
-                prompt += (
-                    "This is a revision request. Below is the previously generated report and the feedback provided by the user.\n\n"
-                    "Previously generated report:\n"
-                    "--------------------------------\n"
-                    f"{previous_response}\n\n"
-                    "Feedback from the user:\n"
-                    f"- {feedback}\n\n"
-                    "Please revise the report based on this feedback while retaining the original structure and addressing all feedback."
+            # Helper function to structure test results
+            def structure_test_results(test_name):
+                test_obj = PsychometricTest.objects.filter(name__iexact=test_name).first()
+                if not test_obj:
+                    return None
+                test_result = TestResult.objects.filter(user=student, test=test_obj).first()
+                if not test_result:
+                    return None
+                question_scores = TestResultDetail.objects.filter(result=test_result).values(
+                    "question__type__type", "answer__weightage"
                 )
-            else:
-                # Generate the initial report
-                prompt += (
-                    "This is an initial report generation request. Use the provided student data to generate a detailed and personalized report.\n\n"
-                )
+                breakdown = {}
+                for detail in question_scores:
+                    question_type = detail["question__type__type"]
+                    weightage = detail["answer__weightage"]
+                    breakdown[question_type] = breakdown.get(question_type, 0) + weightage
+                return {
+                    "score": test_result.score,
+                    "total_score": sum(breakdown.values()),
+                    "details": [{"category": question_type, "score": score} for question_type, score in breakdown.items()],
+                }
 
-            # Predicted Points and Subjects
-            if request_data.get('predicted_points_and_subjects') == 'Yes':
-                # Fetch UserPoints for the student
+            # Gather Self-Assessment Results
+            assessment_results = {}
+            if data.get("mis") == "Yes":
+                assessment_results["multiple_intelligence"] = structure_test_results("Multiple Intelligence")
+            if data.get("values_assessment") == "Yes":
+                assessment_results["values"] = structure_test_results("Occupational Values Assesment")
+            if data.get("interest_assessment") == "Yes":
+                assessment_results["interest"] = structure_test_results("Occupational Interest Assesment")
+
+            # Gather CV Data
+            cv_data = {}
+            if cv:
+                if data.get("personal_statement") == "Yes":
+                    cv_data["personal_statement"] = cv.objective or "Not provided"
+                if data.get("work_experience") == "Yes":
+                    cv_data["work_experience"] = list(
+                        Experience.objects.filter(user=student).values(
+                            "job_title", "company", "city", "country", "description", "startdate", "enddate", "is_current_work"
+                        )
+                    )
+                if data.get("skills") == "Yes":
+                    cv_data["skills"] = list(Skills.objects.filter(user=student).values_list("description", flat=True))
+                if data.get("interest") == "Yes":
+                    cv_data["interests"] = list(Interests.objects.filter(user=student).values_list("interests", flat=True))
+                    cv_data["qualities"] = list(Qualities.objects.filter(user=student).values_list("description", flat=True))
+
+            # Gather Predicted Points and Subjects
+            predicted_points = None
+            if data.get("predicted_points_and_subjects") == "Yes":
                 user_points = UserPoints.objects.filter(user=student).first()
                 if user_points:
-                    prompt += f"- Predicted Points: {user_points.total_points}\n"
+                    predicted_points = {
+                        "total_points": user_points.total_points,
+                        "grades": list(user_points.grades.values("subject__name", "grade", "point")),
+                    }
 
-                    # Fetch related grades through the grades ManyToManyField
-                    subjects = user_points.grades.all()
-                    if subjects.exists():
-                        subject_list = "\n".join([
-                            f"  - Subject: {subject.subject.name}, Grade: {subject.grade}, Points: {subject.point}, Level: {subject.level.subjectlevel}"
-                            for subject in subjects
-                        ])
-                        prompt += f"- Subjects:\n{subject_list}\n"
-                    else:
-                        prompt += "- Subjects: Not available\n"
-                else:
-                    prompt += "- Predicted Points and Subjects: Not available\n"
+            # Gather Goals
+            goals = None
+            if data.get("my_stated_goals") == "Yes":
+                goals = list(
+                    Goal.objects.filter(user=student).values("proffession", "goal", "description", "realistic", "countdown")
+                )
 
-            # My Stated Goals
-            if request_data.get('my_stated_goals') == 'Yes':
-                # Fetch goals for the student
-                goals = Goal.objects.filter(user=student)
-                if goals.exists():
-                    goal_list = "\n".join([f"  - {goal.goal}: {goal.description}" for goal in goals])
-                    prompt += f"- Goals:\n{goal_list}\n"
-                else:
-                    prompt += "- Goals: Not available\n"
+            # Gather Education Options
+            education_options = {}
+            if data.get("education_options"):
+                options = data.get("education_options")
+                if "level 5(plc)" in options:
+                    education_options["level_5"] = list(Level5.objects.filter(choice__user=student).values())
+                if "level 6/7" in options:
+                    education_options["level_6_7"] = list(Level6.objects.filter(choice__user=student).values())
+                if "level 8" in options:
+                    education_options["level_8"] = list(Level8.objects.filter(choice__user=student).values())
+                if "apprenticeship" in options:
+                    education_options["apprenticeship"] = list(Apprentice.objects.filter(choice__user=student).values())
 
-            # Multiple Intelligence Score
-            if request_data.get('mis') == 'Yes':
-                mi_score = TestResult.objects.filter(user=student, test__name='Multiple Intelligence').first()
-                if mi_score:
-                    prompt += f"- Multiple Intelligence Score: {mi_score.score}\n"
-                else:
-                    prompt += "- Multiple Intelligence Score: Not available\n"
+            # Combine all gathered data
+            response_data = {
+                "personal_info": personal_info,
+                "self_assessment_results": assessment_results,
+                "cv_data": cv_data,
+                "predicted_points": predicted_points,
+                "goals": goals,
+                "education_options": education_options,
+            }
 
-            # Address
-            if request_data.get('address') == 'Yes':
-                cv = CV.objects.filter(user=student).first()
-                if cv and cv.address and cv.city and cv.town:
-                    prompt += f"- Address: {cv.address}, {cv.city}, {cv.town}\n"
-                else:
-                    prompt += "- Address: Not available\n"
+            # Construct a generic prompt
+            prompt = f"""
+            You are creating a career guidance report for a student.
 
-            # Personal Statement
-            if request_data.get('personal_statement') == 'Yes':
-                cv = CV.objects.filter(user=student).first()
-                if cv and cv.objective:
-                    prompt += f"- Personal Statement: {cv.objective}\n"
-                else:
-                    prompt += "- Personal Statement: Not available\n"
+            The final output should be a fully structured HTML page with the following sections:
 
-            # Work Experience
-            if request_data.get('work_experience') == 'Yes':
-                work_experience = Experience.objects.filter(user=student)
-                if work_experience.exists():
-                    experience_list = "\n".join([
-                        f"  - Job Title: {exp.job_title}, Company: {exp.company}, City: {exp.city}, Country: {exp.country}, Description: {exp.description}"
-                        for exp in work_experience
-                    ])
-                    prompt += f"- Work Experience:\n{experience_list}\n"
-                else:
-                    prompt += "- Work Experience: Not available\n"
+            1. Introduction:
+               - Include the student's name, approximate age (if not given, you may estimate based on educational stage), 
+                 and educational stage or current context (e.g., high school student, college student).
+               - Provide a brief introduction to the purpose of the report.
 
-            # Skills
-            if request_data.get('skills') == 'Yes':
-                skills = Skills.objects.filter(user=student)
-                if skills.exists():
-                    skills_list = "\n".join([f"  - {skill.skill_dropdown}: {skill.description}" for skill in skills])
-                    prompt += f"- Skills:\n{skills_list}\n"
-                else:
-                    prompt += "- Skills: Not available\n"
+            2. Self-Assessment Results:
+               - Overview the student's Multiple Intelligence scores, Occupational Values, and Occupational Interests if available.
+               - Highlight the top three skills and top three qualities from their CV data.
+               - Discuss what these strengths may indicate about suitable career paths.
+               - Suggest 5 possible future careers that align with these results.
 
-            # Qualities
-            if request_data.get('qualities') == 'Yes':
-                qualities = Qualities.objects.filter(user=student)
-                if qualities.exists():
-                    qualities_list = ", ".join([quality.quality_dropdown for quality in qualities])
-                    prompt += f"- Qualities: {qualities_list}\n"
-                else:
-                    prompt += "- Qualities: Not available\n"
+            3. Suggested Study Techniques and Advice:
+               - Provide study techniques tailored to the student's learning style based on their multiple intelligences.
 
-            # Interests
-            if request_data.get('interest') == 'Yes':
-                interests = Interests.objects.filter(user=student)
-                if interests.exists():
-                    interests_list = ", ".join([interest.interests for interest in interests])
-                    prompt += f"- Interests: {interests_list}\n"
-                else:
-                    prompt += "- Interests: Not available\n"
+            4. Academic Achievement:
+               - Use the predicted points/grades/achievements to comment on courses or areas of study that would suit their strengths.
 
-            # Values Assessment
-            if request_data.get('values_assessment') == 'Yes':
-                values_assessment = TestResult.objects.filter(user=student, test__name='Values Assessment').first()
-                if values_assessment:
-                    prompt += f"- Values Assessment Score: {values_assessment.score}\n"
-                else:
-                    prompt += "- Values Assessment: Not available\n"
+            5. Career Exploration:
+               - Offer advice on how the student can further explore these potential careers (e.g. shadowing, volunteering, online courses).
 
-            # Interest Assessment
-            if request_data.get('interest_assessment') == 'Yes':
-                interest_assessment = TestResult.objects.filter(user=student, test__name='Interest Assessment').first()
-                if interest_assessment:
-                    prompt += f"- Interest Assessment Score: {interest_assessment.score}\n"
-                else:
-                    prompt += "- Interest Assessment: Not available\n"
+            6. Goals of Student:
+               - Outline short-term (3 months) and long-term (1 year) goals, referencing the student's stated goals if provided.
 
-            # Education Options
-            education_options = request_data.get('education_options', [])
-            if education_options:
-                # Prepare the education mappings
-                education_mappings = {
-                    "level 8": Level8,
-                    "level 6/7": Level6,
-                    "level 5(plc)": Level5,
-                    "apprentices": Apprentice
-                }
-                for key in education_options:
-                    if key in education_mappings:
-                        entries = education_mappings[key].objects.filter(choice__user=student)
-                        if entries.exists():
-                            # Build the education list with detailed information
-                            education_list = "\n".join([
-                                f"  - Code: {entry.code}, Title: {entry.title}, College: {entry.college}, Points: {getattr(entry, 'point', 'N/A')}, Info: {entry.course_information}"
-                                for entry in entries
-                            ])
-                            prompt += f"- Education Option - {key.title()}:\n{education_list}\n"
-                        else:
-                            prompt += f"- Education Option - {key.title()}: Not available\n"
+            7. Compatible Courses:
+               - List 10 compatible courses at one educational level (e.g., Level 8) if provided.
+               - List 10 courses at another educational level (e.g., Level 6/7) if provided.
+               - List 5 apprenticeships (if applicable).
+               - List 3 QQI Level 5 courses (if applicable).
+               - Provide a few non-education-based options for personal or professional development.
 
-            # Add additional instructions to the prompt
-            prompt += "\n\nPlease write the report in a formal and professional tone, using clear and concise language. Make sure to reference the student's specific data throughout the report, providing personalized advice and recommendations."
+            8. Conclusion:
+               - Summarize the student's strengths, potential career areas, and encourage next steps.
+
+            Use the data provided below to inform your report. Only use what's relevant. If some data isn't available, you can skip that part.
+            The final output should be in valid HTML (no Markdown, no code fences).
+            Just produce the HTML document, including <html> and <body> tags.
+
+            Data provided:
+            Personal Info: {response_data['personal_info']}
+            Self-Assessment Results: {response_data['self_assessment_results']}
+            CV Data: {response_data['cv_data']}
+            Predicted Points: {response_data['predicted_points']}
+            Goals: {response_data['goals']}
+            Education Options: {response_data['education_options']}
+            """
 
             # Generate the GPT response
             gpt_response = generate_gpt_response(prompt)
 
-            # Sanitize response: Remove any backticks or markdown artifacts
-            if gpt_response.startswith("```html"):
-                gpt_response = gpt_response.strip("```html").strip("```")
-            gpt_response = unescape(gpt_response)  # Handle any escaped HTML entities like `&lt;` or `&amp;`
-
-            response = {
-                "success": True,
-                "message": "GPT report generated successfully",
-                "gpt_response": gpt_response
-            }
-
-            return Response(response, status=status.HTTP_200_OK)
+            # Return the response
+            return Response({"success": True, "message": gpt_response}, status=200)
 
         except Exception as e:
-            return Response({"success": False, "message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"success": False, "message": str(e)}, status=400)
