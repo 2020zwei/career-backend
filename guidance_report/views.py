@@ -355,76 +355,152 @@ class GenerateGuidanceReportGPT(APIView):
 			# given.
 			# We also provide the arrays and ask GPT to use them creatively to build a better final HTML report.
 			prompt = f"""
-You are a highly skilled career guidance counselor and HTML designer tasked with creating an improved career guidance 
-report. 
-You have access to the user's data, previous report version, and feedback. Now, you must produce a more engaging, 
-well-structured, visually appealing, and insightful final HTML report.
+			You are an expert career guidance counselor and professional HTML designer. You have access to the user's data, previous report version, and feedback. Your task is to produce a final HTML report following a strict predefined structure.
 
-**Instructions & Requirements:**
-- Use the given data (scores, subjects, goals, CV details) to craft a detailed, creative, and user-friendly career 
-guidance report.
-- The output must be a fully-structured HTML document (<html>, <head>, <body>) with styling (CSS inline or in <style> 
-tags) to make it visually appealing. 
-  For example, use headings, color accents, tables for scores, and lists for careers.
-- Incorporate the user's feedback: "{feedback}" (if any), and improve upon the "previous_response" (if provided) by 
-enhancing layout, color usage, or adding more depth and clarity.
-- The report should not just restate data but interpret it meaningfully and guide the user with actionable advice.
-- Show creativity in discussing the results, providing study techniques, career suggestions, and next steps. 
-- Use the arrays of scores and grading data provided below to inform the "Self-Assessment Results" and "Academic 
-Achievement" sections.
-- If some data is missing, focus on what's available.
+			DO NOT:
+			- Use Markdown formatting or code fences (no ```).
+			- Include triple backticks anywhere in the output.
 
-**Sections to Include:**
-1. Introduction: Student's name, approximate age or educational stage, purpose of the report.
-2. Self-Assessment Results: 
-   - Display Multiple Intelligence scores, Occupational Interest scores, and Occupational Values scores.
-   - Display Occupational Interest and Values scores from the arrays below.
-   - Highlight top three skills & qualities from CV data.
-   - Discuss what these scores mean and suggest 5 careers compatible with these results.
-3. Suggested Study Techniques and Advice: 
-   - Tailor advice based on the multiple intelligence strengths.
-4. Academic Achievement:
-   - Show subject grades and corresponding percentages from the array below.
-   - Suggest areas of study/courses that align with strongest subjects.
-5. Career Exploration:
-   - Practical steps for exploring suggested careers (shadowing, volunteering, online research).
-6. Goals of Student:
-   - Short-term (3 months) and long-term (1 year) goals and suggestions to achieve them.
-7. Compatible Courses:
-   - Use the education_options data if available to list courses at different levels.
-   - Suggest apprenticeships, QQI Level 5 courses, and non-education activities.
-8. Conclusion:
-   - Summarize the student's strengths, reassure them, and encourage next steps.
+			Your final output must ONLY be valid HTML as described below.
 
-**Data Provided:**
-- Feedback: {feedback}
-- Previous Response (for reference to improve upon): {previous_response}
-- Personal Info: {response_data['personal_info']}
-- Self-Assessment Results: {response_data['self_assessment_results']}
-- CV Data: {response_data['cv_data']}
-- Goals: {response_data['goals']}
-- Predicted Points: {response_data['predicted_points']}
-- Education Options: {response_data['education_options']}
+			***********************
+			REPORT FORMAT AND REQUIREMENTS
+			***********************
+			The final output MUST be a valid, standalone HTML document, structured as follows:
 
-**Scoring & Grading Data:**
-Multiple Intelligence Scores (array of dicts with "score" and "out_of"):
-{multiple_intelligence_scores}
+			<html>
+			  <head>
+			    <title>Career Guidance Report</title>
+			    <style>
+			      /* Include styling here, such as fonts, colors, layout.
+			         Use clean, readable fonts.
+			         Include headings, subtle color accents, and spacing for readability.
+			         Use CSS selectors to style tables, headings, and lists.
+			      */
+			    </style>
+			  </head>
+			  <body>
+			    <header>
+			      <h1>Career Guidance Report</h1>
+			      <h2>Student Name: [Replace with Student's Full Name]</h2>
+			    </header>
 
-Occupational Interest Scores (array of dicts):
-{occupational_interest_scores}
+			    <section id="introduction">
+			      <h3>1. Introduction</h3>
+			      <p>[Provide a brief introduction, referencing the student's approximate age or educational stage and the purpose of the report.]</p>
+			    </section>
 
-Occupational Values Scores (array of dicts):
-{occupational_values_scores}
+			    <section id="self-assessment">
+			      <h3>2. Self-Assessment Results</h3>
+			      <h4>2.1 Multiple Intelligence Scores</h4>
+			      <table>
+			        <!-- Display multiple intelligence scores in a table -->
+			      </table>
+			      <h4>2.2 Occupational Interest Scores</h4>
+			      <table>
+			        <!-- Display occupational interest scores here -->
+			      </table>
+			      <h4>2.3 Occupational Values Scores</h4>
+			      <table>
+			        <!-- Display occupational values scores here -->
+			      </table>
+			      <h4>2.4 Top Skills & Qualities</h4>
+			      <ul>
+			        <!-- Highlight top three skills & qualities from CV data -->
+			      </ul>
+			      <p>[Discuss what these scores mean, interpret them meaningfully, and suggest 5 possible careers compatible with these results.]</p>
+			    </section>
 
-Subject Grades (with percentage ranges):
-{subject_grades}
+			    <section id="study-advice">
+			      <h3>3. Suggested Study Techniques and Advice</h3>
+			      <p>[Tailor advice based on the multiple intelligence strengths. Provide practical, actionable study tips.]</p>
+			    </section>
 
-Create the best possible final HTML report. No Markdown. Just return the final HTML.
-Do not include triple backticks in your response.
-Do not use Markdown formatting or code fences (```).
-Only produce a valid HTML document starting with <html> and ending with </html>.
+			    <section id="academic-achievement">
+			      <h3>4. Academic Achievement</h3>
+			      <table>
+			        <!-- Show subject grades and corresponding percentages -->
+			      </table>
+			      <p>[Discuss the student's strongest subjects and suggest areas of study or courses that align with them.]</p>
+			    </section>
 
-"""
+			    <section id="career-exploration">
+			      <h3>5. Career Exploration</h3>
+			      <p>[Provide practical steps for exploring suggested careers: shadowing, volunteering, online research, etc.]</p>
+			    </section>
+
+			    <section id="goals">
+			      <h3>6. Student's Goals</h3>
+			      <h4>6.1 Short-Term Goals (3 months)</h4>
+			      <ul>
+			        <!-- List short-term goals and suggestions to achieve them -->
+			      </ul>
+			      <h4>6.2 Long-Term Goals (1 year)</h4>
+			      <ul>
+			        <!-- List long-term goals and suggestions to achieve them -->
+			      </ul>
+			    </section>
+
+			    <section id="education-options">
+			      <h3>7. Compatible Courses and Opportunities</h3>
+			      <h4>7.1 QQI Level 5 (PLC) Options</h4>
+			      <ul>
+			        <!-- List relevant Level 5 courses if available -->
+			      </ul>
+			      <h4>7.2 Level 6/7 Courses</h4>
+			      <ul>
+			        <!-- List relevant Level 6/7 courses if available -->
+			      </ul>
+			      <h4>7.3 Level 8 Courses</h4>
+			      <ul>
+			        <!-- List relevant Level 8 courses if available -->
+			      </ul>
+			      <h4>7.4 Apprenticeships</h4>
+			      <ul>
+			        <!-- List apprenticeships if available -->
+			      </ul>
+			      <p>[Suggest non-education activities as well if data is sparse.]</p>
+			    </section>
+
+			    <section id="conclusion">
+			      <h3>8. Conclusion</h3>
+			      <p>[Summarize the student's strengths, reassure them, and encourage next steps. Reference any feedback or improvements from the previous response and user feedback. The conclusion should be positive and forward-looking.]</p>
+			    </section>
+
+			  </body>
+			</html>
+
+			***********************
+			ADDITIONAL INSTRUCTIONS
+			***********************
+			- Incorporate the user's feedback: "{feedback}" and improve upon the "previous_response" by enhancing layout, color usage, and adding more depth and clarity.
+			- Use the arrays of scores and grading data provided to populate the tables and interpretations.
+			- The data you have available:
+			  Personal Info: {response_data['personal_info']}
+			  Self-Assessment Results: {response_data['self_assessment_results']}
+			  CV Data: {response_data['cv_data']}
+			  Goals: {response_data['goals']}
+			  Predicted Points: {response_data['predicted_points']}
+			  Education Options: {response_data['education_options']}
+
+			Scoring & Grading Data:
+			Multiple Intelligence Scores:
+			{multiple_intelligence_scores}
+
+			Occupational Interest Scores:
+			{occupational_interest_scores}
+
+			Occupational Values Scores:
+			{occupational_values_scores}
+
+			Subject Grades (with percentage ranges):
+			{subject_grades}
+
+			- DO NOT include triple backticks.
+			- DO NOT use Markdown code fences.
+			- Only produce the final HTML as the output.
+			- Do not add any styling or CSS to the HTML. Only include the structure and content.
+			"""
 
 			# Generate the GPT response using your existing GPT configuration
 			gpt_response = generate_gpt_response(prompt)
