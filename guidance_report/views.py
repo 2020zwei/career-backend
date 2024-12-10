@@ -377,7 +377,7 @@ Achievement" sections.
 **Sections to Include:**
 1. Introduction: Student's name, approximate age or educational stage, purpose of the report.
 2. Self-Assessment Results: 
-   - Display Multiple Intelligence scores from the array below.
+   - Display Multiple Intelligence scores, Occupational Interest scores, and Occupational Values scores.
    - Display Occupational Interest and Values scores from the arrays below.
    - Highlight top three skills & qualities from CV data.
    - Discuss what these scores mean and suggest 5 careers compatible with these results.
@@ -400,6 +400,7 @@ Achievement" sections.
 - Feedback: {feedback}
 - Previous Response (for reference to improve upon): {previous_response}
 - Personal Info: {response_data['personal_info']}
+- Self-Assessment Results: {response_data['self_assessment_results']}
 - CV Data: {response_data['cv_data']}
 - Goals: {response_data['goals']}
 - Predicted Points: {response_data['predicted_points']}
