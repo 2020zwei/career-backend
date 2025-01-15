@@ -120,3 +120,23 @@ class Stripe():
             metadata={"cancel_at_period_end": status})
         except stripe.error.InvalidRequestError as e:
             raise ValueError(e._message)
+
+    def get_subscription_expiration(self, sub_id):
+        """ Retrieve a subscription from Stripe and return its expiration date (current_period_end). """
+        subscription = self.retrieve_subscription(sub_id)
+        # Stripe returns current_period_end as a Unix timestamp (integer).
+        expiration_ts = subscription.current_period_end  # e.g., 1676470523
+
+        return expiration_ts
+
+    def list_subscriptions_for_customer(self, stripe_customer_id):
+        """
+        Return all subscriptions for the given Stripe customer ID.
+        """
+        try:
+            return stripe.Subscription.list(customer=stripe_customer_id)
+        except stripe.error.StripeError as e:
+            # Catch any Stripe errors (e.g., invalid customer, network issues, etc.)
+            raise ValueError(str(e))
+
+
