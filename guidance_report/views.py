@@ -292,7 +292,10 @@ class GenerateGuidanceReportGPT(APIView):
                     experiences = Experience.objects.filter(user=student)
                     if experiences.exists():
                         cv_data["work_experience"] = list(
-                            experiences.values("job_title", "company", "city", "country", "description", "startdate", "enddate", "is_current_work")
+                            experiences.values(
+                                "job_title", "company", "city", "country",
+                                "description", "startdate", "enddate", "is_current_work"
+                            )
                         )
                 if data.get("skills") == "Yes":
                     skill_objs = Skills.objects.filter(user=student)
@@ -307,16 +310,20 @@ class GenerateGuidanceReportGPT(APIView):
                         cv_data["qualities"] = list(qualities.values_list("description", flat=True))
 
             # Gather Predicted Points and Subjects if requested
-            predicted_points = None
+            predicted_points = []
             if data.get("predicted_points_and_subjects") == "Yes":
-                user_points = UserPoints.objects.filter(user=student).first()
-                if user_points:
-                    grades = user_points.grades.values("subject__name", "grade", "point")
-                    if grades.exists():
-                        predicted_points = {
-                            "total_points": user_points.total_points,
-                            "grades": list(grades)
-                        }
+                user_points_records = UserPoints.objects.filter(user=student)
+                if user_points_records.exists():
+                    for up in user_points_records:
+                        grades = up.grades.all().values("subject__name", "grade", "point")
+                        if grades.exists():
+                            predicted_points.append({
+                                "total_points": up.total_points,
+                                "grades": list(grades)
+                            })
+
+            if not predicted_points:
+                predicted_points = None
 
             # Gather Goals if requested
             goals = None
@@ -346,48 +353,13 @@ class GenerateGuidanceReportGPT(APIView):
                     if appr.exists():
                         education_options["apprenticeship"] = list(appr.values())
 
-            # Grade mapping if available
-            subject_data = []
-            if predicted_points and predicted_points["grades"]:
-                grade_mapping = {
-                    "H1": "90%-100%",
-                    "H2": "80%-89%",
-                    "H3": "70%-79%",
-                    "H4": "60%-69%",
-                    "H5": "50%-59%",
-                    "H6": "40%-49%",
-                    "H7": "30%-39%",
-                    "O1": "90%-100%",
-                    "O2": "80%-89%",
-                    "O3": "70%-79%",
-                    "O4": "60%-69%",
-                    "O5": "50%-59%",
-                    "O6": "40%-49%",
-                    "O7": "30%-39%",
-                    "F1": "90%-100%",
-                    "F2": "80%-89%",
-                    "F3": "70%-79%",
-                    "F4": "60%-69%",
-                    "F5": "50%-59%",
-                    "F6": "40%-49%",
-                    "F7": "30%-39%",
-                }
-                for g in predicted_points["grades"]:
-                    subj_name = g.get("subject__name")
-                    grade = g.get("grade")
-                    if subj_name and grade:
-                        percentage_range = grade_mapping.get(grade)
-                        if percentage_range:
-                            subject_data.append({"subject": subj_name, "grade": grade, "range": percentage_range})
-
             def get_first_word_of_first_chosen_course(courses):
                 if not courses:
                     return None
                 first_course = courses[0]
                 title = first_course.get("title")
-                if title:
-                    # Extract the first word from the title
-                    return title.split()[0] if title.strip() else None
+                if title and title.strip():
+                    return title.split()[0]
                 return None
 
             def fetch_recommendations(model, chosen_courses, keyword, limit=5):
@@ -423,119 +395,8 @@ class GenerateGuidanceReportGPT(APIView):
                 "recommended_courses": recommended_courses if recommended_courses else {}
             }
 
-            # Adjusting the prompt: Always provide a conclusion, even if data is minimal
-            prompt = f"""
-You are an expert career guidance counselor and HTML report generator. Based on the provided data, produce a standalone HTML document containing a Career Guidance Report. The HTML must start with <html> and end with </html>, with no extra formatting, no CSS, no styling, and no escape characters.
-
-Use basic HTML elements like h1, h2, h3, p, ul, li, table, tr, th, td. Only include data if it is available; if data for a specific section is not available, omit that section entirely. Do not show any placeholder or text for missing data. However, always include a conclusion section. If not enough data is present for a personalized conclusion, provide a generic but positive and encouraging conclusion.
-
-Incorporate the user's feedback ("{feedback}") and improve upon the previous response ("{previous_response}") if they exist. If they do not exist, do not reference them.
-
-If recommended courses are available, display them under each respective education level section in a new subsection called "Recommended Courses".
-
-Follow this general structure:
-
-<html>
-<head><title>Career Guidance Report</title></head>
-<body>
-<h1>Career Guidance Report</h1>
-
-<!-- Show Student Name if available -->
-<h2>Student Name: [Full Name]</h2>
-
-<h3>1. Introduction</h3>
-<p>[Brief introduction if personal or school info available]</p>
-
-<h3>2. Self-Assessment Results</h3>
-<h4>2.1 Multiple Intelligence</h4>
-<table>
-<!-- For each category available, show category and score as score/out_of -->
-</table>
-
-<h4>2.2 Occupational Interest</h4>
-<table>
-<!-- For each category available, show category and score as score/out_of -->
-</table>
-
-<h4>2.3 Occupational Values</h4>
-<table>
-<!-- For each category available, show category and score as score/out_of -->
-</table>
-
-<h4>2.4 Top Skills & Qualities</h4>
-<ul>
-<!-- Show top skills and qualities if available -->
-</ul>
-<p>[Interpretation and career suggestions if data present]</p>
-
-<h3>3. Suggested Study Techniques</h3>
-<p>[Suggestions based on available MI data]</p>
-
-<h3>4. Academic Achievement</h3>
-<table>
-<!-- Show subjects and their grade ranges if available -->
-</table>
-<p>[Discuss strengths if available]</p>
-
-<h3>5. Career Exploration</h3>
-<p>[Practical steps if available]</p>
-
-<h3>6. Student's Goals</h3>
-<h4>6.1 Short-Term Goals (3 months)</h4>
-<ul>
-<!-- List short-term goals if available -->
-</ul>
-<h4>6.2 Long-Term Goals (1 year)</h4>
-<ul>
-<!-- List long-term goals if available -->
-</ul>
-
-<h3>7. Compatible Courses and Opportunities</h3>
-<h4>7.1 Level 5 (PLC) Options</h4>
-<ul>
-<!-- List Level 5 courses if available -->
-</ul>
-<h5>Recommended Level 5 Courses</h5>
-<ul>
-<!-- List recommended Level 5 courses if available -->
-</ul>
-
-<h4>7.2 Level 6/7 Courses</h4>
-<ul>
-<!-- List Level 6/7 courses if available -->
-</ul>
-<h5>Recommended Level 6/7 Courses</h5>
-<ul>
-<!-- List recommended Level 6/7 courses if available -->
-</ul>
-
-<h4>7.3 Level 8 Courses</h4>
-<ul>
-<!-- List Level 8 courses if available -->
-</ul>
-<h5>Recommended Level 8 Courses</h5>
-<ul>
-<!-- List recommended Level 8 courses if available -->
-</ul>
-
-<h4>7.4 Apprenticeships</h4>
-<ul>
-<!-- List apprenticeships if available -->
-</ul>
-<p>[Suggest other activities if data is sparse]</p>
-
-<h3>8. Conclusion</h3>
-<p>[Summarize and encourage next steps; if limited data, provide a generic positive conclusion]</p>
-</body>
-</html>
-"""
-
-            prompt += "\n\nstudent data:\n"
-            prompt += str(response_data)
-
-            gpt_response = generate_gpt_response(prompt)
-
-            return Response({"success": True, "message": gpt_response}, status=200)
+            # Return the collected data as JSON
+            return Response({"success": True, "data": response_data}, status=200)
 
         except Exception as e:
             return Response({"success": False, "message": str(e)}, status=400)
