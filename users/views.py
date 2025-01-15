@@ -109,7 +109,50 @@ class SignupUser(APIView):
             response_template['access_token'] = access_token  # Include the access token in the response
             return Response(data=response_template)
 
+from django.shortcuts import get_object_or_404
 
+class SubscriptionExpirationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # 1) Identify the logged-in user
+        user = request.user  # e.g., a Student or standard Django user
+
+        # 2) Retrieve StripeCustomer object for the current user
+        stripe_customer = get_object_or_404(StripeCustomer, user=user)
+        stripe_customer_id = stripe_customer.stripe_customer_id
+
+        # 3) Use the Stripe helper to list subscriptions for this customer
+        stripe_obj = Stripe()
+        try:
+            subscriptions = stripe_obj.list_subscriptions_for_customer(stripe_customer_id)
+        except ValueError as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 4) Check if there are any subscriptions
+        if not subscriptions.data:
+            return Response(
+                {"detail": "No subscriptions found for this user."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 5) For simplicity, assume we want the first subscription
+        subscription = subscriptions.data[0]
+        subscription_id = subscription.id
+        current_period_end = subscription.current_period_end  # Unix timestamp
+
+        # Convert Unix timestamp to a human-readable string
+        expiration_date_utc = datetime.fromtimestamp(current_period_end).strftime("%Y-%m-%d %H:%M:%S")
+
+        response_data = {
+            "subscription_id": subscription_id,
+            "expiration_unix_ts": current_period_end,
+            "expiration_date_utc": expiration_date_utc
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class UserView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
@@ -120,56 +163,6 @@ class UserView(RetrieveAPIView):
             return queryset
         except Exception as e:
             raise ValidationError(e)
-
-    def get(self, request, *args, **kwargs):
-        """
-        Overriding GET to inject 'subscription_expires_at' into the response
-        by fetching the active subscription from Stripe using customer_id.
-        """
-        student = self.get_object()
-        serializer = self.serializer_class(student)
-        response_data = serializer.data  # Base serialized data
-
-        try:
-            # 1) Retrieve the StripeCustomer object for this student
-            stripe_customer = student.stripecustomer
-            # 2) List subscriptions for that customer (using stripe_customer_id).
-            #    We'll filter by active subscriptions to get the relevant one.
-            subscriptions = stripe.Subscription.list(
-                customer=stripe_customer.stripe_customer_id,
-                status='active',
-                limit=1  # Just get the first active subscription
-            )
-
-            if subscriptions.data:
-                # 3) Extract the first active subscription
-                subscription = subscriptions.data[0]
-                current_period_end = subscription.get('current_period_end')
-
-                if current_period_end:
-                    # Convert from Unix timestamp to Python datetime, then to ISO format
-                    expiry_date = datetime.fromtimestamp(current_period_end).isoformat()
-                    response_data['subscription_expires_at'] = expiry_date
-                else:
-                    response_data['subscription_expires_at'] = None
-            else:
-                # No active subscription
-                response_data['subscription_expires_at'] = None
-
-        except ObjectDoesNotExist:
-            # If StripeCustomer doesn't exist for this Student
-            response_data['subscription_expires_at'] = None
-        except stripe.error.StripeError as e:
-            # Handle or log Stripe errors
-            response_data['subscription_expires_at'] = None
-        except Exception as e:
-            # Catch-all for unexpected exceptions
-            response_data['subscription_expires_at'] = None
-
-        # Return the final response, now augmented with 'subscription_expires_at'
-        return Response({'data': response_data, 'success': True})
-
-
     
     def patch(self, request):
         try:
@@ -180,6 +173,7 @@ class UserView(RetrieveAPIView):
                 return Response({'data':serializer.data, 'success':True})
         except Exception as e:
             raise ValidationError(e)
+
 
 class UserUpdate(UpdateAPIView):
     permission_classes = [IsAuthenticated]
