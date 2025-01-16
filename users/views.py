@@ -115,34 +115,50 @@ class SubscriptionExpirationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        # 1) Identify the logged-in user
-        user = request.user  # e.g., a Student or standard Django user
+        # Identify the logged-in user
+        user = request.user
 
-        # 2) Retrieve StripeCustomer object for the current user
-        stripe_customer = get_object_or_404(StripeCustomer, user=user)
+        # Ensure the user has an associated Student instance
+        try:
+            student = user.student
+        except Student.DoesNotExist:
+            return Response(
+                {"detail": "The logged-in user is not associated with a student account."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Retrieve StripeCustomer object for the current student
+        try:
+            stripe_customer = student.stripecustomer
+        except StripeCustomer.DoesNotExist:
+            return Response(
+                {"detail": "The student does not have a Stripe customer account."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         stripe_customer_id = stripe_customer.stripe_customer_id
 
-        # 3) Use the Stripe helper to list subscriptions for this customer
+        # Use the Stripe helper to list subscriptions for this customer
         stripe_obj = Stripe()
         try:
             subscriptions = stripe_obj.list_subscriptions_for_customer(stripe_customer_id)
         except ValueError as e:
-            return Response(
-                {"detail": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 4) Check if there are any subscriptions
-        if not subscriptions.data:
-            return Response(
-                {"detail": "No subscriptions found for this user."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+        # Check if there are any subscriptions
+        if not subscriptions or not subscriptions.data:
+            return Response({"detail": "No subscriptions found for this user."}, status=status.HTTP_404_NOT_FOUND)
 
-        # 5) For simplicity, assume we want the first subscription
+        # For simplicity, assume we want the first subscription
         subscription = subscriptions.data[0]
-        subscription_id = subscription.id
-        current_period_end = subscription.current_period_end  # Unix timestamp
+        subscription_id = subscription.get("id")
+        current_period_end = subscription.get("current_period_end")
+
+        if not current_period_end:
+            return Response(
+                {"detail": "Subscription does not have a valid expiration date."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         # Convert Unix timestamp to a human-readable string
         expiration_date_utc = datetime.fromtimestamp(current_period_end).strftime("%Y-%m-%d %H:%M:%S")
@@ -150,7 +166,7 @@ class SubscriptionExpirationView(APIView):
         response_data = {
             "subscription_id": subscription_id,
             "expiration_unix_ts": current_period_end,
-            "expiration_date_utc": expiration_date_utc
+            "expiration_date_utc": expiration_date_utc,
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
