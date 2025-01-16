@@ -17,8 +17,7 @@ from .stripe import Stripe
 import stripe
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_simplejwt.tokens import RefreshToken
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 stripeObject = Stripe()
 
@@ -109,65 +108,83 @@ class SignupUser(APIView):
             response_template['access_token'] = access_token  # Include the access token in the response
             return Response(data=response_template)
 
-from django.shortcuts import get_object_or_404
+import logging
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class SubscriptionExpirationView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        logger.info("Fetching subscription/payment expiration date")
+
         # Identify the logged-in user
         user = request.user
+        logger.debug(f"Logged-in user: {user.email}")
 
-        # Ensure the user has an associated Student instance
+        # Ensure the user is associated with a student account
         try:
             student = user.student
+            logger.debug(f"Associated student: {student}")
         except Student.DoesNotExist:
+            logger.error("Student instance not found for the user")
             return Response(
                 {"detail": "The logged-in user is not associated with a student account."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Retrieve StripeCustomer object for the current student
+        # Retrieve the Stripe customer for the student
         try:
             stripe_customer = student.stripecustomer
+            stripe_customer_id = stripe_customer.stripe_customer_id
+            logger.debug(f"Stripe customer ID: {stripe_customer_id}")
         except StripeCustomer.DoesNotExist:
+            logger.error("StripeCustomer instance not found for the student")
             return Response(
                 {"detail": "The student does not have a Stripe customer account."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        stripe_customer_id = stripe_customer.stripe_customer_id
-
-        # Use the Stripe helper to list subscriptions for this customer
-        stripe_obj = Stripe()
+        # Fetch payment intents for the Stripe customer
+        stripe.api_key = os.environ.get('CG_STRIPE_SECRET_KEY')
         try:
-            subscriptions = stripe_obj.list_subscriptions_for_customer(stripe_customer_id)
-        except ValueError as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            payment_intents = stripe.PaymentIntent.list(
+                customer=stripe_customer_id,
+                limit=10,  # Fetch up to 10 recent payment intents
+            )
+            logger.debug(f"Fetched payment intents: {payment_intents}")
+        except stripe.error.StripeError as e:
+            logger.error(f"Error fetching payment intents: {str(e)}")
+            return Response({"detail": "Error fetching payment details."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if there are any subscriptions
-        if not subscriptions or not subscriptions.data:
-            return Response({"detail": "No subscriptions found for this user."}, status=status.HTTP_404_NOT_FOUND)
+        # Filter successful payment intents
+        successful_payments = [
+            intent for intent in payment_intents.data if intent.status == "succeeded"
+        ]
 
-        # For simplicity, assume we want the first subscription
-        subscription = subscriptions.data[0]
-        subscription_id = subscription.get("id")
-        current_period_end = subscription.get("current_period_end")
-
-        if not current_period_end:
+        if not successful_payments:
+            logger.warning("No successful payments found for the student")
             return Response(
-                {"detail": "Subscription does not have a valid expiration date."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"detail": "No payment history found for this user."},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Convert Unix timestamp to a human-readable string
-        expiration_date_utc = datetime.fromtimestamp(current_period_end).strftime("%Y-%m-%d %H:%M:%S")
+        # Get the most recent successful payment
+        latest_payment = successful_payments[0]
+        last_payment_date = datetime.fromtimestamp(latest_payment.created)
 
+        # Assume a fixed subscription interval of 30 days
+        next_payment_date = last_payment_date + timedelta(days=30)
+
+        # Format dates for the response
         response_data = {
-            "subscription_id": subscription_id,
-            "expiration_unix_ts": current_period_end,
-            "expiration_date_utc": expiration_date_utc,
+            "last_payment_date": last_payment_date.strftime("%Y-%m-%d %H:%M:%S"),
+            "next_payment_date": next_payment_date.strftime("%Y-%m-%d %H:%M:%S"),
         }
+
+        logger.info(f"Returning subscription/payment expiration data: {response_data}")
         return Response(response_data, status=status.HTTP_200_OK)
 
 class UserView(RetrieveAPIView):
