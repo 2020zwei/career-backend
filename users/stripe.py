@@ -134,9 +134,8 @@ class Stripe():
         Return all subscriptions for the given Stripe customer ID.
         """
         try:
-            return stripe.Subscription.list(customer=stripe_customer_id)
+            return stripe.Subscription.list(customer=stripe_customer_id, status='all')
         except stripe.error.StripeError as e:
             # Catch any Stripe errors (e.g., invalid customer, network issues, etc.)
             raise ValueError(str(e))
-
 
